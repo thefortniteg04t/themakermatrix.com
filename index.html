@@ -1957,11 +1957,11 @@
 // Submit to Google Forms
         try {
             const formData = new FormData();
-            formData.append('entry.1244134821', customerName);
-            formData.append('entry.935675022', homeroom);
+            formData.append('entry.957937954', customerName);
+            formData.append('entry.702310277', homeroom);
             formData.append('entry.1216365344', payment);
-            formData.append('entry.2131548750', orderDetails);
-            formData.append('entry.1359220500', notes || 'None');
+            formData.append('entry.1979507159', orderDetails);
+            formData.append('entry.759705507', notes || 'None');
 
             await fetch('https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/viewform?usp=pp_url&entry.957937954=Ryland&entry.702310277=Saiz&entry.1216365344=Cash&entry.1979507159=None&entry.759705507=None', {
                 method: 'POST',
