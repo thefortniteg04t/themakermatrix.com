@@ -1,2 +1,2009 @@
-# themakermatrix.com
-Step into the digital realm where imagination meets precision. We transform your concepts into tangible reality using cutting-edge 3D printing technology. From decorative pieces to functional tools, we've got the matrix covered.
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Maker Matrix - 3D Printing Services</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            line-height: 1.6;
+            color: #00ff00;
+            background: #0d0d0d;
+            min-height: 100vh;
+        }
+
+        /* Matrix rain effect background */
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #001a00 0%, #003300 100%);
+            padding: 40px 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px solid #00ff00;
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 0, 0.03) 2px,
+                rgba(0, 255, 0, 0.03) 4px
+            );
+            animation: scan 8s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(50%); }
+        }
+
+        h1 {
+            color: #00ff00;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+            font-weight: bold;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tagline {
+            color: #00cc00;
+            font-size: 1.3em;
+            text-shadow: 0 0 5px #00ff00;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            background: #001a00;
+            padding: 0;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            display: flex;
+            overflow-x: auto;
+            border: 2px solid #003300;
+        }
+
+        .tab-btn {
+            background: transparent;
+            color: #00ff00;
+            border: none;
+            padding: 18px 30px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            transition: all 0.3s;
+            flex: 1;
+            min-width: 120px;
+            border-right: 1px solid #003300;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .tab-btn:last-child {
+            border-right: none;
+        }
+
+        .tab-btn:hover {
+            background: rgba(0, 255, 0, 0.1);
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            background: #00ff00;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+            background: rgba(0, 26, 0, 0.8);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.2);
+            margin-bottom: 30px;
+            border: 2px solid #003300;
+            animation: fadeIn 0.5s;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0); 
+            }
+        }
+
+        h2 {
+            color: #00ff00;
+            margin-bottom: 25px;
+            font-size: 2.2em;
+            text-shadow: 0 0 10px #00ff00;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 15px;
+            letter-spacing: 2px;
+        }
+
+        h3 {
+            color: #00cc00;
+            margin: 25px 0 15px 0;
+            font-size: 1.5em;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        p, li {
+            color: #00dd00;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+
+        /* Category Section */
+        .category-section {
+            margin-bottom: 40px;
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .expand-btn {
+            background: rgba(0, 51, 0, 0.5);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .expand-btn:hover {
+            background: rgba(0, 77, 0, 0.7);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .expand-arrow {
+            transition: transform 0.3s;
+            font-size: 1.2em;
+        }
+
+        .expand-arrow.rotated {
+            transform: rotate(180deg);
+        }
+
+        /* Product Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .product-grid.collapsed {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .product-grid.collapsed .product-card:nth-child(n+4) {
+            display: none;
+        }
+
+        .product-card {
+            background: rgba(0, 51, 0, 0.5);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .product-card:hover::before {
+            left: 100%;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+            border-color: #00ff00;
+            background: rgba(0, 51, 0, 0.8);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: rgba(0, 77, 0, 0.3);
+            border: 1px solid #003300;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .product-placeholder {
+            color: #004d00;
+            font-size: 0.4em;
+            text-align: center;
+            line-height: 1.3;
+        }
+
+        .product-name {
+            font-size: 1.4em;
+            font-weight: bold;
+            color: #00ff00;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .product-category {
+            color: #00cc00;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        /* Notice Box */
+        .notice-box {
+            background: rgba(255, 165, 0, 0.1);
+            border: 2px solid #ff8800;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+            color: #ffaa00;
+            text-align: center;
+            font-size: 1.1em;
+        }
+
+        /* Product Detail Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #001a00 0%, #003300 100%);
+            margin: 50px auto;
+            padding: 40px;
+            border-radius: 15px;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0, 255, 0, 0.5);
+            border: 2px solid #00ff00;
+            animation: slideDown 0.3s;
+            position: relative;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .close {
+            color: #00ff00;
+            float: right;
+            font-size: 35px;
+            font-weight: bold;
+            cursor: pointer;
+            line-height: 20px;
+            transition: all 0.3s;
+        }
+
+        .close:hover {
+            text-shadow: 0 0 15px #00ff00;
+        }
+
+        .modal-product-image {
+            width: 100%;
+            height: 300px;
+            background: rgba(0, 77, 0, 0.3);
+            border: 2px solid #003300;
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 6em;
+        }
+
+        .modal-product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .modal-btn {
+            flex: 1;
+            background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .modal-btn:hover {
+            background: linear-gradient(135deg, #004d00 0%, #006600 100%);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .modal-btn.primary {
+            background: linear-gradient(135deg, #004d00 0%, #006600 100%);
+        }
+
+        /* Feature Boxes */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .feature-box {
+            background: rgba(0, 51, 0, 0.5);
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #003300;
+            transition: all 0.3s;
+        }
+
+        .feature-box:hover {
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .feature-icon {
+            font-size: 3.5em;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 0 5px #00ff00);
+        }
+
+        .feature-title {
+            color: #00ff00;
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .feature-desc {
+            color: #00dd00;
+            font-size: 1em;
+        }
+
+        /* Calculator Styles */
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #00ff00;
+            font-size: 1.1em;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #003300;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 26, 0, 0.8);
+            color: #00ff00;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            background: rgba(0, 51, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #003300;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .radio-option:hover {
+            background: rgba(0, 77, 0, 0.5);
+            border-color: #00ff00;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 10px;
+            cursor: pointer;
+            accent-color: #00ff00;
+        }
+
+        .radio-option.selected {
+            background: rgba(0, 77, 0, 0.6);
+            border-color: #00ff00;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+        }
+
+        .option-description {
+            font-size: 0.9em;
+            color: #00aa00;
+            margin-top: 5px;
+            margin-left: 30px;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            padding: 15px 10px;
+            border: 3px solid transparent;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            font-weight: bold;
+            font-size: 0.95em;
+        }
+
+        .color-option:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        }
+
+        .color-option.selected {
+            border-color: #00ff00;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .color-price {
+            display: block;
+            font-size: 0.85em;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #003300;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Courier New', Courier, monospace;
+            background: rgba(0, 26, 0, 0.8);
+            color: #00ff00;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #00ff00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        select option {
+            background: #001a00;
+            color: #00ff00;
+        }
+
+        .checkbox-option {
+            display: flex;
+            align-items: center;
+            background: rgba(0, 51, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #003300;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checkbox-option:hover {
+            background: rgba(0, 77, 0, 0.5);
+            border-color: #00ff00;
+        }
+
+        .checkbox-option input {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #00ff00;
+        }
+
+        .price-display {
+            background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+            color: #00ff00;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 30px 0;
+            text-align: center;
+            border: 2px solid #00ff00;
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+        }
+
+        .price-label {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .price-amount {
+            font-size: 3.5em;
+            font-weight: bold;
+            margin: 10px 0;
+            text-shadow: 0 0 15px #00ff00, 0 0 30px #00ff00;
+        }
+
+        .price-note {
+            font-size: 0.9em;
+            color: #00cc00;
+            margin-top: 10px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-family: 'Courier New', Courier, monospace;
+            cursor: pointer;
+            transition: all 0.3s;
+            width: 100%;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #004d00 0%, #006600 100%);
+            box-shadow: 0 0 25px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #001a00;
+            border-color: #003300;
+            color: #004d00;
+            cursor: not-allowed;
+            transform: none;
+            text-shadow: none;
+        }
+
+        .info-text {
+            font-size: 0.9em;
+            color: #00aa00;
+            margin-top: 5px;
+            font-style: italic;
+        }
+
+        /* Cart Styles */
+        .cart-item {
+            background: rgba(0, 51, 0, 0.3);
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #003300;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 1.3em;
+            color: #00ff00;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .cart-item-details {
+            font-size: 0.9em;
+            color: #00aa00;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-price {
+            font-size: 1.2em;
+            color: #00ff00;
+            font-weight: bold;
+            margin-right: 20px;
+        }
+
+        .remove-btn {
+            background: rgba(255, 0, 0, 0.3);
+            color: #ff0000;
+            border: 2px solid #ff0000;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', Courier, monospace;
+            transition: all 0.3s;
+        }
+
+        .remove-btn:hover {
+            background: rgba(255, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .cart-total {
+            background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+            padding: 25px;
+            border-radius: 10px;
+            border: 2px solid #00ff00;
+            margin-top: 30px;
+            text-align: right;
+        }
+
+        .cart-total-label {
+            font-size: 1.5em;
+            color: #00cc00;
+            margin-bottom: 10px;
+        }
+
+        .cart-total-amount {
+            font-size: 2.5em;
+            color: #00ff00;
+            font-weight: bold;
+            text-shadow: 0 0 15px #00ff00;
+        }
+
+        .empty-cart {
+            text-align: center;
+            padding: 60px 20px;
+            color: #00aa00;
+            font-size: 1.3em;
+        }
+
+        .success-message {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00ff00;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .success-message h3 {
+            color: #00ff00;
+            font-size: 2em;
+            margin-bottom: 15px;
+        }
+
+        .loading-spinner {
+            border: 4px solid rgba(0, 255, 0, 0.1);
+            border-top: 4px solid #00ff00;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2em;
+            }
+
+            .tab-nav {
+                flex-wrap: wrap;
+            }
+
+            .tab-btn {
+                flex: 1 1 50%;
+            }
+
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-grid.collapsed {
+                grid-template-columns: 1fr;
+            }
+
+            .color-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .price-amount {
+                font-size: 2.5em;
+            }
+
+            .tab-content {
+                padding: 25px 20px;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .modal-buttons {
+                flex-direction: column;
+            }
+
+            .cart-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+
+            .cart-item-price {
+                margin-right: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Background Effect -->
+    <canvas class="matrix-bg" id="matrixCanvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>⚡ THE MAKER MATRIX ⚡</h1>
+            <p class="tagline">>>> Materializing Your Ideas Into Reality <<<</p>
+        </header>
+
+        <!-- Tab Navigation -->
+        <div class="tab-nav">
+            <button class="tab-btn active" onclick="openTab(event, 'home')">Home</button>
+            <button class="tab-btn" onclick="openTab(event, 'collection')">Collection</button>
+            <button class="tab-btn" onclick="openTab(event, 'calculator')">Price Calculator</button>
+            <button class="tab-btn" onclick="openTab(event, 'cart')">
+                Cart
+                <span class="cart-badge" id="cartBadge" style="display: none;">0</span>
+            </button>
+            <button class="tab-btn" onclick="openTab(event, 'about')">About</button>
+        </div>
+
+        <!-- HOME TAB -->
+        <div id="home" class="tab-content active">
+            <h2>>> WELCOME TO THE MAKER MATRIX</h2>
+            <p style="font-size: 1.2em; margin-bottom: 30px;">
+                Step into the digital realm where imagination meets precision. We transform your concepts into tangible reality using cutting-edge 3D printing technology. From decorative pieces to functional tools, we've got the matrix covered.
+            </p>
+
+            <div class="feature-grid">
+                <div class="feature-box">
+                    <div class="feature-icon">🔮</div>
+                    <div class="feature-title">Vast Selection</div>
+                    <div class="feature-desc">Browse our extensive collection of designs - from straw toppers to roll-up tables, keychains to LEGO sorting trays.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🎨</div>
+                    <div class="feature-title">Color Spectrum</div>
+                    <div class="feature-desc">Choose from a rainbow of colors including specialty dual-color options powered by our AMS system.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">⚙️</div>
+                    <div class="feature-title">Material Options</div>
+                    <div class="feature-desc">Select between PLA for decorative items or PETG for functional parts that need extra strength.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-title">Premium Rush</div>
+                    <div class="feature-desc">Need it fast? Upgrade to our Premium Listing for priority queue placement.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">💳</div>
+                    <div class="feature-title">Flexible Payment</div>
+                    <div class="feature-desc">Pay your way - Cash, PayPal, Venmo, or Cash App. We've got you covered.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">🖨️</div>
+                    <div class="feature-title">Pro Equipment</div>
+                    <div class="feature-desc">All prints produced on professional Bambu Lab printers for maximum quality.</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 50px; text-align: center;">
+                <button class="submit-btn" onclick="openTab(event, 'collection')" style="max-width: 400px; margin: 0 auto;">
+                    EXPLORE COLLECTION
+                </button>
+            </div>
+        </div>
+
+        <!-- COLLECTION TAB -->
+        <div id="collection" class="tab-content">
+            <h2>>> PRODUCT COLLECTION</h2>
+            <p style="margin-bottom: 30px;">Browse our complete catalog of 3D printed items. Click any product for details and ordering.</p>
+
+            <!-- DECORATIVE ITEMS CATEGORY -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>// DECORATIVE ITEMS</h3>
+                    <button class="expand-btn" onclick="toggleCategory('decorative')">
+                        <span>Show All</span>
+                        <span class="expand-arrow" id="decorative-arrow">▼</span>
+                    </button>
+                </div>
+                
+                <div class="product-grid collapsed" id="decorative-grid">
+                    <div class="product-card" onclick="openProductDetail(1)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/p2uTIaS.png" alt="Straw Topper">
+                        </div>
+                        <div class="product-name">Straw Topper</div>
+                        <div class="product-category">Decorative</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(2)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/Jn9D34K.png" alt="Keychain">
+                        </div>
+                        <div class="product-name">Keychain</div>
+                        <div class="product-category">Decorative</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(3)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/fl3T8u5.png" alt="Desk Cactus">
+                        </div>
+                        <div class="product-name">Desk Cactus</div>
+                        <div class="product-category">Decorative</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(4)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/EK9ldmU.png" alt="Balancing Bird">
+                        </div>
+                        <div class="product-name">Balancing Bird</div>
+                        <div class="product-category">Decorative</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PRACTICAL ITEMS CATEGORY -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>// PRACTICAL ITEMS</h3>
+                    <button class="expand-btn" onclick="toggleCategory('practical')">
+                        <span>Show All</span>
+                        <span class="expand-arrow" id="practical-arrow">▼</span>
+                    </button>
+                </div>
+                
+                <div class="product-grid collapsed" id="practical-grid">
+                    <div class="product-card" onclick="openProductDetail(5)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/kj8Tub7.png" alt="LEGO Sorting Tray">
+                        </div>
+                        <div class="product-name">LEGO Sorting Tray</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(6)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/8rE5EnS.png" alt="Cable Organizer">
+                        </div>
+                        <div class="product-name">Cable Organizer</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(7)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/Mf56D6Q.png" alt="Roll-up Picnic Table">
+                        </div>
+                        <div class="product-name">Roll-up Picnic Table</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(8)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/xGs4ooL.png" alt="Sheets Holder">
+                        </div>
+                        <div class="product-name">Sheets Holder</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(9)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/pxhuXiT.png" alt="Fruit Rinser">
+                        </div>
+                        <div class="product-name">Fruit Rinser</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(10)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/8OhpLnD.png" alt="Purse Hanger">
+                        </div>
+                        <div class="product-name">Purse Hanger</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(11)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/oxWw4Pb.png" alt="Cable Clip">
+                        </div>
+                        <div class="product-name">Cable Clip</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(12)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/dhv52FD.png" alt="Glasses Holder">
+                        </div>
+                        <div class="product-name">Glasses Holder</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(13)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/hyMtQgG.png" alt="Headphones Holder">
+                        </div>
+                        <div class="product-name">Headphones Holder</div>
+                        <div class="product-category">Practical</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SATISFYING FIDGETS CATEGORY -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>// SATISFYING FIDGETS</h3>
+                    <button class="expand-btn" onclick="toggleCategory('fidgets')">
+                        <span>Show All</span>
+                        <span class="expand-arrow" id="fidgets-arrow">▼</span>
+                    </button>
+                </div>
+                
+                <div class="product-grid collapsed" id="fidgets-grid">
+                    <div class="product-card" onclick="openProductDetail(14)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/aihR6No.png" alt="Infinity Cube">
+                        </div>
+                        <div class="product-name">Infinity Cube</div>
+                        <div class="product-category">Fidget</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(15)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/aVtCvRR.png" alt="Clicker Button or Switch">
+                        </div>
+                        <div class="product-name">Clicker Button or Switch</div>
+                        <div class="product-category">Fidget</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(16)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/yecq8ZU.png" alt="Pass Through">
+                        </div>
+                        <div class="product-name">Pass Through</div>
+                        <div class="product-category">Fidget</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(17)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/dTmgpnr.png" alt="Sensory Fidget">
+                        </div>
+                        <div class="product-name">Sensory Fidget</div>
+                        <div class="product-category">Fidget</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(18)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/Ksi9yVE.png" alt="3D Fabric">
+                        </div>
+                        <div class="product-name">3D Fabric</div>
+                        <div class="product-category">Satisfying</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- $5 DEAL ITEMS CATEGORY -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>// $5 DEAL ITEMS 💰 (5 for $5)</h3>
+                    <button class="expand-btn" onclick="toggleCategory('deals')">
+                        <span>Show All</span>
+                        <span class="expand-arrow" id="deals-arrow">▼</span>
+                    </button>
+                </div>
+                
+                <div class="product-grid collapsed" id="deals-grid">
+                    <div class="product-card" onclick="openProductDetail(19)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/Le1SFsr.png" alt="Angry Duck">
+                        </div>
+                        <div class="product-name">Angry Duck</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(20)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/F5RtTFL.png" alt="Baby Chicken">
+                        </div>
+                        <div class="product-name">Baby Chicken</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(21)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/w2PyxJE.png" alt="Chubby Bunny">
+                        </div>
+                        <div class="product-name">Chubby Bunny</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(22)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/cgvsM6M.png" alt="Goldfish">
+                        </div>
+                        <div class="product-name">Goldfish</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(23)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/R1LH1ih.png" alt="Narwal">
+                        </div>
+                        <div class="product-name">Narwal</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(24)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/ybdMg8o.png" alt="Chubby Dino">
+                        </div>
+                        <div class="product-name">Chubby Dino</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(25)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/Buopk8F.png" alt="Mini Otter">
+                        </div>
+                        <div class="product-name">Mini Otter</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(26)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/VBc3zsA.png" alt="Panda">
+                        </div>
+                        <div class="product-name">Panda</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(27)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/7m6NT66.png" alt="Froggy">
+                        </div>
+                        <div class="product-name">Froggy</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(28)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/Go1TT49.png" alt="Raccoon">
+                        </div>
+                        <div class="product-name">Raccoon</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(29)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/p2oji7p.png" alt="Balloon Dog">
+                        </div>
+                        <div class="product-name">Balloon Dog</div>
+                        <div class="product-category">$5 Deal</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CUSTOM ORDERS CATEGORY -->
+            <div class="category-section">
+                <div class="category-header">
+                    <h3>// CUSTOM ORDERS</h3>
+                    <button class="expand-btn" onclick="toggleCategory('custom')">
+                        <span>Show All</span>
+                        <span class="expand-arrow" id="custom-arrow">▼</span>
+                    </button>
+                </div>
+                
+                <div class="product-grid collapsed" id="custom-grid">
+                    <div class="product-card" onclick="openProductDetail(30)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/FYg88r9.png" alt="Custom Animal">
+                        </div>
+                        <div class="product-name">Custom Animal</div>
+                        <div class="product-category">Custom</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(31)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/FNNj5pk.png" alt="Earrings">
+                        </div>
+                        <div class="product-name">Earrings</div>
+                        <div class="product-category">Custom</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(32)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/nsEjmzM.png" alt="Custom Prop">
+                        </div>
+                        <div class="product-name">Custom Prop</div>
+                        <div class="product-category">Custom</div>
+                    </div>
+
+                    <div class="product-card" onclick="openProductDetail(33)">
+                        <div class="product-image">
+                            <img src="https://i.imgur.com/G9fbSxn.png" alt="Coaster">
+                        </div>
+                        <div class="product-name">Coaster</div>
+                        <div class="product-category">Custom</div>
+                    </div>
+                </div>
+
+                <div class="notice-box">
+                    ⚠️ <strong>NOTE:</strong> Custom orders typically cost more than standard items due to personalization and design work. Pricing varies based on complexity and size.
+                </div>
+            </div>
+        </div>
+
+        <!-- PRICE CALCULATOR TAB -->
+        <div id="calculator" class="tab-content">
+            <h2>>> PRICE CALCULATOR</h2>
+            <p style="margin-bottom: 30px; font-size: 1.1em;">
+                Calculate the price for your custom 3D print configuration
+            </p>
+
+            <div class="form-group">
+                <label>Select Product</label>
+                <select id="productSelect" onchange="onProductSelect()">
+                    <option value="">Choose a product...</option>
+                    <!-- Options populated by JavaScript -->
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Material Type</label>
+                <div class="radio-group">
+                    <div class="radio-option selected" onclick="selectMaterial('pla')">
+                        <input type="radio" name="material" value="pla" id="pla" checked>
+                        <label for="pla" style="display: inline; cursor: pointer; margin: 0; color: #00ff00;">
+                            <strong>PLA</strong> - Basic filament, useful for miscellaneous things
+                        </label>
+                        <div class="option-description">Best for decorative items and general use</div>
+                    </div>
+                    <div class="radio-option" onclick="selectMaterial('petg')">
+                        <input type="radio" name="material" value="petg" id="petg">
+                        <label for="petg" style="display: inline; cursor: pointer; margin: 0; color: #00ff00;">
+                            <strong>PETG</strong> - Tougher and useful for prints that need to hold weight
+                        </label>
+                        <div class="option-description">+$0.02 per gram - Better strength and durability</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Color Selection</label>
+                <p class="info-text">PETG is currently only available in Greyish Blue</p>
+                <div class="color-grid" id="colorOptions"></div>
+            </div>
+
+            <div class="form-group">
+                <div class="checkbox-option">
+                    <input type="checkbox" id="premiumListing" onchange="calculatePrice()">
+                    <label for="premiumListing" style="cursor: pointer; margin: 0; color: #00ff00;">
+                        <strong>Premium Listing (Fast Pass)</strong> - Get your order prioritized for +$0.50
+                    </label>
+                </div>
+            </div>
+
+            <div id="priceDisplay"></div>
+        </div>
+
+        <!-- CART TAB -->
+        <div id="cart" class="tab-content">
+            <h2>>> YOUR CART</h2>
+            
+            <div id="cartItems"></div>
+
+            <div id="customerInfoSection" style="display: none;">
+                <h3 style="margin-top: 40px; margin-bottom: 20px;">// Customer Information</h3>
+                
+                <div class="form-group">
+                    <label>Your Name *</label>
+                    <input type="text" id="customerName" placeholder="Enter your full name" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Homeroom *</label>
+                    <input type="text" id="customerHomeroom" placeholder="Enter your homeroom (e.g., Room 101, Ms. Smith)" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Payment Method *</label>
+                    <select id="paymentMethod" required>
+                        <option value="">Select payment method...</option>
+                        <option value="Cash">Cash</option>
+                        <option value="PayPal">PayPal</option>
+                        <option value="Venmo">Venmo</option>
+                        <option value="Cash App">Cash App</option>
+                        <option value="Apple Pay">Apple Pay</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Special Requests / Notes (Optional)</label>
+                    <textarea id="specialNotes" placeholder="Any special instructions or customizations?"></textarea>
+                </div>
+
+                <button class="submit-btn" onclick="checkout()">
+                    SUBMIT ORDER
+                </button>
+            </div>
+        </div>
+
+        <!-- ABOUT TAB -->
+        <div id="about" class="tab-content">
+            <h2>>> ABOUT THE MAKER MATRIX</h2>
+            <p style="font-size: 1.2em; margin-bottom: 30px;">
+                We're a student-run 3D printing operation dedicated to bringing digital designs into the physical world. Using professional-grade Bambu Lab technology, we deliver high-quality prints at competitive prices.
+            </p>
+
+            <h3>// WHY CHOOSE US?</h3>
+            <ul style="list-style: none; padding-left: 20px; line-height: 2; font-size: 1.1em;">
+                <li>✓ Professional Bambu Lab printing technology</li>
+                <li>✓ Extensive color selection with multi-color capabilities</li>
+                <li>✓ Transparent, calculated pricing</li>
+                <li>✓ Premium rush option available</li>
+                <li>✓ Multiple payment methods accepted</li>
+                <li>✓ Quality guaranteed on every print</li>
+            </ul>
+
+            <h3>// MATERIAL OPTIONS</h3>
+            <div class="feature-grid" style="margin-top: 20px;">
+                <div class="feature-box">
+                    <div class="feature-icon">🟢</div>
+                    <div class="feature-title">PLA (Polylactic Acid)</div>
+                    <div class="feature-desc">Our standard material - perfect for decorative items, prototypes, and general use. Biodegradable and easy to print with excellent detail. Available in full color range.</div>
+                </div>
+                <div class="feature-box">
+                    <div class="feature-icon">💎</div>
+                    <div class="feature-title">PETG (Polyethylene Terephthalate Glycol)</div>
+                    <div class="feature-desc">Stronger and more durable than PLA. Ideal for functional parts that need to hold weight or withstand regular use. Currently available in Greyish Blue.</div>
+                </div>
+            </div>
+
+            <h3>// CONTACT</h3>
+            <p style="font-size: 1.1em; margin-top: 20px;">
+                Questions? Custom project? Reach out to us!<br>
+                <strong style="color: #00ff00;">Email:</strong> <span style="color: #00cc00;"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="c4b6a7f1f0fcf3f584b7b0b1eaa5a8a5b7a7acababa8b7eaabb6a3">[email&#160;protected]</a>, <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="a8dbc49f989d9198e8dbdcdd86c9c4c9dbcbc0c7c7c4db86c7dacf">[email&#160;protected]</a></span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div id="productModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeProductModal()">&times;</span>
+            <h2 id="modalProductName" style="margin-bottom: 20px;"></h2>
+            
+            <div class="modal-product-image" id="modalProductImage"></div>
+            
+            <div id="modalProductDescription" style="color: #00dd00; font-size: 1.1em; line-height: 1.8; margin: 20px 0;">
+                <!-- Description will be inserted here -->
+            </div>
+
+            <div class="modal-buttons">
+                <button class="modal-btn" onclick="addToCart()">Add to Cart</button>
+                <button class="modal-btn primary" onclick="buyNow()">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PRODUCT DATABASE
+        const products = [
+            // DECORATIVE ITEMS
+            { id: 1, name: 'Straw Topper', category: 'Decorative', grams: 5, hours: 0.5, emoji: '🥤', image: 'https://i.imgur.com/p2uTIaS.png', description: 'Fun and colorful straw toppers to personalize your drinks. Perfect for parties, gifts, or daily use. Customizable in every way possible!', dimensions: '1"x1"x1"' },
+            { id: 2, name: 'Keychain', category: 'Decorative', grams: 8, hours: 0.75, emoji: '🏷️', image: 'https://i.imgur.com/Jn9D34K.png', description: 'Customizable keychains in various designs. Lightweight and perfect for lanyards, bags, or as a unique gift.', dimensions: '1"x1"x1"' },
+            { id: 3, name: 'Desk Cactus', category: 'Decorative', grams: 50, hours: 3, emoji: '🌵', image: 'https://i.imgur.com/fl3T8u5.png', description: 'A cute little cactus to match the vibes. Perfect for gifts or desk accessory.', dimensions: '3"x1.5"x4"' },
+            { id: 4, name: 'Balancing Bird', category: 'Decorative', grams: 10, hours: 1, emoji: '🦅', image: 'https://i.imgur.com/EK9ldmU.png', description: 'This bird literally balances on anything- aside from round objects. It is an excellent party trick to show off to your friends.', dimensions: '3"x6"x0.5"' },
+
+            // PRACTICAL ITEMS
+            { id: 5, name: 'LEGO Sorting Tray', category: 'Practical', grams: 45, hours: 3, emoji: '🧱', image: 'https://i.imgur.com/kj8Tub7.png', description: 'Organize your LEGO bricks efficiently with this multi-compartment sorting tray. Multiple sections for different sizes.', dimensions: '8"x8"x8"' },
+            { id: 6, name: 'Cable Organizer', category: 'Practical', grams: 12, hours: 1, emoji: '🔌', image: 'https://i.imgur.com/8rE5EnS.png', description: 'Say goodbye to tangled cables! This organizer keeps your charging cables, headphones, and wires neat and accessible.', dimensions: '1"x3.5"x4"' },
+            { id: 7, name: 'Roll-up Picnic Table', category: 'Practical', grams: 80, hours: 5, emoji: '🧺', image: 'https://i.imgur.com/Mf56D6Q.png', description: 'Portable and convenient roll-up table perfect for camping, picnics, or as an extra surface. Lightweight yet sturdy design.', dimensions: '12"x12"x8"' },
+            { id: 8, name: 'Sheets Holder', category: 'Practical', grams: 25, hours: 2, emoji: '🛏️', image: 'https://i.imgur.com/xGs4ooL.png', description: 'Got tough or annoying sheets? This is the ultimate solution! All you need to do is cover this in the sheets at each corner and lock it into place!', dimensions: '5"x5"x5"' },
+            { id: 9, name: 'Fruit Rinser', category: 'Practical', grams: 30, hours: 2.5, emoji: '🍇', image: 'https://i.imgur.com/pxhuXiT.png', description: 'Washing fruit has never been easier with this rinser! Simply put your fruit in the center and run water through the tube on the side. **Note this is NOT dishwasher safe. Do not wash in the dishwasher.', dimensions: '6"x8"x5"' },
+            { id: 10, name: 'Purse Hanger', category: 'Practical', grams: 15, hours: 1.5, emoji: '👜', image: 'https://i.imgur.com/8OhpLnD.png', description: 'If you don\'t like placing your purse on the floor or wasting space on the table, this is what you need. This gadget holds your purse off the edge of the table easily.', dimensions: '2"x1"x6"' },
+            { id: 11, name: 'Cable Clip', category: 'Practical', grams: 8, hours: 0.8, emoji: '🔌', image: 'https://i.imgur.com/oxWw4Pb.png', description: 'This minimalistic clip packs up your loose cords easily. Just snap and go!', dimensions: '2.5"x1"x1"' },
+            { id: 12, name: 'Glasses Holder', category: 'Practical', grams: 20, hours: 1.8, emoji: '👓', image: 'https://i.imgur.com/dhv52FD.png', description: 'This majestic Greek-Style column securely holds your glasses whilst standing them up. Great as decoration or display for glasses.', dimensions: '1"x1"x6"' },
+            { id: 13, name: 'Headphones Holder', category: 'Practical', grams: 18, hours: 1.5, emoji: '🎧', image: 'https://i.imgur.com/hyMtQgG.png', description: 'Tired of clustered desk space? This holder clamps onto the side of your desk and holds the headphones off to the side.', dimensions: '1"x4"x5"' },
+
+            // SATISFYING FIDGETS
+            { id: 14, name: 'Infinity Cube', category: 'Fidget', grams: 18, hours: 1.5, emoji: '🔲', image: 'https://i.imgur.com/aihR6No.png', description: 'Endlessly satisfying infinity cube fidget toy. Folds and unfolds in multiple directions for continuous fidgeting fun. Great for focus and stress relief.', dimensions: '2"x4"x1"' },
+            { id: 15, name: 'Clicker Button or Switch', category: 'Fidget', grams: 10, hours: 1, emoji: '👆', image: 'https://i.imgur.com/aVtCvRR.png', description: 'Like the satisfying sound of a light switch? How about a keyboard clack? This fidget mimics those with added satisfying click sounds!', dimensions: '1"x0.5"x1" or 1"x4"x0.5"' },
+            { id: 16, name: 'Pass Through', category: 'Fidget', grams: 12, hours: 1.2, emoji: '🌀', image: 'https://i.imgur.com/yecq8ZU.png', description: 'Classic pass through with smooth motion for long satisfaction. Great as a desk fidget for focus.', dimensions: '3"x3"x8"' },
+            { id: 17, name: 'Sensory Fidget', category: 'Fidget', grams: 15, hours: 1.3, emoji: '⭐', image: 'https://i.imgur.com/dTmgpnr.png', description: 'This fidget makes the best sounds. You just have to try it and trust us. No other way to describe it.', dimensions: '4"x4"x3"' },
+            { id: 18, name: '3D Fabric', category: 'Satisfying', grams: 20, hours: 2, emoji: '🧣', image: 'https://i.imgur.com/Ksi9yVE.png', description: 'This fabric is very cool to the touch and satisfies your senses. The cloth is great for whenever you want to feel something that is as cool as it sounds.', dimensions: '8"x8"x0.1"' },
+
+            // $5 DEAL ITEMS
+            { id: 19, name: 'Angry Duck', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🦆', image: 'https://i.imgur.com/Le1SFsr.png', description: 'This duck may look angry, but he just had a bad day. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 20, name: 'Baby Chicken', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🐤', image: 'https://i.imgur.com/F5RtTFL.png', description: 'This cute duck looks woven, but it is 3d Printed! Larger version available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 21, name: 'Chubby Bunny', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🐇', image: 'https://i.imgur.com/w2PyxJE.png', description: 'This cute little bunny is round and pleasantly plump. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 22, name: 'Goldfish', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🐠', image: 'https://i.imgur.com/cgvsM6M.png', description: 'The snack that smiles back! **DO NOT CONSUME! Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 23, name: 'Narwal', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🦭', image: 'https://i.imgur.com/R1LH1ih.png', description: 'This cute little Narwal is a great option for enthusiasts. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 24, name: 'Chubby Dino', category: '$5 Deal', grams: 7, hours: 0.7, emoji: '🦖', image: 'https://i.imgur.com/ybdMg8o.png', description: 'This chubby dinosaur is so cute, it\'ll melt your heart. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 25, name: 'Mini Otter', category: '$5 Deal', grams: 8, hours: 0.8, emoji: '🦦', image: 'https://i.imgur.com/Buopk8F.png', description: 'This articulated otter can wiggle around and simultaneously be the cutest otter ever. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 26, name: 'Panda', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🐼', image: 'https://i.imgur.com/VBc3zsA.png', description: 'Cute panda that sits around waiting for bamboo to eat. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 27, name: 'Froggy', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🐸', image: 'https://i.imgur.com/7m6NT66.png', description: 'This little frog is round and perfect for all decorational settings. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 28, name: 'Raccoon', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🦝', image: 'https://i.imgur.com/Go1TT49.png', description: 'Don\'t worry, he won\'t steal your food. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 29, name: 'Balloon Dog', category: '$5 Deal', grams: 7, hours: 0.7, emoji: '🐶', image: 'https://i.imgur.com/p2oji7p.png', description: 'These ballons look like a dog? Wait, it is a dog! Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+
+            // CUSTOM ORDERS
+            { id: 30, name: 'Custom Animal', category: 'Custom', grams: 15, hours: 2, emoji: '🐈', image: 'https://i.imgur.com/FYg88r9.png', description: 'Didn\'t see an animal you liked? Custom order one!', dimensions: 'custom"xcustom"xcustom"' },
+            { id: 31, name: 'Earrings', category: 'Custom', grams: 8, hours: 1, emoji: '💍', image: 'https://i.imgur.com/FNNj5pk.png', description: 'Want any customized bling? This is the right spot. Just request what you want and consider it done.', dimensions: 'custom"xcustom"xcustom"' },
+            { id: 32, name: 'Custom Prop', category: 'Custom', grams: 40, hours: 3, emoji: '🎭', image: 'https://i.imgur.com/nsEjmzM.png', description: 'Custom 3D printed figure from your favorite game or movie. Great for gaming miniatures, collectibles, or gifts. Pricing varies by complexity.', dimensions: 'custom"xcustom"xcustom"' },
+            { id: 33, name: 'Coaster', category: 'Custom', grams: 12, hours: 1.5, emoji: '🛞', image: 'https://i.imgur.com/G9fbSxn.png', description: 'Want a custom-made coaster? Perhaps a woven one, or a thematic one to go along with the design of your room.', dimensions: 'custom"xcustom"xcustom"' }
+        ];
+
+        // GOOGLE FORMS CONFIGURATION
+        const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse';
+        
+        const FORM_FIELDS = {
+            customerName: 'entry.1144699017',
+            homeroom: 'entry.503481078',
+            paymentMethod: 'entry.1998247204',
+            orderDetails: 'entry.1635605300',
+            specialNotes: 'entry.1080964059'
+        };
+
+        // Matrix Background Effect
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()";
+        const fontSize = 14;
+        const columns = canvas.width / fontSize;
+        const drops = Array(Math.floor(columns)).fill(1);
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < drops.length; i++) {
+                const text = matrix[Math.floor(Math.random() * matrix.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(drawMatrix, 35);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+
+        // Tab Navigation
+        function openTab(evt, tabName) {
+            const tabContents = document.getElementsByClassName('tab-content');
+            for (let i = 0; i < tabContents.length; i++) {
+                tabContents[i].classList.remove('active');
+            }
+
+            const tabButtons = document.getElementsByClassName('tab-btn');
+            for (let i = 0; i < tabButtons.length; i++) {
+                tabButtons[i].classList.remove('active');
+            }
+
+            document.getElementById(tabName).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        // Category Expansion
+        function toggleCategory(category) {
+            const grid = document.getElementById(category + '-grid');
+            const arrow = document.getElementById(category + '-arrow');
+            const btn = event.currentTarget.querySelector('span:first-child');
+            
+            if (grid.classList.contains('collapsed')) {
+                grid.classList.remove('collapsed');
+                arrow.classList.add('rotated');
+                btn.textContent = 'Show Less';
+            } else {
+                grid.classList.add('collapsed');
+                arrow.classList.remove('rotated');
+                btn.textContent = 'Show All';
+            }
+        }
+
+        // Calculator Variables
+        let selectedProduct = null;
+        let selectedMaterial = 'pla';
+        let selectedColor = null;
+        let currentModalProduct = null;
+
+        // Shopping Cart
+        let cart = [];
+
+        // Color Pricing
+        const colorPrices = {
+            red: 0.03, black: 0.03,
+            white: 0.04, gold: 0.04, yellow: 0.04,
+            purple: 0.05, blue: 0.05, green: 0.05, orange: 0.05,
+            greyblue: 0.05
+        };
+
+        const multiColorExtra = 0.02;
+
+        const multiColors = {
+            'multi-rg': { name: 'Red & Green', base: 0.03 },
+            'multi-rb': { name: 'Red & Blue', base: 0.03 },
+            'multi-rgold': { name: 'Red & Gold', base: 0.03 },
+            'multi-bg': { name: 'Blue & Green', base: 0.05 }
+        };
+
+        // Initialize
+        window.onload = function() {
+            populateProductSelect();
+            renderColorOptions();
+            updateCartDisplay();
+        };
+
+        // Populate product dropdown
+        function populateProductSelect() {
+            const select = document.getElementById('productSelect');
+            products.forEach(product => {
+                const option = document.createElement('option');
+                option.value = product.id;
+                option.textContent = `${product.name} (${product.category})`;
+                select.appendChild(option);
+            });
+        }
+
+        // Product selection in calculator
+        function onProductSelect() {
+            const select = document.getElementById('productSelect');
+            const productId = parseInt(select.value);
+            
+            if (productId) {
+                selectedProduct = products.find(p => p.id === productId);
+                selectedColor = null;
+                renderColorOptions();
+                calculatePrice();
+            } else {
+                selectedProduct = null;
+                document.getElementById('priceDisplay').innerHTML = '';
+            }
+        }
+
+        // Product Detail Modal
+        function openProductDetail(id) {
+            const product = products.find(p => p.id === id);
+            currentModalProduct = product;
+            
+            document.getElementById('modalProductName').textContent = product.name;
+            
+            // Use image if available, otherwise fall back to emoji
+            if (product.image && product.image !== '') {
+                document.getElementById('modalProductImage').innerHTML = 
+                    `<img src="${product.image}" alt="${product.name}">`;
+            } else {
+                document.getElementById('modalProductImage').innerHTML = 
+                    `<div class="product-placeholder" style="font-size: 1em;">${product.emoji}</div>`;
+            }
+            
+            document.getElementById('modalProductDescription').textContent = product.description;
+            
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+            currentModalProduct = null;
+        }
+
+        // Add to Cart from modal
+        function addToCart() {
+            if (!currentModalProduct) return;
+            
+            selectedProduct = currentModalProduct;
+            document.getElementById('productSelect').value = currentModalProduct.id;
+            
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('calculator').classList.add('active');
+            document.querySelectorAll('.tab-btn')[2].classList.add('active');
+            
+            closeProductModal();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Buy Now
+        function buyNow() {
+            addToCart();
+        }
+
+        // Material Selection
+        function selectMaterial(material) {
+            selectedMaterial = material;
+            document.getElementById(material).checked = true;
+            
+            document.querySelectorAll('.radio-option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            event.currentTarget.classList.add('selected');
+            
+            selectedColor = null;
+            renderColorOptions();
+            calculatePrice();
+        }
+
+        // Render Color Options
+        function renderColorOptions() {
+            const colorContainer = document.getElementById('colorOptions');
+            let colors = [];
+
+            if (selectedMaterial === 'petg') {
+                colors = [
+                    { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.05, textColor: '#fff' }
+                ];
+            } else {
+                colors = [
+                    { value: 'red', name: 'Red', bg: '#FF0000', price: 0.03, textColor: '#000' },
+                    { value: 'black', name: 'Black', bg: '#000000', price: 0.03, textColor: '#fff' },
+                    { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.04, textColor: '#000' },
+                    { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.04, textColor: '#000' },
+                    { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.04, textColor: '#000' },
+                    { value: 'purple', name: 'Purple', bg: '#800080', price: 0.05, textColor: '#fff' },
+                    { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.05, textColor: '#fff' },
+                    { value: 'green', name: 'Green', bg: '#008000', price: 0.05, textColor: '#fff' },
+                    { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.05, textColor: '#000' },
+                    { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
+                    { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
+                    { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.03, extra: 0.02, textColor: '#000', isMulti: true },
+                    { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.05, extra: 0.02, textColor: '#fff', isMulti: true }
+                ];
+            }
+
+            colorContainer.innerHTML = colors.map(color => {
+                const priceText = color.isMulti 
+                    ? `+$${(color.price + color.extra).toFixed(2)}/g` 
+                    : `+$${color.price.toFixed(2)}/g`;
+                
+                return `
+                    <div class="color-option ${selectedColor === color.value ? 'selected' : ''}" 
+                         onclick="selectColor('${color.value}')"
+                         style="background: ${color.bg}; color: ${color.textColor};">
+                        ${color.name}
+                        <span class="color-price">${priceText}</span>
+                        ${color.isMulti ? '<span class="color-price" style="font-size: 0.75em;">(Multi-color)</span>' : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Select Color
+        function selectColor(color) {
+            selectedColor = color;
+            renderColorOptions();
+            calculatePrice();
+        }
+
+        // Calculate Price
+        function calculatePrice() {
+            if (!selectedColor || !selectedProduct) {
+                document.getElementById('priceDisplay').innerHTML = '';
+                return;
+            }
+
+            const grams = selectedProduct.grams;
+            const hours = selectedProduct.hours;
+            
+            let baseCost = 1 + (5 * hours);
+            let pricePerGram = 0;
+            
+            if (selectedColor.startsWith('multi-')) {
+                const multiColor = multiColors[selectedColor];
+                pricePerGram = multiColor.base + multiColorExtra;
+            } else {
+                pricePerGram = colorPrices[selectedColor] || 0;
+            }
+            
+            if (selectedMaterial === 'petg') {
+                pricePerGram += 0.02;
+            }
+            
+            let materialCost = pricePerGram * grams;
+            let subtotal = baseCost + materialCost;
+            
+            let discount = 0;
+            if (subtotal > 20) {
+                discount = (subtotal - 20) * 0.10;
+                subtotal -= discount;
+            }
+            
+            let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
+            let total = subtotal + premium;
+
+            let html = `
+                <div class="price-display">
+                    <div class="price-label">Calculated Price</div>
+                    <div class="price-amount">$${total.toFixed(2)}</div>
+                    ${discount > 0 ? '<div class="price-note">✓ Includes 10% discount on amount over $20!</div>' : ''}
+                </div>
+                <button class="submit-btn" onclick="addConfiguredToCart()">Add to Cart</button>
+            `;
+            
+            document.getElementById('priceDisplay').innerHTML = html;
+        }
+
+        // Add configured item to cart
+        function addConfiguredToCart() {
+            if (!selectedProduct || !selectedColor) {
+                alert('Please select a product and color!');
+                return;
+            }
+
+            const grams = selectedProduct.grams;
+            const hours = selectedProduct.hours;
+            let baseCost = 1 + (5 * hours);
+            let pricePerGram = 0;
+            
+            if (selectedColor.startsWith('multi-')) {
+                pricePerGram = multiColors[selectedColor].base + multiColorExtra;
+            } else {
+                pricePerGram = colorPrices[selectedColor];
+            }
+            
+            if (selectedMaterial === 'petg') {
+                pricePerGram += 0.02;
+            }
+            
+            let materialCost = pricePerGram * grams;
+            let subtotal = baseCost + materialCost;
+            
+            if (subtotal > 20) {
+                subtotal -= (subtotal - 20) * 0.10;
+            }
+            
+            let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
+            let total = subtotal + premium;
+
+            const cartItem = {
+                id: Date.now(),
+                product: selectedProduct,
+                material: selectedMaterial,
+                color: selectedColor,
+                premium: premium > 0,
+                price: total
+            };
+
+            cart.push(cartItem);
+            updateCartDisplay();
+            
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('cart').classList.add('active');
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Update Cart Display
+        function updateCartDisplay() {
+            const cartItemsContainer = document.getElementById('cartItems');
+            const cartBadge = document.getElementById('cartBadge');
+            const customerInfoSection = document.getElementById('customerInfoSection');
+            
+            if (cart.length === 0) {
+                cartItemsContainer.innerHTML = '<div class="empty-cart">Your cart is empty<br>Add items from the collection!</div>';
+                cartBadge.style.display = 'none';
+                customerInfoSection.style.display = 'none';
+                return;
+            }
+
+            cartBadge.style.display = 'flex';
+            cartBadge.textContent = cart.length;
+            customerInfoSection.style.display = 'block';
+
+            let total = 0;
+            cartItemsContainer.innerHTML = cart.map(item => {
+                total += item.price;
+                return `
+                    <div class="cart-item">
+                        <div class="cart-item-info">
+                            <div class="cart-item-name">${item.product.name}</div>
+                            <div class="cart-item-details">
+                                Material: ${item.material.toUpperCase()} | 
+                                Color: ${item.color}${item.premium ? ' | Premium Rush' : ''}
+                            </div>
+                        </div>
+                        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+                    </div>
+                `;
+            }).join('');
+
+            cartItemsContainer.innerHTML += `
+                <div class="cart-total">
+                    <div class="cart-total-label">Total Amount:</div>
+                    <div class="cart-total-amount">$${total.toFixed(2)}</div>
+                </div>
+            `;
+        }
+
+        // Remove from cart
+        function removeFromCart(itemId) {
+            cart = cart.filter(item => item.id !== itemId);
+            updateCartDisplay();
+        }
+
+        // Checkout and send order to Google Forms
+        async function checkout() {
+            const customerName = document.getElementById('customerName').value.trim();
+            const homeroom = document.getElementById('customerHomeroom').value.trim();
+            const payment = document.getElementById('paymentMethod').value;
+            const notes = document.getElementById('specialNotes').value.trim();
+            
+            if (!customerName || !homeroom || !payment) {
+                alert('Please fill in all required fields (Name, Homeroom, and Payment Method)!');
+                return;
+            }
+
+            if (cart.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+
+            // Calculate total with bundle pricing
+            const dealItems = cart.filter(item => item.product.category === '$5 Deal');
+            let total = 0;
+            
+            if (dealItems.length >= 5) {
+                const bundleCount = Math.floor(dealItems.length / 5);
+                const remainingDeals = dealItems.length % 5;
+                total += bundleCount * 5;
+                for (let i = 0; i < remainingDeals; i++) total += dealItems[i].price;
+                cart.filter(item => item.product.category !== '$5 Deal').forEach(item => total += item.price);
+            } else {
+                cart.forEach(item => total += item.price);
+            }
+            
+            // Create order details
+            let orderDetails = '';
+            cart.forEach((item, index) => {
+                orderDetails += `\nItem ${index + 1}: ${item.product.name}\n`;
+                orderDetails += `  Category: ${item.product.category}\n`;
+                orderDetails += `  Material: ${item.material.toUpperCase()}\n`;
+                orderDetails += `  Color: ${item.color}\n`;
+                orderDetails += `  Premium Rush: ${item.premium ? 'YES' : 'NO'}\n`;
+                orderDetails += `  Price: $${item.price.toFixed(2)}\n`;
+            });
+
+            if (dealItems.length >= 5) {
+                const bundleCount = Math.floor(dealItems.length / 5);
+                orderDetails += `\n**BUNDLE DEAL APPLIED: ${bundleCount} set(s) of 5 items = $${(bundleCount * 5).toFixed(2)}**\n`;
+            }
+
+            orderDetails += `\nTOTAL: $${total.toFixed(2)}`;
+
+            // Show loading
+            const cartItemsContainer = document.getElementById('cartItems');
+            cartItemsContainer.innerHTML = `
+                <div style="text-align: center; padding: 40px;">
+                    <div class="loading-spinner"></div>
+                    <p style="color: #00ff00; margin-top: 20px; font-size: 1.2em;">Submitting your order...</p>
+                </div>
+            `;
+
+            // Submit to Google Forms
+            try {
+                const formData = new FormData();
+                formData.append(FORM_FIELDS.customerName, customerName);
+                formData.append(FORM_FIELDS.homeroom, homeroom);
+                formData.append(FORM_FIELDS.paymentMethod, payment);
+                formData.append(FORM_FIELDS.orderDetails, orderDetails);
+                formData.append(FORM_FIELDS.specialNotes, notes || 'None');
+
+                await fetch(GOOGLE_FORM_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    body: formData
+                });
+
+                // Show success
+                cartItemsContainer.innerHTML = `
+                    <div class="success-message">
+                        <h3>✓ Order Submitted Successfully!</h3>
+                        <p style="font-size: 1.1em; margin-top: 15px; color: #00dd00;">
+                            Thank you, ${customerName}!<br><br>
+                            Your order has been received and we'll contact you at:<br>
+                            <strong>${homeroom}</strong><br><br>
+                            Total: $${total.toFixed(2)}
+                        </p>
+                    </div>
+                `;
+
+                document.getElementById('customerInfoSection').style.display = 'none';
+
+                // Clear form and cart
+                setTimeout(() => {
+                    cart = [];
+                    document.getElementById('customerName').value = '';
+                    document.getElementById('customerHomeroom').value = '';
+                    document.getElementById('paymentMethod').value = '';
+                    document.getElementById('specialNotes').value = '';
+                    updateCartDisplay();
+                }, 3000);
+
+            } catch (error) {
+                console.error('Submission error:', error);
+                alert('There was an error submitting your order. Please try again or contact us directly at rc54871@stu.alaschools.org or sl70590@stu.alaschools.org');
+                updateCartDisplay();
+            }
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('productModal');
+            if (event.target == modal) closeProductModal();
+        }
+    </script>
+</body>
+</html>
