@@ -1286,6 +1286,11 @@
                         <div class="product-category">Custom</div>
                     </div>
                 </div>
+                <div style="margin-top: 30px; text-align: center;">
+                    <button class="submit-btn" onclick="openCustomOrderModal()" style="max-width: 100%; margin: 0 auto;">
+                        CUSTOM ORDER
+                    </button>
+                </div>
 
                 <div class="notice-box">
                     ⚠️ <strong>NOTE:</strong> Custom orders typically cost more than standard items due to personalization and design work. Pricing varies based on complexity and size.
@@ -1449,7 +1454,36 @@
             </div>
         </div>
     </div>
+    <!-- Custom Order Modal -->
+    <div id="customOrderModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeCustomOrderModal()">&times;</span>
+            <h2 style="margin-bottom: 20px;">⚡ CUSTOM ORDER ⚡</h2>
+            
+            <div style="color: #00dd00; font-size: 1.1em; line-height: 1.8; margin: 20px 0;">
+                <p>Tell us what you'd like us to create! Describe your custom item in detail - dimensions, features, colors, or any specific requirements.</p>
+            </div>
 
+            <div class="form-group" style="margin-top: 30px;">
+                <label>Custom Item Description *</label>
+                <textarea id="customOrderDescription" 
+                          placeholder="Example: I need a custom phone holder for my desk that fits an iPhone 14 Pro Max, with a slot for charging cable, in blue color..."
+                          style="min-height: 150px; resize: vertical;"></textarea>
+                <p class="info-text" style="margin-top: 10px;">
+                    💡 Tip: The more details you provide, the better we can create exactly what you need!
+                </p>
+            </div>
+
+            <div class="notice-box" style="margin-top: 20px;">
+                ⚠️ <strong>NOTE:</strong> Pricing will be determined based on complexity, size, and materials needed.
+            </div>
+
+            <div class="modal-buttons" style="margin-top: 30px;">
+                <button class="modal-btn primary" onclick="addCustomOrderToCart()">Add to Cart</button>
+            </div>
+        </div>
+    </div>
+    
     <script>
         // PRODUCT DATABASE
         const products = [
@@ -1663,6 +1697,51 @@
             document.getElementById('productModal').classList.remove('active');
             currentModalProduct = null;
         }
+         // Custom Order Modal Functions
+        function openCustomOrderModal() {
+            document.getElementById('customOrderModal').classList.add('active');
+            document.getElementById('customOrderDescription').value = '';
+        }
+
+        function closeCustomOrderModal() {
+            document.getElementById('customOrderModal').classList.remove('active');
+        }
+
+        function addCustomOrderToCart() {
+            const description = document.getElementById('customOrderDescription').value.trim();
+            
+            if (!description) {
+                alert('Please describe your custom order!');
+                return;
+            }
+
+            // Create a custom order cart item
+            const customOrderItem = {
+                id: Date.now(),
+                product: {
+                    name: 'Custom Order',
+                    category: 'Custom'
+                },
+                customDescription: description,
+                material: 'TBD',
+                color: 'TBD',
+                premium: false,
+                price: 0 // Price will be quoted later
+            };
+
+            cart.push(customOrderItem);
+            updateCartDisplay();
+            
+            closeCustomOrderModal();
+            
+            // Switch to cart tab
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('cart').classList.add('active');
+            document.querySelectorAll('.tab-btn')[3].classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
 
         // Add to Cart from modal
         function addToCart() {
@@ -1871,19 +1950,36 @@
             let total = 0;
             cartItemsContainer.innerHTML = cart.map(item => {
                 total += item.price;
-                return `
-                    <div class="cart-item">
-                        <div class="cart-item-info">
-                            <div class="cart-item-name">${item.product.name}</div>
-                            <div class="cart-item-details">
-                                Material: ${item.material.toUpperCase()} | 
-                                Color: ${item.color}${item.premium ? ' | Premium Rush' : ''}
+                
+                // Check if it's a custom order
+                if (item.customDescription) {
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.product.name}</div>
+                                <div class="cart-item-details">
+                                    ${item.customDescription}
+                                </div>
                             </div>
+                            <div class="cart-item-price">Quote Needed</div>
+                            <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
                         </div>
-                        <div class="cart-item-price">$${item.price.toFixed(2)}</div>
-                        <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
-                    </div>
-                `;
+                    `;
+                } else {
+                    return `
+                        <div class="cart-item">
+                            <div class="cart-item-info">
+                                <div class="cart-item-name">${item.product.name}</div>
+                                <div class="cart-item-details">
+                                    Material: ${item.material.toUpperCase()} | 
+                                    Color: ${item.color}${item.premium ? ' | Premium Rush' : ''}
+                                </div>
+                            </div>
+                            <div class="cart-item-price">$${item.price.toFixed(2)}</div>
+                            <button class="remove-btn" onclick="removeFromCart(${item.id})">Remove</button>
+                        </div>
+                    `;
+                }
             }).join('');
 
             cartItemsContainer.innerHTML += `
@@ -1936,10 +2032,17 @@
             cart.forEach((item, index) => {
                 orderDetails += `\nItem ${index + 1}: ${item.product.name}\n`;
                 orderDetails += `  Category: ${item.product.category}\n`;
-                orderDetails += `  Material: ${item.material.toUpperCase()}\n`;
-                orderDetails += `  Color: ${item.color}\n`;
-                orderDetails += `  Premium Rush: ${item.premium ? 'YES' : 'NO'}\n`;
-                orderDetails += `  Price: $${item.price.toFixed(2)}\n`;
+                
+                // Check if it's a custom order
+                if (item.customDescription) {
+                    orderDetails += `  CUSTOM ORDER DESCRIPTION: ${item.customDescription}\n`;
+                    orderDetails += `  Price: QUOTE NEEDED\n`;
+                } else {
+                    orderDetails += `  Material: ${item.material.toUpperCase()}\n`;
+                    orderDetails += `  Color: ${item.color}\n`;
+                    orderDetails += `  Premium Rush: ${item.premium ? 'YES' : 'NO'}\n`;
+                    orderDetails += `  Price: $${item.price.toFixed(2)}\n`;
+                }
             });
 
             if (dealItems.length >= 5) {
@@ -2008,9 +2111,16 @@
 
         // Close modal on outside click
         window.onclick = function(event) {
-            const modal = document.getElementById('productModal');
-            if (event.target == modal) closeProductModal();
-        };
+            const productModal = document.getElementById('productModal');
+            const customOrderModal = document.getElementById('customOrderModal');
+            
+            if (event.target == productModal) {
+                closeProductModal();
+            }
+            if (event.target == customOrderModal) {
+                closeCustomOrderModal();
+            }
+        }
 
     </script>
 </body>
