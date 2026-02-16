@@ -2039,7 +2039,7 @@
                 <div class="price-display">
                     <div class="price-label">Calculated Price</div>
                     <div class="price-amount">$${total.toFixed(2)}</div>
-                    ${discount > 0 ? '<div class="price-note">✓ Includes 10% discount on amount over $20!</div>' : ''}
+                    ${discount > 0 ? '<div class="price-note">✓ Includes discounts of up to 20% off depending on cart total!</div>' : ''}
                 </div>
                 <button class="submit-btn" onclick="addConfiguredToCart()">Add to Cart</button>
             `;
@@ -2072,8 +2072,16 @@
             let materialCost = pricePerGram * grams;
             let subtotal = baseCost + materialCost;
             
+            if (subtotal > 10) {
+                subtotal -= (subtotal - 10) * 0.10;
+            }
+
             if (subtotal > 20) {
-                subtotal -= (subtotal - 20) * 0.10;
+                subtotal -= (subtotal - 20) * 0.15
+            }
+
+            if (subtotal > 30) {
+                subtotal -= (subtotal - 30)  * 0.2
             }
             
             let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
