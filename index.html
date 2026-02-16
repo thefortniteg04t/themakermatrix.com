@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0d0d0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>The Maker Matrix - 3D Printing Services</title>
     <style>
         * {
@@ -881,6 +884,163 @@
                 margin-right: 0;
             }
         }
+        /* MOBILE OPTIMIZATION ADDITIONS */
+
+/* Prevent zoom on input focus (iOS) */
+@media (max-width: 768px) {
+    input, select, textarea {
+        font-size: 16px !important; /* Prevents iOS zoom */
+    }
+}
+
+/* Better touch targets for mobile */
+@media (max-width: 768px) {
+    .product-card, .tab-btn, .modal-btn, .submit-btn, 
+    .color-option, .radio-option, .checkbox-option {
+        min-height: 44px; /* iOS recommended touch target */
+    }
+    
+    /* Improve scrolling performance */
+    .tab-content {
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Prevent text selection on buttons */
+    .tab-btn, .modal-btn, .submit-btn, .expand-btn, 
+    .color-option, .remove-btn {
+        -webkit-tap-highlight-color: rgba(0, 255, 0, 0.2);
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    
+    /* Better modal on mobile */
+    .modal-content {
+        margin: 20px;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    /* Sticky header on mobile */
+    header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    /* Better tab navigation on mobile */
+    .tab-nav {
+        position: sticky;
+        top: 0;
+        z-index: 99;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* Firefox */
+    }
+    
+    .tab-nav::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+    
+    /* Prevent horizontal scroll */
+    body {
+        overflow-x: hidden;
+    }
+    
+    .container {
+        padding: 10px;
+    }
+    
+    /* Larger text for readability */
+    p, li {
+        font-size: 1em;
+        line-height: 1.6;
+    }
+    
+    /* Better spacing for forms */
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    /* Make images fit better */
+    .product-image img, .modal-product-image img {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    /* Better cart items on mobile */
+    .cart-item {
+        padding: 15px;
+    }
+    
+    .cart-item-name {
+        font-size: 1.1em;
+    }
+    
+    /* Feature boxes stack better */
+    .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    /* Better price display */
+    .price-amount {
+        font-size: 2em;
+    }
+    
+    /* Reduce matrix effect on mobile for performance */
+    .matrix-bg {
+        opacity: 0.05;
+    }
+}
+
+/* Extra small devices (phones in portrait, less than 576px) */
+@media (max-width: 576px) {
+    h1 {
+        font-size: 1.5em;
+        letter-spacing: 1px;
+    }
+    
+    .tagline {
+        font-size: 1em;
+    }
+    
+    h2 {
+        font-size: 1.5em;
+    }
+    
+    h3 {
+        font-size: 1.2em;
+    }
+    
+    .tab-btn {
+        padding: 12px 15px;
+        font-size: 14px;
+    }
+    
+    .tab-content {
+        padding: 20px 15px;
+    }
+    
+    .modal-content {
+        padding: 20px 15px;
+    }
+}
+
+/* Landscape orientation optimization */
+@media (max-width: 896px) and (orientation: landscape) {
+    header {
+        padding: 20px 15px;
+    }
+    
+    h1 {
+        font-size: 1.8em;
+    }
+    
+    .feature-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
     </style>
 </head>
 <body>
@@ -1688,7 +1848,16 @@
                     `<div class="product-placeholder" style="font-size: 1em;">${product.emoji}</div>`;
             }
             
-            document.getElementById('modalProductDescription').textContent = product.description;
+            document.getElementById('modalProductDescription').innerHTML = `
+                <p style="margin-bottom: 15px;">${product.description}</p>
+                <p style="color: #00cc00; font-weight: bold; margin-top: 20px;">
+                    📏 Dimensions: ${product.dimensions}
+                </p>
+                <p style="color: #00aa00; font-size: 0.95em; margin-top: 10px;">
+                    ⚙️ Estimated Print Time: ${product.hours} hour${product.hours !== 1 ? 's' : ''}<br>
+                    📦 Material Weight: ${product.grams}g
+                </p>
+            `;
             
             document.getElementById('productModal').classList.add('active');
         }
@@ -2121,6 +2290,51 @@
                 closeCustomOrderModal();
             }
         }
+        // MOBILE OPTIMIZATION ADDITIONS
+
+// Prevent double-tap zoom on iOS
+document.addEventListener('touchstart', function(event) {
+    if (event.touches.length > 1) {
+        event.preventDefault();
+    }
+}, { passive: false });
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(event) {
+    const now = Date.now();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+// Optimize matrix animation for mobile
+if (window.innerWidth <= 768) {
+    // Reduce matrix effect frequency on mobile
+    const originalInterval = 35;
+    clearInterval(window.matrixInterval);
+    window.matrixInterval = setInterval(drawMatrix, originalInterval * 2);
+}
+
+// Add smooth scroll behavior
+if ('scrollBehavior' in document.documentElement.style) {
+    document.documentElement.style.scrollBehavior = 'smooth';
+}
+
+// Improve tab navigation scrolling on mobile
+if (window.innerWidth <= 768) {
+    const tabNav = document.querySelector('.tab-nav');
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    tabButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            // Scroll active tab into view
+            setTimeout(() => {
+                this.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+            }, 100);
+        });
+    });
+}
 
     </script>
 </body>
