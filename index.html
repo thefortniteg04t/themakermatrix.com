@@ -1648,21 +1648,21 @@
         // PRODUCT DATABASE
         const products = [
             // DECORATIVE ITEMS
-            { id: 1, name: 'Straw Topper', category: 'Decorative', grams: 5, hours: 0.5, emoji: '🥤', image: 'https://i.imgur.com/p2uTIaS.png', description: 'Fun and colorful straw toppers to personalize your drinks. Perfect for parties, gifts, or daily use. Customizable in every way possible!', dimensions: '1"x1"x1"' },
+            { id: 1, name: 'Straw Topper', category: 'Decorative', grams: 20, hours: 1.2, emoji: '🥤', image: 'https://i.imgur.com/p2uTIaS.png', description: 'Fun and colorful straw toppers to personalize your drinks. Perfect for parties, gifts, or daily use. Customizable in every way possible!', dimensions: '1"x1"x1"' },
             { id: 2, name: 'Keychain', category: 'Decorative', grams: 8, hours: 0.75, emoji: '🏷️', image: 'https://i.imgur.com/Jn9D34K.png', description: 'Customizable keychains in various designs. Lightweight and perfect for lanyards, bags, or as a unique gift.', dimensions: '1"x1"x1"' },
-            { id: 3, name: 'Desk Cactus', category: 'Decorative', grams: 50, hours: 3, emoji: '🌵', image: 'https://i.imgur.com/fl3T8u5.png', description: 'A cute little cactus to match the vibes. Perfect for gifts or desk accessory.', dimensions: '3"x1.5"x4"' },
-            { id: 4, name: 'Balancing Bird', category: 'Decorative', grams: 10, hours: 1, emoji: '🦅', image: 'https://i.imgur.com/EK9ldmU.png', description: 'This bird literally balances on anything- aside from round objects. It is an excellent party trick to show off to your friends.', dimensions: '3"x6"x0.5"' },
+            { id: 3, name: 'Desk Cactus', category: 'Decorative', grams: 50, hours: 2.8, emoji: '🌵', image: 'https://i.imgur.com/fl3T8u5.png', description: 'A cute little cactus to match the vibes. Perfect for gifts or desk accessory.', dimensions: '3"x1.5"x4"' },
+            { id: 4, name: 'Balancing Bird', category: 'Decorative', grams: 30, hours: 1.8, emoji: '🦅', image: 'https://i.imgur.com/EK9ldmU.png', description: 'This bird literally balances on anything- aside from round objects. It is an excellent party trick to show off to your friends.', dimensions: '3"x6"x0.5"' },
 
             // PRACTICAL ITEMS
             { id: 5, name: 'LEGO Sorting Tray', category: 'Practical', grams: 45, hours: 3, emoji: '🧱', image: 'https://i.imgur.com/kj8Tub7.png', description: 'Organize your LEGO bricks efficiently with this multi-compartment sorting tray. Multiple sections for different sizes.', dimensions: '8"x8"x8"' },
-            { id: 6, name: 'Cable Organizer', category: 'Practical', grams: 12, hours: 1, emoji: '🔌', image: 'https://i.imgur.com/8rE5EnS.png', description: 'Say goodbye to tangled cables! This organizer keeps your charging cables, headphones, and wires neat and accessible.', dimensions: '1"x3.5"x4"' },
+            { id: 6, name: 'Cable Organizer', category: 'Practical', grams: 31, hours: 1.7, emoji: '🔌', image: 'https://i.imgur.com/8rE5EnS.png', description: 'Say goodbye to tangled cables! This organizer keeps your charging cables, headphones, and wires neat and accessible.', dimensions: '1"x3.5"x4"' },
             { id: 7, name: 'Roll-up Picnic Table', category: 'Practical', grams: 80, hours: 5, emoji: '🧺', image: 'https://i.imgur.com/Mf56D6Q.png', description: 'Portable and convenient roll-up table perfect for camping, picnics, or as an extra surface. Lightweight yet sturdy design.', dimensions: '12"x12"x8"' },
             { id: 8, name: 'Sheets Holder', category: 'Practical', grams: 25, hours: 2, emoji: '🛏️', image: 'https://i.imgur.com/xGs4ooL.png', description: 'Got tough or annoying sheets? This is the ultimate solution! All you need to do is cover this in the sheets at each corner and lock it into place!', dimensions: '5"x5"x5"' },
-            { id: 9, name: 'Fruit Rinser', category: 'Practical', grams: 30, hours: 2.5, emoji: '🍇', image: 'https://i.imgur.com/pxhuXiT.png', description: 'Washing fruit has never been easier with this rinser! Simply put your fruit in the center and run water through the tube on the side. **Note this is NOT dishwasher safe. Do not wash in the dishwasher.', dimensions: '6"x8"x5"' },
+            { id: 9, name: 'Fruit Rinser', category: 'Practical', grams: 130, hours: 4, emoji: '🍇', image: 'https://i.imgur.com/pxhuXiT.png', description: 'Washing fruit has never been easier with this rinser! Simply put your fruit in the center and run water through the tube on the side. **Note this is NOT dishwasher safe. Do not wash in the dishwasher.', dimensions: '6"x8"x5"' },
             { id: 10, name: 'Purse Hanger', category: 'Practical', grams: 15, hours: 1.5, emoji: '👜', image: 'https://i.imgur.com/8OhpLnD.png', description: 'If you don\'t like placing your purse on the floor or wasting space on the table, this is what you need. This gadget holds your purse off the edge of the table easily.', dimensions: '2"x1"x6"' },
             { id: 11, name: 'Cable Clip', category: 'Practical', grams: 8, hours: 0.8, emoji: '🔌', image: 'https://i.imgur.com/oxWw4Pb.png', description: 'This minimalistic clip packs up your loose cords easily. Just snap and go!', dimensions: '2.5"x1"x1"' },
             { id: 12, name: 'Glasses Holder', category: 'Practical', grams: 20, hours: 1.8, emoji: '👓', image: 'https://i.imgur.com/dhv52FD.png', description: 'This majestic Greek-Style column securely holds your glasses whilst standing them up. Great as decoration or display for glasses.', dimensions: '1"x1"x6"' },
-            { id: 13, name: 'Headphones Holder', category: 'Practical', grams: 18, hours: 1.5, emoji: '🎧', image: 'https://i.imgur.com/hyMtQgG.png', description: 'Tired of clustered desk space? This holder clamps onto the side of your desk and holds the headphones off to the side.', dimensions: '1"x4"x5"' },
+            { id: 13, name: 'Headphones Holder', category: 'Practical', grams: 60, hours: 2.7, emoji: '🎧', image: 'https://i.imgur.com/hyMtQgG.png', description: 'Tired of clustered desk space? This holder clamps onto the side of your desk and holds the headphones off to the side.', dimensions: '1"x4"x5"' },
 
             // SATISFYING FIDGETS
             { id: 14, name: 'Infinity Cube', category: 'Fidget', grams: 100, hours:3.6, emoji: '🔲', image: 'https://i.imgur.com/aihR6No.png', description: 'Endlessly satisfying infinity cube fidget toy. Folds and unfolds in multiple directions for continuous fidgeting fun. Great for focus and stress relief.', dimensions: '2"x4"x1"' },
@@ -1680,9 +1680,9 @@
             { id: 24, name: 'Chubby Dino', category: '$5 Deal', grams: 7, hours: 0.7, emoji: '🦖', image: 'https://i.imgur.com/ybdMg8o.png', description: 'This chubby dinosaur is so cute, it\'ll melt your heart. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
             { id: 25, name: 'Mini Otter', category: '$5 Deal', grams: 8, hours: 0.8, emoji: '🦦', image: 'https://i.imgur.com/Buopk8F.png', description: 'This articulated otter can wiggle around and simultaneously be the cutest otter ever. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
             { id: 26, name: 'Panda', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🐼', image: 'https://i.imgur.com/VBc3zsA.png', description: 'Cute panda that sits around waiting for bamboo to eat. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 27, name: 'Froggy', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🐸', image: 'https://i.imgur.com/7m6NT66.png', description: 'This little frog is round and perfect for all decorational settings. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 27, name: 'Froggy', category: '$5 Deal', grams: 12, hours: 0.5, emoji: '🐸', image: 'https://i.imgur.com/7m6NT66.png', description: 'This little frog is round and perfect for all decorational settings. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
             { id: 28, name: 'Raccoon', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🦝', image: 'https://i.imgur.com/Go1TT49.png', description: 'Don\'t worry, he won\'t steal your food. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 29, name: 'Balloon Dog', category: '$5 Deal', grams: 7, hours: 0.7, emoji: '🐶', image: 'https://i.imgur.com/p2oji7p.png', description: 'These ballons look like a dog? Wait, it is a dog! Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
+            { id: 29, name: 'Balloon Dog', category: '$5 Deal', grams: 3, hours: 0.5, emoji: '🐶', image: 'https://i.imgur.com/p2oji7p.png', description: 'These ballons look like a dog? Wait, it is a dog! Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
 
             // CUSTOM ORDERS
             { id: 30, name: 'Custom Animal', category: 'Custom', grams: 15, hours: 2, emoji: '🐈', image: 'https://i.imgur.com/FYg88r9.png', description: 'Didn\'t see an animal you liked? Custom order one!', dimensions: 'custom"xcustom"xcustom"' },
@@ -2174,118 +2174,132 @@
         }
 
         // Checkout and send order to Google Forms
-        async function checkout() {
-            const customerName = document.getElementById('customerName').value.trim();
-            const homeroom = document.getElementById('customerHomeroom').value.trim();
-            const payment = document.getElementById('paymentMethod').value;
-            const notes = document.getElementById('specialNotes').value.trim();
-            
-            if (!customerName || !homeroom || !payment) {
-                alert('Please fill in all required fields (Name, Homeroom, and Payment Method)!');
-                return;
-            }
+async function checkout() {
+    const customerName = document.getElementById('customerName').value.trim();
+    const homeroom = document.getElementById('customerHomeroom').value.trim();
+    const payment = document.getElementById('paymentMethod').value;
+    const notes = document.getElementById('specialNotes').value.trim();
+    
+    if (!customerName || !homeroom || !payment) {
+        alert('Please fill in all required fields (Name, Homeroom, and Payment Method)!');
+        return;
+    }
 
-            if (cart.length === 0) {
-                alert('Your cart is empty!');
-                return;
-            }
+    if (cart.length === 0) {
+        alert('Your cart is empty!');
+        return;
+    }
 
-            // Calculate total with bundle pricing
-            const dealItems = cart.filter(item => item.product.category === '$5 Deal');
-            let total = 0;
-            
-            if (dealItems.length >= 5) {
-                const bundleCount = Math.floor(dealItems.length / 5);
-                const remainingDeals = dealItems.length % 5;
-                total += bundleCount * 5;
-                for (let i = 0; i < remainingDeals; i++) total += dealItems[i].price;
-                cart.filter(item => item.product.category !== '$5 Deal').forEach(item => total += item.price);
-            } else {
-                cart.forEach(item => total += item.price);
-            }
-            
-            // Create order details
-            let orderDetails = '';
-            cart.forEach((item, index) => {
-                orderDetails += `\nItem ${index + 1}: ${item.product.name}\n`;
-                orderDetails += `  Category: ${item.product.category}\n`;
-                
-                // Check if it's a custom order
-                if (item.customDescription) {
-                    orderDetails += `  CUSTOM ORDER DESCRIPTION: ${item.customDescription}\n`;
-                    orderDetails += `  Price: QUOTE NEEDED\n`;
-                } else {
-                    orderDetails += `  Material: ${item.material.toUpperCase()}\n`;
-                    orderDetails += `  Color: ${item.color}\n`;
-                    orderDetails += `  Premium Rush: ${item.premium ? 'YES' : 'NO'}\n`;
-                    orderDetails += `  Price: $${item.price.toFixed(2)}\n`;
-                }
-            });
+    // Calculate total with bundle pricing for $5 Deal items
+    const dealItems = cart.filter(item => item.product.category === '$5 Deal');
+    const otherItems = cart.filter(item => item.product.category !== '$5 Deal');
 
-            if (dealItems.length >= 5) {
-                const bundleCount = Math.floor(dealItems.length / 5);
-                orderDetails += `\n**BUNDLE DEAL APPLIED: ${bundleCount} set(s) of 5 items = $${(bundleCount * 5).toFixed(2)}**\n`;
-            }
+    let subtotal = 0;
 
-            orderDetails += `\nTOTAL: $${total.toFixed(2)}`;
+    // Apply $5 bundle deal
+    if (dealItems.length >= 5) {
+        const bundleCount = Math.floor(dealItems.length / 5);
+        const remainingDeals = dealItems.length % 5;
+        subtotal += bundleCount * 5;  // $5 for each bundle of 5
+        for (let i = 0; i < remainingDeals; i++) subtotal += dealItems[i].price;
+    } else {
+        dealItems.forEach(item => subtotal += item.price);
+    }
 
-            // Show loading
-            const cartItemsContainer = document.getElementById('cartItems');
-            cartItemsContainer.innerHTML = `
-                <div style="text-align: center; padding: 40px;">
-                    <div class="loading-spinner"></div>
-                    <p style="color: #00ff00; margin-top: 20px; font-size: 1.2em;">Submitting your order...</p>
-                </div>
-            `;
+    // Add other items to subtotal
+    otherItems.forEach(item => subtotal += item.price);
 
-// Submit to Google Forms
-        try {
-            const formData = new FormData();
-            formData.append('entry.957937954', customerName);
-            formData.append('entry.702310277', homeroom);
-            formData.append('entry.1216365344', payment);
-            formData.append('entry.1979507159', orderDetails);
-            formData.append('entry.759705507', notes || 'None');
+    // Apply tiered cart discounts to the subtotal
+    if (subtotal > 30) {
+        subtotal -= subtotal * 0.20;  // 20% off entire cart
+    } else if (subtotal > 20) {
+        subtotal -= subtotal * 0.15;  // 15% off entire cart
+    } else if (subtotal > 10) {
+        subtotal -= subtotal * 0.10;  // 10% off entire cart
+    }
 
-            await fetch('https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse', {
-                method: 'POST',
-                mode: 'no-cors',
-                body: formData
-            });
+    let total = subtotal;
+    
+    // Create order details
+    let orderDetails = '';
+    cart.forEach((item, index) => {
+        orderDetails += `\nItem ${index + 1}: ${item.product.name}\n`;
+        orderDetails += `  Category: ${item.product.category}\n`;
+        
+        // Check if it's a custom order
+        if (item.customDescription) {
+            orderDetails += `  CUSTOM ORDER DESCRIPTION: ${item.customDescription}\n`;
+            orderDetails += `  Price: QUOTE NEEDED\n`;
+        } else {
+            orderDetails += `  Material: ${item.material.toUpperCase()}\n`;
+            orderDetails += `  Color: ${item.color}\n`;
+            orderDetails += `  Premium Rush: ${item.premium ? 'YES' : 'NO'}\n`;
+            orderDetails += `  Price: $${item.price.toFixed(2)}\n`;
+        }
+    });
 
-            // Show success
-            cartItemsContainer.innerHTML = `
-                <div class="success-message">
-                    <h3>✓ Order Submitted Successfully!</h3>
-                    <p style="font-size: 1.1em; margin-top: 15px; color: #00dd00;">
-                        Thank you, ${customerName}!<br><br>
-                        Your order has been received and we'll contact you at:<br>
-                        <strong>${homeroom}</strong><br><br>
-                        Total: $${total.toFixed(2)}
-                    </p>
-                </div>
-            `;
+    if (dealItems.length >= 5) {
+        const bundleCount = Math.floor(dealItems.length / 5);
+        orderDetails += `\n**BUNDLE DEAL APPLIED: ${bundleCount} set(s) of 5 items = $${(bundleCount * 5).toFixed(2)}**\n`;
+    }
 
-            document.getElementById('customerInfoSection').style.display = 'none';
+    orderDetails += `\nTOTAL: $${total.toFixed(2)}`;
 
-            // Clear form and cart
-            setTimeout(() => {
-                cart = [];
-                document.getElementById('customerName').value = '';
-                document.getElementById('customerHomeroom').value = '';
-                document.getElementById('paymentMethod').value = '';
-                document.getElementById('specialNotes').value = '';
-                updateCartDisplay();
-            }, 3000);
+    // Show loading
+    const cartItemsContainer = document.getElementById('cartItems');
+    cartItemsContainer.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <div class="loading-spinner"></div>
+            <p style="color: #00ff00; margin-top: 20px; font-size: 1.2em;">Submitting your order...</p>
+        </div>
+    `;
 
-        } catch (error) {
-            console.error('Submission error:', error);
-            alert('There was an error submitting your order. Please try again or contact us directly at rc54871@stu.alaschools.org or sl70590@stu.alaschools.org');
+    // Submit to Google Forms
+    try {
+        const formData = new FormData();
+        formData.append('entry.957937954', customerName);
+        formData.append('entry.702310277', homeroom);
+        formData.append('entry.1216365344', payment);
+        formData.append('entry.1979507159', orderDetails);
+        formData.append('entry.759705507', notes || 'None');
+
+        await fetch('https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse', {
+            method: 'POST',
+            mode: 'no-cors',
+            body: formData
+        });
+
+        // Show success
+        cartItemsContainer.innerHTML = `
+            <div class="success-message">
+                <h3>✓ Order Submitted Successfully!</h3>
+                <p style="font-size: 1.1em; margin-top: 15px; color: #00dd00;">
+                    Thank you, ${customerName}!<br><br>
+                    Your order has been received and we'll contact you at:<br>
+                    <strong>${homeroom}</strong><br><br>
+                    Total: $${total.toFixed(2)}
+                </p>
+            </div>
+        `;
+
+        document.getElementById('customerInfoSection').style.display = 'none';
+
+        // Clear form and cart
+        setTimeout(() => {
+            cart = [];
+            document.getElementById('customerName').value = '';
+            document.getElementById('customerHomeroom').value = '';
+            document.getElementById('paymentMethod').value = '';
+            document.getElementById('specialNotes').value = '';
             updateCartDisplay();
-        } // <-- This closes try/catch
+        }, 3000);
 
-        } // <-- This closes async function checkout()
-
+    } catch (error) {
+        console.error('Submission error:', error);
+        alert('There was an error submitting your order. Please try again or contact us directly at rc54871@stu.alaschools.org or sl70590@stu.alaschools.org');
+        updateCartDisplay();
+    }
+}
         // Close modal on outside click
         window.onclick = function(event) {
             const productModal = document.getElementById('productModal');
