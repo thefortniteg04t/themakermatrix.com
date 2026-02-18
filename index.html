@@ -2113,31 +2113,57 @@
         }
 
         // Product Detail Modal
-       function openProductDetail(id) {
-    const product = products.find(p => p.id === id);
-    currentModalProduct = product;
-    
-    document.getElementById('modalProductName').textContent = product.name;
-    
-    // Use image if available, otherwise fall back to emoji
-    if (product.image && product.image !== '') {
-        document.getElementById('modalProductImage').innerHTML = 
-            `<img src="${product.image}" alt="${product.name}">`;
-    } else {
-        document.getElementById('modalProductImage').innerHTML = 
-            `<div class="product-placeholder" style="font-size: 1em;">${product.emoji}</div>`;
-    }
-    
-    document.getElementById('modalProductDescription').innerHTML = `
-        <p style="margin-bottom: 15px;">${product.description}</p>
-        <p style="color: #00cc00; font-weight: bold; margin-top: 20px;">
-            📏 Dimensions: ${product.dimensions}
-        </p>
-        <p style="color: #00aa00; font-size: 0.95em; margin-top: 10px;">
-            ⚙️ Estimated Print Time: ${product.hours} hour${product.hours !== 1 ? 's' : ''}<br>
-            📦 Material Weight: ${product.grams}g
-        </p>
-    `;
+        function openProductDetail(id) {
+            const product = products.find(p => p.id === id);
+            currentModalProduct = product;
+            
+            document.getElementById('modalProductName').textContent = product.name;
+            
+            // Use image if available, otherwise fall back to emoji
+            if (product.image && product.image !== '') {
+                document.getElementById('modalProductImage').innerHTML = 
+                    `<img src="${product.image}" alt="${product.name}">`;
+            } else {
+                document.getElementById('modalProductImage').innerHTML = 
+                    `<div class="product-placeholder" style="font-size: 1em;">${product.emoji}</div>`;
+            }
+            
+            document.getElementById('modalProductDescription').innerHTML = `
+                <p style="margin-bottom: 15px;">${product.description}</p>
+                <p style="color: #00cc00; font-weight: bold; margin-top: 20px;">
+                    📏 Dimensions: ${product.dimensions}
+                </p>
+                <p style="color: #00aa00; font-size: 0.95em; margin-top: 10px;">
+                    ⚙️ Estimated Print Time: ${product.hours} hour${product.hours !== 1 ? 's' : ''}<br>
+                    📦 Material Weight: ${product.grams}g
+                </p>
+            `;
+
+            document.getElementById('productModal').classList.add('active');
+        }
+
+        function closeProductModal() {
+            document.getElementById('productModal').classList.remove('active');
+            currentModalProduct = null;
+        }
+
+        function openCustomOrderModal() {
+            document.getElementById('customOrderModal').classList.add('active');
+        }
+
+        function closeCustomOrderModal() {
+            document.getElementById('customOrderModal').classList.remove('active');
+            document.getElementById('customOrderDescription').value = '';
+        }
+
+        function addCustomOrderToCart() {
+            const description = document.getElementById('customOrderDescription').value.trim();
+
+            if (!description) {
+                alert('Please describe your custom order before adding to cart.');
+                return;
+            }
+
             // Create a custom order cart item
             const customOrderItem = {
                 id: Date.now(),
@@ -2145,7 +2171,7 @@
                     name: 'Custom Order',
                     category: 'Custom'
                 },
-                customDescription: product.description,
+                customDescription: description,
                 material: 'TBD',
                 color: 'TBD',
                 premium: false,
