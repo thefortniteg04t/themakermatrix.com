@@ -1043,7 +1043,7 @@
 }
         /* Search Bar Styles */
 .search-container {
-    max-width: 600px;
+    width: min(95vw, 900px);
     margin: 20px auto;
     position: relative;
 }
@@ -1086,8 +1086,9 @@
     border: 2px solid #00ff00;
     border-radius: 10px;
     margin-top: 10px;
-    max-height: 400px;
+    max-height: min(60vh, 500px);
     overflow-y: auto;
+    overflow-x: hidden;
     z-index: 1000;
     box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
 }
@@ -2639,7 +2640,7 @@ if (window.innerWidth <= 768) {
 }
         // Search functionality
 function handleSearch() {
-    const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+    const searchTerm = document.getElementById('searchBar').value.trim().toLowerCase();
     const searchResults = document.getElementById('searchResults');
     
     if (searchTerm.length < 2) {
@@ -2647,14 +2648,22 @@ function handleSearch() {
         return;
     }
     
-    const matches = products.filter(p => 
-        p.name.toLowerCase().includes(searchTerm) || 
-        p.category.toLowerCase().includes(searchTerm) ||
-        p.description.toLowerCase().includes(searchTerm)
-    );
+    const matches = products
+        .filter(p => p.name.toLowerCase().includes(searchTerm))
+        .sort((a, b) => {
+            const aName = a.name.toLowerCase();
+            const bName = b.name.toLowerCase();
+            const aStartsWith = aName.startsWith(searchTerm);
+            const bStartsWith = bName.startsWith(searchTerm);
+
+            if (aStartsWith && !bStartsWith) return -1;
+            if (!aStartsWith && bStartsWith) return 1;
+            return aName.localeCompare(bName);
+        });
+
     
     if (matches.length > 0) {
-        searchResults.innerHTML = matches.slice(0, 8).map(product => `
+        searchResults.innerHTML = matches.slice(0, 12).map(product => `
             <div class="search-result-item" onclick="openProductDetail(${product.id}); document.getElementById('searchResults').style.display='none'; document.getElementById('searchBar').value='';">
                 <strong style="color: #00ff00;">${product.name}</strong>
                 <div style="font-size: 0.9em; color: #00aa00;">${product.category}</div>
