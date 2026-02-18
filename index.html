@@ -1192,95 +1192,6 @@
     color: #00ff00;
     border: 1px solid #00ff00;
 }
-        /* Review Submission Form */
-.review-form {
-    background: rgba(0, 51, 0, 0.3);
-    padding: 25px;
-    border-radius: 10px;
-    border: 2px solid #003300;
-    margin-top: 20px;
-}
-
-.review-form h4 {
-    color: #00ff00;
-    margin-bottom: 15px;
-    font-size: 1.2em;
-}
-
-.star-rating {
-    display: flex;
-    gap: 5px;
-    font-size: 2em;
-    margin-bottom: 15px;
-}
-
-.star-rating span {
-    cursor: pointer;
-    color: #003300;
-    transition: color 0.2s;
-}
-
-.star-rating span:hover,
-.star-rating span.selected {
-    color: #FFD700;
-}
-
-.review-form textarea {
-    width: 100%;
-    min-height: 100px;
-    padding: 12px;
-    border: 2px solid #003300;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: 'Courier New', Courier, monospace;
-    background: rgba(0, 26, 0, 0.8);
-    color: #00ff00;
-    resize: vertical;
-    margin-bottom: 15px;
-}
-
-.review-form input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #003300;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: 'Courier New', Courier, monospace;
-    background: rgba(0, 26, 0, 0.8);
-    color: #00ff00;
-    margin-bottom: 15px;
-}
-
-.review-submit-btn {
-    background: linear-gradient(135deg, #003300 0%, #004d00 100%);
-    color: #00ff00;
-    border: 2px solid #00ff00;
-    padding: 12px 30px;
-    border-radius: 8px;
-    font-size: 16px;
-    font-family: 'Courier New', Courier, monospace;
-    cursor: pointer;
-    transition: all 0.3s;
-    font-weight: bold;
-}
-
-.review-submit-btn:hover {
-    background: linear-gradient(135deg, #004d00 0%, #006600 100%);
-    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
-}
-
-.no-reviews {
-    text-align: center;
-    padding: 20px;
-    color: #00aa00;
-    font-style: italic;
-}
-
-.review-date {
-    font-size: 0.85em;
-    color: #00aa00;
-    margin-top: 5px;
-}
     </style>
 </head>
 <body>
@@ -1366,7 +1277,6 @@
         <div id="collection" class="tab-content">
             <h2>>> PRODUCT COLLECTION</h2>
             <p style="margin-bottom: 30px;">Browse our complete catalog of 3D printed items. Click any product for details and ordering.</p>
-            <div class="product-rating" id="rating-${product.id}">Loading reviews...</div>
             
             <!-- DECORATIVE ITEMS CATEGORY -->
             <div class="category-section">
@@ -2059,42 +1969,6 @@
             { id: 32, name: 'Custom Prop', category: 'Custom', grams: 40, hours: 3, emoji: '🎭', image: 'https://i.imgur.com/nsEjmzM.png', description: 'Custom 3D printed figure from your favorite game or movie. Great for gaming miniatures, collectibles, or gifts. Pricing varies by complexity.', dimensions: 'custom"xcustom"xcustom"' },
             { id: 33, name: 'Coaster', category: 'Custom', grams: 12, hours: 1.5, emoji: '🛞', image: 'https://i.imgur.com/G9fbSxn.png', description: 'Want a custom-made coaster? Perhaps a woven one, or a thematic one to go along with the design of your room.', dimensions: 'custom"xcustom"xcustom"' }
         ];
-
-// ==========================================
-// REVIEW SYSTEM - localStorage based
-// ==========================================
-
-// Get all reviews for a specific product
-function getProductReviews(productId) {
-    const allReviews = JSON.parse(localStorage.getItem('makerMatrixReviews') || '{}');
-    return allReviews[productId] || [];
-}
-
-// Add a new review for a product
-function addProductReview(productId, reviewData) {
-    const allReviews = JSON.parse(localStorage.getItem('makerMatrixReviews') || '{}');
-    
-    if (!allReviews[productId]) {
-        allReviews[productId] = [];
-    }
-    
-    // Add timestamp
-    reviewData.timestamp = new Date().toISOString();
-    
-    allReviews[productId].push(reviewData);
-    localStorage.setItem('makerMatrixReviews', JSON.stringify(allReviews));
-    
-    return true;
-}
-
-// Calculate average rating for a product
-function getAverageRating(productId) {
-    const reviews = getProductReviews(productId);
-    if (reviews.length === 0) return 0;
-    
-    const sum = reviews.reduce((acc, review) => acc + review.stars, 0);
-    return (sum / reviews.length).toFixed(1);
-}
         // GOOGLE FORMS CONFIGURATION
         const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse';
         
@@ -2264,35 +2138,6 @@ function getAverageRating(productId) {
             📦 Material Weight: ${product.grams}g
         </p>
     `;
-    
-    // LOAD AND DISPLAY REAL REVIEWS
-    displayProductReviews(product.id);
-    
-    document.getElementById('productModal').classList.add('active');
-}
-
-        function closeProductModal() {
-            document.getElementById('productModal').classList.remove('active');
-            currentModalProduct = null;
-        }
-         // Custom Order Modal Functions
-        function openCustomOrderModal() {
-            document.getElementById('customOrderModal').classList.add('active');
-            document.getElementById('customOrderDescription').value = '';
-        }
-
-        function closeCustomOrderModal() {
-            document.getElementById('customOrderModal').classList.remove('active');
-        }
-
-        function addCustomOrderToCart() {
-            const description = document.getElementById('customOrderDescription').value.trim();
-            
-            if (!description) {
-                alert('Please describe your custom order!');
-                return;
-            }
-
             // Create a custom order cart item
             const customOrderItem = {
                 id: Date.now(),
@@ -2840,205 +2685,12 @@ function lookupOrder() {
         </div>
     `;
 }
-// Update all product card ratings on page load
-function updateAllProductRatings() {
-    products.forEach(product => {
-        const reviews = getProductReviews(product.id);
-        const avgRating = reviews.length > 0 
-            ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length).toFixed(1)
-            : 0;
-        
-        const ratingElement = document.getElementById(`rating-${product.id}`);
-        if (ratingElement) {
-            if (reviews.length > 0) {
-                const stars = '★'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating));
-                ratingElement.textContent = `${stars} (${reviews.length} review${reviews.length !== 1 ? 's' : ''})`;
-            } else {
-                ratingElement.textContent = 'No reviews yet';
-            }
-        }
-    });
-}
-
 // Call this in window.onload
 window.onload = function() {
     populateProductSelect();
     renderColorOptions();
     updateCartDisplay();
-    updateAllProductRatings(); // ADD THIS LINE
 };
-        // Display reviews for a product
-function displayProductReviews(productId) {
-    const reviewsSection = document.getElementById('modalProductReviews');
-    const reviews = getProductReviews(productId);
-    const avgRating = getAverageRating(productId);
-    
-    let html = '<h3>Customer Reviews</h3>';
-    
-    // Show average rating if reviews exist
-    if (reviews.length > 0) {
-        const stars = '★'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating));
-        html += `
-            <div style="margin-bottom: 20px; padding: 15px; background: rgba(0, 77, 0, 0.3); border-radius: 8px;">
-                <div style="font-size: 1.2em; color: #FFD700;">${stars}</div>
-                <div style="color: #00dd00; margin-top: 5px;">
-                    ${avgRating} out of 5 stars (${reviews.length} review${reviews.length !== 1 ? 's' : ''})
-                </div>
-            </div>
-        `;
-    }
-    
-    // Display reviews
-    if (reviews.length > 0) {
-        // Sort by newest first
-        const sortedReviews = reviews.sort((a, b) => 
-            new Date(b.timestamp) - new Date(a.timestamp)
-        );
-        
-        sortedReviews.forEach(review => {
-            const date = new Date(review.timestamp).toLocaleDateString();
-            html += `
-                <div class="review-item">
-                    <div class="review-header">
-                        <span class="review-author">${review.author}</span>
-                        <span class="review-stars">${'★'.repeat(review.stars)}${'☆'.repeat(5-review.stars)}</span>
-                    </div>
-                    <div class="review-text">${review.text}</div>
-                    <div class="review-date">Posted on ${date}</div>
-                </div>
-            `;
-        });
-    } else {
-        html += '<div class="no-reviews">No reviews yet. Be the first to review this product!</div>';
-    }
-    
-    // Add review form
-    html += `
-        <div class="review-form">
-            <h4>Write a Review</h4>
-            
-            <label style="display: block; margin-bottom: 10px; color: #00ff00;">Your Rating:</label>
-            <div class="star-rating" id="reviewStarRating">
-                <span data-rating="1">★</span>
-                <span data-rating="2">★</span>
-                <span data-rating="3">★</span>
-                <span data-rating="4">★</span>
-                <span data-rating="5">★</span>
-            </div>
-            
-            <label style="display: block; margin-bottom: 10px; color: #00ff00;">Your Name:</label>
-            <input type="text" id="reviewAuthor" placeholder="Enter your name" required>
-            
-            <label style="display: block; margin-bottom: 10px; color: #00ff00;">Your Review:</label>
-            <textarea id="reviewText" placeholder="Share your experience with this product..." required></textarea>
-            
-            <button class="review-submit-btn" onclick="submitReview(${productId})">
-                Submit Review
-            </button>
-        </div>
-    `;
-    
-    reviewsSection.innerHTML = html;
-    reviewsSection.style.display = 'block';
-    
-    // Add star rating interaction
-    setupStarRating();
-}
-
-// Setup star rating interaction
-let selectedRating = 0;
-
-function setupStarRating() {
-    const stars = document.querySelectorAll('#reviewStarRating span');
-    
-    stars.forEach(star => {
-        star.addEventListener('click', function() {
-            selectedRating = parseInt(this.getAttribute('data-rating'));
-            
-            // Update visual state
-            stars.forEach(s => {
-                const rating = parseInt(s.getAttribute('data-rating'));
-                if (rating <= selectedRating) {
-                    s.classList.add('selected');
-                } else {
-                    s.classList.remove('selected');
-                }
-            });
-        });
-        
-        // Hover effect
-        star.addEventListener('mouseenter', function() {
-            const rating = parseInt(this.getAttribute('data-rating'));
-            stars.forEach(s => {
-                const starRating = parseInt(s.getAttribute('data-rating'));
-                if (starRating <= rating) {
-                    s.style.color = '#FFD700';
-                } else {
-                    s.style.color = '#003300';
-                }
-            });
-        });
-    });
-    
-    // Reset on mouse leave
-    document.getElementById('reviewStarRating').addEventListener('mouseleave', function() {
-        const stars = document.querySelectorAll('#reviewStarRating span');
-        stars.forEach(s => {
-            const rating = parseInt(s.getAttribute('data-rating'));
-            if (rating <= selectedRating) {
-                s.style.color = '#FFD700';
-            } else {
-                s.style.color = '#003300';
-            }
-        });
-    });
-}
-
-// Submit a review
-function submitReview(productId) {
-    const author = document.getElementById('reviewAuthor').value.trim();
-    const text = document.getElementById('reviewText').value.trim();
-    
-    // Validation
-    if (!author) {
-        alert('Please enter your name!');
-        return;
-    }
-    
-    if (!text) {
-        alert('Please write a review!');
-        return;
-    }
-    
-    if (selectedRating === 0) {
-        alert('Please select a star rating!');
-        return;
-    }
-    
-    // Create review object
-    const review = {
-        author: author,
-        stars: selectedRating,
-        text: text
-    };
-    
-    // Save review
-    addProductReview(productId, review);
-    
-    // Show success message
-    alert('Thank you for your review! ⭐');
-    
-    // Reload reviews display
-    displayProductReviews(productId);
-    
-    // Update product card ratings
-    updateAllProductRatings();
-    
-    // Reset form
-    document.getElementById('reviewAuthor').value = '';
-    document.getElementById('reviewText').value = '';
-    selectedRating = 0;
-}
     </script>
 </body>
 </html>
