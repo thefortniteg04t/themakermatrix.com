@@ -1041,6 +1041,246 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+        /* Search Bar Styles */
+.search-container {
+    max-width: 600px;
+    margin: 20px auto;
+    position: relative;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 15px 50px 15px 20px;
+    border: 2px solid #003300;
+    border-radius: 10px;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    background: rgba(0, 26, 0, 0.8);
+    color: #00ff00;
+    transition: all 0.3s;
+}
+
+.search-bar:focus {
+    outline: none;
+    border-color: #00ff00;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    right: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #00ff00;
+    font-size: 1.5em;
+    pointer-events: none;
+}
+
+.search-results {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(0, 26, 0, 0.95);
+    border: 2px solid #00ff00;
+    border-radius: 10px;
+    margin-top: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
+}
+
+.search-result-item {
+    padding: 15px;
+    border-bottom: 1px solid #003300;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.search-result-item:hover {
+    background: rgba(0, 77, 0, 0.5);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+       /* FAQ Styles */
+.faq-item {
+    background: rgba(0, 51, 0, 0.3);
+    padding: 20px;
+    margin-bottom: 15px;
+    border-radius: 10px;
+    border: 2px solid #003300;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.faq-item:hover {
+    border-color: #00ff00;
+    background: rgba(0, 51, 0, 0.5);
+}
+
+.faq-question {
+    color: #00ff00;
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.faq-answer {
+    color: #00dd00;
+    display: none;
+    padding-top: 10px;
+    border-top: 1px solid #003300;
+}
+
+.faq-item.active .faq-answer {
+    display: block;
+}
+
+.faq-toggle {
+    transition: transform 0.3s;
+}
+
+.faq-item.active .faq-toggle {
+    transform: rotate(180deg);
+} 
+        /* Order Tracking */
+.order-lookup {
+    background: rgba(0, 51, 0, 0.3);
+    padding: 30px;
+    border-radius: 10px;
+    border: 2px solid #003300;
+    margin-bottom: 30px;
+}
+
+.order-status-display {
+    margin-top: 20px;
+    padding: 20px;
+    background: rgba(0, 77, 0, 0.3);
+    border-radius: 10px;
+    border: 2px solid #00ff00;
+}
+
+.status-indicator {
+    display: inline-block;
+    padding: 5px 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    margin-left: 10px;
+}
+
+.status-pending {
+    background: rgba(255, 165, 0, 0.3);
+    color: #ffaa00;
+    border: 1px solid #ff8800;
+}
+
+.status-printing {
+    background: rgba(0, 100, 255, 0.3);
+    color: #00aaff;
+    border: 1px solid #0088ff;
+}
+
+.status-ready {
+    background: rgba(0, 255, 0, 0.3);
+    color: #00ff00;
+    border: 1px solid #00ff00;
+}
+        /* Review Submission Form */
+.review-form {
+    background: rgba(0, 51, 0, 0.3);
+    padding: 25px;
+    border-radius: 10px;
+    border: 2px solid #003300;
+    margin-top: 20px;
+}
+
+.review-form h4 {
+    color: #00ff00;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.star-rating {
+    display: flex;
+    gap: 5px;
+    font-size: 2em;
+    margin-bottom: 15px;
+}
+
+.star-rating span {
+    cursor: pointer;
+    color: #003300;
+    transition: color 0.2s;
+}
+
+.star-rating span:hover,
+.star-rating span.selected {
+    color: #FFD700;
+}
+
+.review-form textarea {
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    border: 2px solid #003300;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    background: rgba(0, 26, 0, 0.8);
+    color: #00ff00;
+    resize: vertical;
+    margin-bottom: 15px;
+}
+
+.review-form input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid #003300;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    background: rgba(0, 26, 0, 0.8);
+    color: #00ff00;
+    margin-bottom: 15px;
+}
+
+.review-submit-btn {
+    background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+    color: #00ff00;
+    border: 2px solid #00ff00;
+    padding: 12px 30px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-family: 'Courier New', Courier, monospace;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-weight: bold;
+}
+
+.review-submit-btn:hover {
+    background: linear-gradient(135deg, #004d00 0%, #006600 100%);
+    box-shadow: 0 0 20px rgba(0, 255, 0, 0.4);
+}
+
+.no-reviews {
+    text-align: center;
+    padding: 20px;
+    color: #00aa00;
+    font-style: italic;
+}
+
+.review-date {
+    font-size: 0.85em;
+    color: #00aa00;
+    margin-top: 5px;
+}
     </style>
 </head>
 <body>
@@ -1051,6 +1291,12 @@
         <header>
             <h1>⚡ THE MAKER MATRIX ⚡</h1>
             <p class="tagline">>>> Materializing Your Ideas Into Reality <<<</p>
+            <!-- Search Bar -->
+<div class="search-container">
+    <input type="text" class="search-bar" id="searchBar" placeholder="Search products..." oninput="handleSearch()">
+    <span class="search-icon">🔍</span>
+    <div class="search-results" id="searchResults"></div>
+</div>
         </header>
 
         <!-- Tab Navigation -->
@@ -1066,6 +1312,8 @@
 
             <button class="tab-btn" onclick="openTab(event, 'about')">About</button>
         </div>
+        <button class="tab-btn" onclick="openTab(event, 'faq')">FAQ</button>
+        <button class="tab-btn" onclick="openTab(event, 'orders')">My Orders</button>
 
         <!-- HOME TAB -->
         <div id="home" class="tab-content active">
@@ -1118,7 +1366,8 @@
         <div id="collection" class="tab-content">
             <h2>>> PRODUCT COLLECTION</h2>
             <p style="margin-bottom: 30px;">Browse our complete catalog of 3D printed items. Click any product for details and ordering.</p>
-
+            <div class="product-rating" id="rating-${product.id}">Loading reviews...</div>
+            
             <!-- DECORATIVE ITEMS CATEGORY -->
             <div class="category-section">
                 <div class="category-header">
@@ -1510,6 +1759,30 @@
 
             <div id="priceDisplay"></div>
         </div>
+        <!-- MY ORDERS TAB -->
+<div id="orders" class="tab-content">
+    <h2>>> ORDER TRACKING</h2>
+    <p style="margin-bottom: 30px;">Track the status of your orders here.</p>
+
+    <div class="order-lookup">
+        <h3>Look Up Your Order</h3>
+        <div class="form-group">
+            <label>Enter Your Name</label>
+            <input type="text" id="orderLookupName" placeholder="Name used when ordering">
+        </div>
+        <div class="form-group">
+            <label>Enter Your Homeroom</label>
+            <input type="text" id="orderLookupHomeroom" placeholder="Homeroom used when ordering">
+        </div>
+        <button class="submit-btn" onclick="lookupOrder()">CHECK ORDER STATUS</button>
+    </div>
+
+    <div id="orderStatusResults"></div>
+
+    <div class="notice-box" style="margin-top: 30px;">
+        <strong>💡 Tip:</strong> Orders typically take 2-4 days to complete. Premium Rush orders are prioritized and usually ready within 36 hours!
+    </div>
+</div>
 
         <!-- CART TAB -->
         <div id="cart" class="tab-content">
@@ -1556,6 +1829,102 @@
             </div>
 
         </div>
+        
+        <!-- FAQ TAB -->
+<div id="faq" class="tab-content">
+    <h2>>> FREQUENTLY ASKED QUESTIONS</h2>
+    <p style="margin-bottom: 30px;">Find answers to common questions about our 3D printing service.</p>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            How long does it take to print my order?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Standard orders typically take 2-4 days to complete, depending on queue length and print complexity. If you need your item faster, select the Premium Listing option for priority processing (you are then put higher priority in listing).
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            What's the difference between PLA and PETG?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            PLA is our standard material - perfect for decorative items, gifts, and general use. It's biodegradable and prints with excellent detail. PETG is stronger and more durable, ideal for functional parts that need to hold weight or withstand regular use.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            How does the $5 Deal work?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Get any 5 items from our $5 Deal section for just $5 total! Mix and match any combination of mini animals and decorative pieces. Items purchased individually from this section are priced normally and larger, but when you add in groups of 5, the bundle pricing automatically applies at checkout.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            Can I customize the colors?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Absolutely! We offer a wide range of colors for PLA prints, including specialty multi-color options using our AMS system. PETG is currently only available in Greyish Blue. Select your preferred color in the Price Calculator when configuring your order.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            What payment methods do you accept?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            We accept Cash, PayPal, Venmo, Cash App, and Apple Pay. Select your preferred payment method during checkout, and we'll coordinate payment details when your order is ready for pickup.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            How do I track my order?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            After placing your order, visit the "My Orders" tab and enter your name and homeroom to check the status. You'll see if your order is Pending (in queue), Printing (being made), or Ready for Pickup.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            Can I order custom designs?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Yes! We offer custom orders for unique projects. Select "Custom Order" from the collection and describe what you'd like created. Pricing varies based on complexity, size, and materials needed. We'll review your request and provide a quote before printing.
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            What if my print has an issue?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            Quality is our priority! If there's any issue with your print, contact us immediately at rc54871@stu.alaschools.org or sl70590@stu.alaschools.org. We'll either fix the issue or refund your item. **Must have proof of damage**
+        </div>
+    </div>
+
+    <div class="faq-item" onclick="toggleFAQ(this)">
+        <div class="faq-question">
+            How does the cart discount system work?
+            <span class="faq-toggle">▼</span>
+        </div>
+        <div class="faq-answer">
+            We offer tiered discounts on your entire cart total: 10% off orders over $10, 15% off orders over $20, and 20% off orders over $30! The discount applies automatically at checkout to your total order value.
+        </div>
+    </div>
+</div>
 
         <!-- ABOUT TAB -->
         <div id="about" class="tab-content">
@@ -1691,6 +2060,41 @@
             { id: 33, name: 'Coaster', category: 'Custom', grams: 12, hours: 1.5, emoji: '🛞', image: 'https://i.imgur.com/G9fbSxn.png', description: 'Want a custom-made coaster? Perhaps a woven one, or a thematic one to go along with the design of your room.', dimensions: 'custom"xcustom"xcustom"' }
         ];
 
+// ==========================================
+// REVIEW SYSTEM - localStorage based
+// ==========================================
+
+// Get all reviews for a specific product
+function getProductReviews(productId) {
+    const allReviews = JSON.parse(localStorage.getItem('makerMatrixReviews') || '{}');
+    return allReviews[productId] || [];
+}
+
+// Add a new review for a product
+function addProductReview(productId, reviewData) {
+    const allReviews = JSON.parse(localStorage.getItem('makerMatrixReviews') || '{}');
+    
+    if (!allReviews[productId]) {
+        allReviews[productId] = [];
+    }
+    
+    // Add timestamp
+    reviewData.timestamp = new Date().toISOString();
+    
+    allReviews[productId].push(reviewData);
+    localStorage.setItem('makerMatrixReviews', JSON.stringify(allReviews));
+    
+    return true;
+}
+
+// Calculate average rating for a product
+function getAverageRating(productId) {
+    const reviews = getProductReviews(productId);
+    if (reviews.length === 0) return 0;
+    
+    const sum = reviews.reduce((acc, review) => acc + review.stars, 0);
+    return (sum / reviews.length).toFixed(1);
+}
         // GOOGLE FORMS CONFIGURATION
         const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse';
         
@@ -1740,7 +2144,7 @@
         });
 
         // Tab Navigation
-        function openTab(evt, tabName) {
+       function openTab(evt, tabName) {
             const tabContents = document.getElementsByClassName('tab-content');
             for (let i = 0; i < tabContents.length; i++) {
                 tabContents[i].classList.remove('active');
@@ -1753,8 +2157,10 @@
 
             document.getElementById(tabName).classList.add('active');
             evt.currentTarget.classList.add('active');
+    
+            // ADD THIS LINE:
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-
         // Category Expansion
         function toggleCategory(category) {
             const grid = document.getElementById(category + '-grid');
@@ -1833,34 +2239,37 @@
         }
 
         // Product Detail Modal
-        function openProductDetail(id) {
-            const product = products.find(p => p.id === id);
-            currentModalProduct = product;
-            
-            document.getElementById('modalProductName').textContent = product.name;
-            
-            // Use image if available, otherwise fall back to emoji
-            if (product.image && product.image !== '') {
-                document.getElementById('modalProductImage').innerHTML = 
-                    `<img src="${product.image}" alt="${product.name}">`;
-            } else {
-                document.getElementById('modalProductImage').innerHTML = 
-                    `<div class="product-placeholder" style="font-size: 1em;">${product.emoji}</div>`;
-            }
-            
-            document.getElementById('modalProductDescription').innerHTML = `
-                <p style="margin-bottom: 15px;">${product.description}</p>
-                <p style="color: #00cc00; font-weight: bold; margin-top: 20px;">
-                    📏 Dimensions: ${product.dimensions}
-                </p>
-                <p style="color: #00aa00; font-size: 0.95em; margin-top: 10px;">
-                    ⚙️ Estimated Print Time: ${product.hours} hour${product.hours !== 1 ? 's' : ''}<br>
-                    📦 Material Weight: ${product.grams}g
-                </p>
-            `;
-            
-            document.getElementById('productModal').classList.add('active');
-        }
+       function openProductDetail(id) {
+    const product = products.find(p => p.id === id);
+    currentModalProduct = product;
+    
+    document.getElementById('modalProductName').textContent = product.name;
+    
+    // Use image if available, otherwise fall back to emoji
+    if (product.image && product.image !== '') {
+        document.getElementById('modalProductImage').innerHTML = 
+            `<img src="${product.image}" alt="${product.name}">`;
+    } else {
+        document.getElementById('modalProductImage').innerHTML = 
+            `<div class="product-placeholder" style="font-size: 1em;">${product.emoji}</div>`;
+    }
+    
+    document.getElementById('modalProductDescription').innerHTML = `
+        <p style="margin-bottom: 15px;">${product.description}</p>
+        <p style="color: #00cc00; font-weight: bold; margin-top: 20px;">
+            📏 Dimensions: ${product.dimensions}
+        </p>
+        <p style="color: #00aa00; font-size: 0.95em; margin-top: 10px;">
+            ⚙️ Estimated Print Time: ${product.hours} hour${product.hours !== 1 ? 's' : ''}<br>
+            📦 Material Weight: ${product.grams}g
+        </p>
+    `;
+    
+    // LOAD AND DISPLAY REAL REVIEWS
+    displayProductReviews(product.id);
+    
+    document.getElementById('productModal').classList.add('active');
+}
 
         function closeProductModal() {
             document.getElementById('productModal').classList.remove('active');
@@ -1966,7 +2375,7 @@
                     { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.04, textColor: '#000' },
                     { value: 'purple', name: 'Purple', bg: '#800080', price: 0.05, textColor: '#fff' },
                     { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.05, textColor: '#fff' },
-                    { value: 'green', name: 'Green', bg: '#008000', price: 0.05, textColor: '#fff' },
+                    { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.05, textColor: '#fff' },
                     { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.05, textColor: '#000' },
                     { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
                     { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
@@ -2009,7 +2418,7 @@
             const grams = selectedProduct.grams;
             const hours = selectedProduct.hours;
             
-            let baseCost = 1 + (5 * hours);
+            let baseCost = 1 + (hours);
             let pricePerGram = 0;
             
             if (selectedColor.startsWith('multi-')) {
@@ -2056,7 +2465,7 @@
 
             const grams = selectedProduct.grams;
             const hours = selectedProduct.hours;
-            let baseCost = 1 + (5 * hours);
+            let baseCost = 1 + (hours);
             let pricePerGram = 0;
             
             if (selectedColor.startsWith('multi-')) {
@@ -2357,7 +2766,279 @@ if (window.innerWidth <= 768) {
         });
     });
 }
+        // Search functionality
+function handleSearch() {
+    const searchTerm = document.getElementById('searchBar').value.toLowerCase();
+    const searchResults = document.getElementById('searchResults');
+    
+    if (searchTerm.length < 2) {
+        searchResults.style.display = 'none';
+        return;
+    }
+    
+    const matches = products.filter(p => 
+        p.name.toLowerCase().includes(searchTerm) || 
+        p.category.toLowerCase().includes(searchTerm) ||
+        p.description.toLowerCase().includes(searchTerm)
+    );
+    
+    if (matches.length > 0) {
+        searchResults.innerHTML = matches.slice(0, 8).map(product => `
+            <div class="search-result-item" onclick="openProductDetail(${product.id}); document.getElementById('searchResults').style.display='none'; document.getElementById('searchBar').value='';">
+                <strong style="color: #00ff00;">${product.name}</strong>
+                <div style="font-size: 0.9em; color: #00aa00;">${product.category}</div>
+            </div>
+        `).join('');
+        searchResults.style.display = 'block';
+    } else {
+        searchResults.innerHTML = '<div class="search-result-item" style="text-align: center; color: #00aa00;">No products found</div>';
+        searchResults.style.display = 'block';
+    }
+}
 
+// Close search results when clicking outside
+document.addEventListener('click', function(event) {
+    const searchContainer = document.querySelector('.search-container');
+    if (!searchContainer.contains(event.target)) {
+        document.getElementById('searchResults').style.display = 'none';
+    }
+});
+        // FAQ Toggle
+function toggleFAQ(element) {
+    element.classList.toggle('active');
+}
+        // Order Lookup (Simulated - replace with real database query)
+function lookupOrder() {
+    const name = document.getElementById('orderLookupName').value.trim();
+    const homeroom = document.getElementById('orderLookupHomeroom').value.trim();
+    const resultsDiv = document.getElementById('orderStatusResults');
+    
+    if (!name || !homeroom) {
+        alert('Please enter both your name and homeroom!');
+        return;
+    }
+    
+    // Simulated order status (in real app, query your order database)
+    resultsDiv.innerHTML = `
+        <div class="order-status-display">
+            <h3 style="color: #00ff00; margin-bottom: 20px;">Order Status for ${name}</h3>
+            <p style="color: #00dd00; font-size: 1.1em; margin-bottom: 15px;">
+                <strong>Homeroom:</strong> ${homeroom}
+            </p>
+            <div style="margin-top: 20px; padding: 20px; background: rgba(0, 51, 0, 0.3); border-radius: 10px;">
+                <p style="margin-bottom: 10px;">
+                    <strong style="color: #00ff00;">Status:</strong> 
+                    <span class="status-indicator status-printing">PRINTING</span>
+                </p>
+                <p style="color: #00aa00; margin-top: 15px;">
+                    Your order is currently being printed. Estimated completion: 1-2 days
+                </p>
+            </div>
+            <div class="notice-box" style="margin-top: 20px;">
+                <strong>Note:</strong> This is a demo. Real order tracking will connect to your order database.
+            </div>
+        </div>
+    `;
+}
+// Update all product card ratings on page load
+function updateAllProductRatings() {
+    products.forEach(product => {
+        const reviews = getProductReviews(product.id);
+        const avgRating = reviews.length > 0 
+            ? (reviews.reduce((sum, r) => sum + r.stars, 0) / reviews.length).toFixed(1)
+            : 0;
+        
+        const ratingElement = document.getElementById(`rating-${product.id}`);
+        if (ratingElement) {
+            if (reviews.length > 0) {
+                const stars = '★'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating));
+                ratingElement.textContent = `${stars} (${reviews.length} review${reviews.length !== 1 ? 's' : ''})`;
+            } else {
+                ratingElement.textContent = 'No reviews yet';
+            }
+        }
+    });
+}
+
+// Call this in window.onload
+window.onload = function() {
+    populateProductSelect();
+    renderColorOptions();
+    updateCartDisplay();
+    updateAllProductRatings(); // ADD THIS LINE
+};
+        // Display reviews for a product
+function displayProductReviews(productId) {
+    const reviewsSection = document.getElementById('modalProductReviews');
+    const reviews = getProductReviews(productId);
+    const avgRating = getAverageRating(productId);
+    
+    let html = '<h3>Customer Reviews</h3>';
+    
+    // Show average rating if reviews exist
+    if (reviews.length > 0) {
+        const stars = '★'.repeat(Math.round(avgRating)) + '☆'.repeat(5 - Math.round(avgRating));
+        html += `
+            <div style="margin-bottom: 20px; padding: 15px; background: rgba(0, 77, 0, 0.3); border-radius: 8px;">
+                <div style="font-size: 1.2em; color: #FFD700;">${stars}</div>
+                <div style="color: #00dd00; margin-top: 5px;">
+                    ${avgRating} out of 5 stars (${reviews.length} review${reviews.length !== 1 ? 's' : ''})
+                </div>
+            </div>
+        `;
+    }
+    
+    // Display reviews
+    if (reviews.length > 0) {
+        // Sort by newest first
+        const sortedReviews = reviews.sort((a, b) => 
+            new Date(b.timestamp) - new Date(a.timestamp)
+        );
+        
+        sortedReviews.forEach(review => {
+            const date = new Date(review.timestamp).toLocaleDateString();
+            html += `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${review.author}</span>
+                        <span class="review-stars">${'★'.repeat(review.stars)}${'☆'.repeat(5-review.stars)}</span>
+                    </div>
+                    <div class="review-text">${review.text}</div>
+                    <div class="review-date">Posted on ${date}</div>
+                </div>
+            `;
+        });
+    } else {
+        html += '<div class="no-reviews">No reviews yet. Be the first to review this product!</div>';
+    }
+    
+    // Add review form
+    html += `
+        <div class="review-form">
+            <h4>Write a Review</h4>
+            
+            <label style="display: block; margin-bottom: 10px; color: #00ff00;">Your Rating:</label>
+            <div class="star-rating" id="reviewStarRating">
+                <span data-rating="1">★</span>
+                <span data-rating="2">★</span>
+                <span data-rating="3">★</span>
+                <span data-rating="4">★</span>
+                <span data-rating="5">★</span>
+            </div>
+            
+            <label style="display: block; margin-bottom: 10px; color: #00ff00;">Your Name:</label>
+            <input type="text" id="reviewAuthor" placeholder="Enter your name" required>
+            
+            <label style="display: block; margin-bottom: 10px; color: #00ff00;">Your Review:</label>
+            <textarea id="reviewText" placeholder="Share your experience with this product..." required></textarea>
+            
+            <button class="review-submit-btn" onclick="submitReview(${productId})">
+                Submit Review
+            </button>
+        </div>
+    `;
+    
+    reviewsSection.innerHTML = html;
+    reviewsSection.style.display = 'block';
+    
+    // Add star rating interaction
+    setupStarRating();
+}
+
+// Setup star rating interaction
+let selectedRating = 0;
+
+function setupStarRating() {
+    const stars = document.querySelectorAll('#reviewStarRating span');
+    
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.getAttribute('data-rating'));
+            
+            // Update visual state
+            stars.forEach(s => {
+                const rating = parseInt(s.getAttribute('data-rating'));
+                if (rating <= selectedRating) {
+                    s.classList.add('selected');
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
+        });
+        
+        // Hover effect
+        star.addEventListener('mouseenter', function() {
+            const rating = parseInt(this.getAttribute('data-rating'));
+            stars.forEach(s => {
+                const starRating = parseInt(s.getAttribute('data-rating'));
+                if (starRating <= rating) {
+                    s.style.color = '#FFD700';
+                } else {
+                    s.style.color = '#003300';
+                }
+            });
+        });
+    });
+    
+    // Reset on mouse leave
+    document.getElementById('reviewStarRating').addEventListener('mouseleave', function() {
+        const stars = document.querySelectorAll('#reviewStarRating span');
+        stars.forEach(s => {
+            const rating = parseInt(s.getAttribute('data-rating'));
+            if (rating <= selectedRating) {
+                s.style.color = '#FFD700';
+            } else {
+                s.style.color = '#003300';
+            }
+        });
+    });
+}
+
+// Submit a review
+function submitReview(productId) {
+    const author = document.getElementById('reviewAuthor').value.trim();
+    const text = document.getElementById('reviewText').value.trim();
+    
+    // Validation
+    if (!author) {
+        alert('Please enter your name!');
+        return;
+    }
+    
+    if (!text) {
+        alert('Please write a review!');
+        return;
+    }
+    
+    if (selectedRating === 0) {
+        alert('Please select a star rating!');
+        return;
+    }
+    
+    // Create review object
+    const review = {
+        author: author,
+        stars: selectedRating,
+        text: text
+    };
+    
+    // Save review
+    addProductReview(productId, review);
+    
+    // Show success message
+    alert('Thank you for your review! ⭐');
+    
+    // Reload reviews display
+    displayProductReviews(productId);
+    
+    // Update product card ratings
+    updateAllProductRatings();
+    
+    // Reset form
+    document.getElementById('reviewAuthor').value = '';
+    document.getElementById('reviewText').value = '';
+    selectedRating = 0;
+}
     </script>
 </body>
 </html>
