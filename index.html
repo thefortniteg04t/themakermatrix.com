@@ -22,6 +22,11 @@
             min-height: 100vh;
         }
 
+        body.modal-open {
+            overflow: hidden;
+            touch-action: none;
+        }
+
         /* Matrix rain effect background */
         .matrix-bg {
             position: fixed;
@@ -361,6 +366,8 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.9);
             overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
 
         .modal.active {
@@ -380,6 +387,10 @@
             border: 2px solid #00ff00;
             animation: slideDown 0.3s;
             position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            -webkit-overflow-scrolling: touch;
         }
 
         @keyframes slideDown {
@@ -2187,6 +2198,16 @@ let selectedRating = 0;
         });
 
         // Tab Navigation
+        function scrollPageToTop() {
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            requestAnimationFrame(() => {
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+            });
+        }
+
         function openTab(evt, tabName) {
             const tabContents = document.getElementsByClassName('tab-content');
             for (let i = 0; i < tabContents.length; i++) {
@@ -2207,7 +2228,7 @@ let selectedRating = 0;
             if (matchingTabButton) {
                 matchingTabButton.classList.add('active');
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollPageToTop();
         }
         
         // Category Expansion
@@ -2359,7 +2380,7 @@ let selectedRating = 0;
             document.getElementById('cart').classList.add('active');
             document.querySelectorAll('.tab-btn')[3].classList.add('active');
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollPageToTop();
         }
 
         // Add to Cart from modal
@@ -2375,7 +2396,7 @@ let selectedRating = 0;
             document.querySelectorAll('.tab-btn')[2].classList.add('active');
             
             closeProductModal();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollPageToTop();
         }
 
         // Buy Now
@@ -2556,7 +2577,7 @@ let selectedRating = 0;
             document.getElementById('cart').classList.add('active');
             document.querySelectorAll('.tab-btn')[3].classList.add('active');
             
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+            scrollPageToTop();
         }
 
         // Update Cart Display
@@ -2980,22 +3001,6 @@ async function checkout() {
             }
         }
         // MOBILE OPTIMIZATION ADDITIONS
-
-// Prevent double-tap zoom on iOS
-document.addEventListener('touchstart', function(event) {
-    if (event.touches.length > 1) {
-        event.preventDefault();
-    }
-}, { passive: false });
-
-let lastTouchEnd = 0;
-document.addEventListener('touchend', function(event) {
-    const now = Date.now();
-    if (now - lastTouchEnd <= 300) {
-        event.preventDefault();
-    }
-    lastTouchEnd = now;
-}, false);
 
 // Optimize matrix animation for mobile
 if (window.innerWidth <= 768) {
