@@ -1078,18 +1078,18 @@
 
 .search-results {
     display: none;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 0;
     left: 0;
-    right: 0;
+    width: 100%;
     background: rgba(0, 26, 0, 0.95);
     border: 2px solid #00ff00;
     border-radius: 10px;
-    margin-top: 10px;
+    margin-top: 0;
     max-height: min(60vh, 500px);
     overflow-y: auto;
     overflow-x: hidden;
-    z-index: 1000;
+    z-index: 2000;
     box-shadow: 0 0 30px rgba(0, 255, 0, 0.3);
 }
 
@@ -1782,14 +1782,14 @@
             <div class="form-group">
                 <label>Material Type</label>
                 <div class="radio-group">
-                    <div class="radio-option selected" onclick="selectMaterial('pla')">
+                    <div class="radio-option selected" onclick="selectMaterial('pla', this)">
                         <input type="radio" name="material" value="pla" id="pla" checked>
                         <label for="pla" style="display: inline; cursor: pointer; margin: 0; color: #00ff00;">
                             <strong>PLA</strong> - Basic filament, useful for miscellaneous things
                         </label>
                         <div class="option-description">Best for decorative items and general use</div>
                     </div>
-                    <div class="radio-option" onclick="selectMaterial('petg')">
+                    <div class="radio-option" onclick="selectMaterial('petg', this)">
                         <input type="radio" name="material" value="petg" id="petg">
                         <label for="petg" style="display: inline; cursor: pointer; margin: 0; color: #00ff00;">
                             <strong>PETG</strong> - Tougher and useful for prints that need to hold weight
@@ -2187,7 +2187,7 @@ let selectedRating = 0;
         });
 
         // Tab Navigation
-       function openTab(evt, tabName) {
+        function openTab(evt, tabName) {
             const tabContents = document.getElementsByClassName('tab-content');
             for (let i = 0; i < tabContents.length; i++) {
                 tabContents[i].classList.remove('active');
@@ -2198,12 +2198,18 @@ let selectedRating = 0;
                 tabButtons[i].classList.remove('active');
             }
 
-            document.getElementById(tabName).classList.add('active');
-            evt.currentTarget.classList.add('active');
-    
-            // ADD THIS LINE:
+            const tabElement = document.getElementById(tabName);
+            if (tabElement) {
+                tabElement.classList.add('active');
+            }
+
+            const matchingTabButton = document.querySelector(`.tab-btn[onclick*="'${tabName}'"]`);
+            if (matchingTabButton) {
+                matchingTabButton.classList.add('active');
+            }
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
+        
         // Category Expansion
         function toggleCategory(category) {
             const grid = document.getElementById(category + '-grid');
@@ -2378,14 +2384,16 @@ let selectedRating = 0;
         }
 
         // Material Selection
-        function selectMaterial(material) {
+        function selectMaterial(material, selectedOption) {
             selectedMaterial = material;
             document.getElementById(material).checked = true;
             
             document.querySelectorAll('.radio-option').forEach(opt => {
                 opt.classList.remove('selected');
             });
-            event.currentTarget.classList.add('selected');
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+            }
             
             selectedColor = null;
             renderColorOptions();
@@ -3016,6 +3024,16 @@ if (window.innerWidth <= 768) {
         });
     });
 }
+                function positionSearchResults() {
+        const searchBar = document.getElementById('searchBar');
+        const searchResults = document.getElementById('searchResults');
+        const rect = searchBar.getBoundingClientRect();
+
+        searchResults.style.left = `${rect.left}px`;
+        searchResults.style.top = `${rect.bottom + 10}px`;
+        searchResults.style.width = `${rect.width}px`;
+    }
+
         // Search functionality
 function handleSearch() {
     const searchTerm = document.getElementById('searchBar').value.trim().toLowerCase();
@@ -3047,9 +3065,11 @@ function handleSearch() {
                 <div style="font-size: 0.9em; color: #00aa00;">${product.category}</div>
             </div>
         `).join('');
+        positionSearchResults();
         searchResults.style.display = 'block';
     } else {
         searchResults.innerHTML = '<div class="search-result-item" style="text-align: center; color: #00aa00;">No products found</div>';
+        positionSearchResults();
         searchResults.style.display = 'block';
     }
 }
@@ -3059,6 +3079,15 @@ document.addEventListener('click', function(event) {
     const searchContainer = document.querySelector('.search-container');
     if (!searchContainer.contains(event.target)) {
         document.getElementById('searchResults').style.display = 'none';
+    }
+});
+        
+
+window.addEventListener('resize', positionSearchResults);
+window.addEventListener('scroll', positionSearchResults, true);
+document.getElementById('searchBar').addEventListener('focus', function() {
+    if (document.getElementById('searchResults').style.display === 'block') {
+        positionSearchResults();
     }
 });
         // FAQ Toggle
