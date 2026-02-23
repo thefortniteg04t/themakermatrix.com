@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tavern Ledger — D&D Character Forge</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#c9a84c;--gold2:#e8c96a;--dark:#0d0b07;--dark2:#1a1510;--dark3:#251e14;--dark4:#2e2518;--parch:#f0e6c8;--parch2:#e8d9a8;--red:#8b2020;--green:#1a4a1a;--blue:#1a2a4a;--ink:#2a1f0a;--shadow:rgba(0,0,0,0.7);}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--dark);color:var(--parch);font-family:'Crimson Text',serif;font-size:17px;min-height:100vh;background-image:radial-gradient(ellipse at 20% 50%,rgba(201,168,76,0.05) 0%,transparent 60%),radial-gradient(ellipse at 80% 20%,rgba(139,32,32,0.05) 0%,transparent 50%);}
+h1,h2,h3,h4{font-family:'Cinzel',serif;}
+.cinzel-deco{font-family:'Cinzel Decorative',serif;}
+
+/* PAGES */
+.page{display:none;min-height:100vh;}
+.page.active{display:block;}
+
+/* AUTH */
+#auth-page{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px;}
+.auth-box{background:var(--dark2);border:1px solid var(--gold);padding:40px;width:100%;max-width:420px;position:relative;}
+.auth-box::before{content:'';position:absolute;inset:-1px;border:1px solid rgba(201,168,76,0.3);pointer-events:none;}
+.auth-title{font-family:'Cinzel Decorative',serif;color:var(--gold);text-align:center;font-size:1.6rem;margin-bottom:8px;}
+.auth-sub{text-align:center;color:var(--parch2);margin-bottom:30px;font-style:italic;}
+.auth-tabs{display:flex;gap:0;margin-bottom:25px;border-bottom:1px solid var(--gold);}
+.auth-tab{flex:1;padding:10px;background:none;border:none;color:var(--parch2);font-family:'Cinzel',serif;cursor:pointer;font-size:.95rem;transition:.2s;}
+.auth-tab.active{color:var(--gold);background:rgba(201,168,76,0.1);}
+label{display:block;font-family:'Cinzel',serif;font-size:.8rem;color:var(--gold2);margin-bottom:5px;letter-spacing:.05em;}
+input[type=text],input[type=password],input[type=email],select,textarea{width:100%;background:var(--dark3);border:1px solid rgba(201,168,76,0.4);color:var(--parch);padding:10px 12px;font-family:'Crimson Text',serif;font-size:1rem;margin-bottom:16px;outline:none;transition:.2s;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);background:var(--dark4);}
+select option{background:var(--dark3);}
+.btn{display:inline-block;padding:11px 22px;font-family:'Cinzel',serif;font-size:.9rem;cursor:pointer;border:none;transition:.2s;letter-spacing:.05em;}
+.btn-gold{background:var(--gold);color:var(--dark);font-weight:700;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-outline{background:transparent;border:1px solid var(--gold);color:var(--gold);}
+.btn-outline:hover{background:rgba(201,168,76,0.1);}
+.btn-red{background:var(--red);color:var(--parch);}
+.btn-red:hover{background:#a02525;}
+.btn-sm{padding:6px 14px;font-size:.8rem;}
+.btn-full{width:100%;}
+.error{color:#e05555;font-size:.9rem;margin-bottom:12px;font-style:italic;}
+.success{color:#55c055;font-size:.9rem;margin-bottom:12px;}
+
+/* NAV */
+#nav{background:var(--dark2);border-bottom:1px solid var(--gold);padding:0 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:'Cinzel Decorative',serif;color:var(--gold);font-size:1.1rem;padding:14px 0;}
+.nav-links{display:flex;gap:4px;}
+.nav-link{padding:14px 16px;color:var(--parch2);font-family:'Cinzel',serif;font-size:.8rem;cursor:pointer;border-bottom:2px solid transparent;transition:.2s;letter-spacing:.05em;background:none;border-top:none;border-left:none;border-right:none;}
+.nav-link:hover,.nav-link.active{color:var(--gold);border-bottom-color:var(--gold);}
+.nav-right{display:flex;align-items:center;gap:12px;}
+.nav-user{color:var(--parch2);font-size:.9rem;font-style:italic;}
+
+/* MAIN CONTENT */
+.main{padding:30px 20px;max-width:1200px;margin:0 auto;}
+.page-title{font-family:'Cinzel Decorative',serif;color:var(--gold);font-size:1.8rem;margin-bottom:6px;}
+.page-subtitle{color:var(--parch2);font-style:italic;margin-bottom:30px;}
+.divider{border:none;border-top:1px solid rgba(201,168,76,0.3);margin:20px 0;}
+
+/* CARDS */
+.card{background:var(--dark2);border:1px solid rgba(201,168,76,0.3);padding:20px;margin-bottom:16px;}
+.card-title{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid rgba(201,168,76,0.2);}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;}
+@media(max-width:700px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr;}}
+
+/* CHARACTER LIST */
+.char-card{background:var(--dark2);border:1px solid rgba(201,168,76,0.3);padding:18px;display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;transition:.2s;cursor:pointer;}
+.char-card:hover{border-color:var(--gold);background:var(--dark3);}
+.char-name{font-family:'Cinzel',serif;color:var(--gold);font-size:1.1rem;}
+.char-info{color:var(--parch2);font-size:.9rem;font-style:italic;}
+.char-actions{display:flex;gap:8px;}
+
+/* STAT BOX */
+.stat-box{background:var(--dark3);border:1px solid rgba(201,168,76,0.4);padding:12px;text-align:center;}
+.stat-label{font-family:'Cinzel',serif;font-size:.7rem;color:var(--gold2);letter-spacing:.05em;display:block;margin-bottom:4px;}
+.stat-score{font-size:1.8rem;font-weight:700;color:var(--parch);line-height:1;}
+.stat-mod{color:var(--gold);font-size:.95rem;margin-top:3px;}
+.stat-input{width:60px;text-align:center;font-size:1.2rem;padding:6px;}
+
+/* SKILL LIST */
+.skill-row{display:flex;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.1);}
+.skill-row input[type=checkbox]{width:16px;height:16px;accent-color:var(--gold);}
+.skill-name{flex:1;font-size:.95rem;}
+.skill-bonus{font-family:'Cinzel',serif;color:var(--gold);font-size:.9rem;min-width:30px;text-align:right;}
+.prof-dot{width:10px;height:10px;border-radius:50%;border:1px solid var(--gold);display:inline-block;margin-right:4px;}
+.prof-dot.filled{background:var(--gold);}
+
+/* DICE ROLLER */
+.dice-area{text-align:center;}
+.dice-grid{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:16px 0;}
+.die-btn{width:70px;height:70px;background:var(--dark3);border:2px solid rgba(201,168,76,0.5);color:var(--gold);font-family:'Cinzel',serif;font-size:.9rem;cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);}
+.die-btn:hover{background:var(--gold);color:var(--dark);border-color:var(--gold2);}
+.roll-result{background:var(--dark3);border:1px solid var(--gold);padding:20px;margin:16px 0;font-size:3rem;font-family:'Cinzel',serif;color:var(--gold);min-height:80px;display:flex;align-items:center;justify-content:center;gap:12px;}
+.roll-history{background:var(--dark3);border:1px solid rgba(201,168,76,0.2);padding:14px;max-height:200px;overflow-y:auto;}
+.roll-entry{padding:4px 0;border-bottom:1px solid rgba(201,168,76,0.1);font-size:.9rem;color:var(--parch2);}
+.qty-input{width:50px;text-align:center;font-size:1rem;padding:6px;}
+
+/* SPELL SLOTS */
+.slot-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.slot-pip{width:18px;height:18px;border:1px solid var(--gold);border-radius:50%;cursor:pointer;transition:.2s;}
+.slot-pip.used{background:var(--dark3);}
+.slot-pip.available{background:var(--gold);}
+
+/* SPELL CARD */
+.spell-item{background:var(--dark3);border:1px solid rgba(201,168,76,0.2);padding:10px;margin-bottom:8px;}
+.spell-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer;}
+.spell-name{font-family:'Cinzel',serif;color:var(--gold);font-size:.95rem;}
+.spell-level{color:var(--parch2);font-size:.85rem;}
+.spell-body{display:none;margin-top:8px;font-size:.9rem;color:var(--parch2);}
+.spell-body.open{display:block;}
+
+/* EQUIPMENT */
+.equip-row{display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.1);}
+.equip-name{flex:1;}
+.equip-qty{width:50px;text-align:center;}
+.equip-wt{width:50px;text-align:right;color:var(--parch2);font-size:.9rem;}
+
+/* TABS */
+.tab-bar{display:flex;flex-wrap:wrap;gap:0;border-bottom:1px solid rgba(201,168,76,0.3);margin-bottom:20px;}
+.tab-btn{padding:10px 18px;background:none;border:none;color:var(--parch2);font-family:'Cinzel',serif;font-size:.8rem;cursor:pointer;letter-spacing:.05em;border-bottom:2px solid transparent;transition:.2s;}
+.tab-btn:hover,.tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+
+/* SECTION HEADERS */
+.section-h{font-family:'Cinzel',serif;color:var(--gold);font-size:1rem;margin:20px 0 12px;padding-bottom:6px;border-bottom:1px solid rgba(201,168,76,0.2);}
+
+/* CAMPAIGN */
+.campaign-card{background:var(--dark2);border:1px solid rgba(201,168,76,0.3);padding:18px;margin-bottom:12px;}
+.campaign-name{font-family:'Cinzel',serif;color:var(--gold);font-size:1.1rem;margin-bottom:6px;}
+.journal-entry{background:var(--dark3);border-left:3px solid var(--gold);padding:12px;margin-bottom:8px;}
+.journal-date{color:var(--gold2);font-size:.8rem;font-family:'Cinzel',serif;margin-bottom:4px;}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;align-items:center;justify-content:center;padding:20px;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--dark2);border:1px solid var(--gold);padding:28px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;position:relative;}
+.modal-title{font-family:'Cinzel Decorative',serif;color:var(--gold);font-size:1.2rem;margin-bottom:20px;}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--parch2);font-size:1.2rem;cursor:pointer;}
+
+/* ABILITY SCORE METHOD */
+.method-btn{padding:10px 18px;background:var(--dark3);border:1px solid rgba(201,168,76,0.3);color:var(--parch);font-family:'Cinzel',serif;font-size:.8rem;cursor:pointer;transition:.2s;margin-right:8px;margin-bottom:8px;}
+.method-btn.active{background:rgba(201,168,76,0.2);border-color:var(--gold);color:var(--gold);}
+
+/* NOTES */
+textarea{resize:vertical;min-height:100px;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--dark);}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:3px;}
+
+/* PORTRAIT */
+.portrait-area{width:120px;height:150px;border:2px solid rgba(201,168,76,0.4);display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--dark3);font-size:.8rem;color:var(--parch2);text-align:center;padding:8px;flex-shrink:0;}
+.portrait-area img{width:100%;height:100%;object-fit:cover;}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 8px;font-family:'Cinzel',serif;font-size:.7rem;border:1px solid;margin-right:4px;}
+.badge-gold{border-color:var(--gold);color:var(--gold);}
+.badge-red{border-color:var(--red);color:#e05555;}
+.badge-green{border-color:#2a6a2a;color:#55a055;}
+
+/* HP BAR */
+.hp-bar{height:8px;background:var(--dark3);border:1px solid rgba(201,168,76,0.2);margin-top:6px;}
+.hp-fill{height:100%;background:linear-gradient(90deg,#8b2020,#c03030);transition:.5s;}
+
+/* DEATH SAVES */
+.save-pips{display:flex;gap:4px;}
+.save-pip{width:16px;height:16px;border-radius:50%;border:1px solid;cursor:pointer;}
+.save-success{border-color:#55a055;}
+.save-success.filled{background:#55a055;}
+.save-fail{border-color:#e05555;}
+.save-fail.filled{background:#e05555;}
+
+/* TRAIT BOXES */
+.trait-box{background:var(--dark3);border:1px solid rgba(201,168,76,0.2);padding:10px;margin-bottom:8px;}
+.trait-label{font-family:'Cinzel',serif;font-size:.75rem;color:var(--gold2);margin-bottom:4px;letter-spacing:.05em;}
+.trait-text{font-size:.9rem;color:var(--parch);line-height:1.5;}
+
+/* INITIATIVE/AC row */
+.combat-stat{background:var(--dark3);border:1px solid rgba(201,168,76,0.4);padding:10px 6px;text-align:center;}
+.combat-stat-val{font-size:1.6rem;font-family:'Cinzel',serif;color:var(--parch);}
+.combat-stat-lbl{font-family:'Cinzel',serif;font-size:.65rem;color:var(--gold2);letter-spacing:.05em;}
+
+/* ATTACK TABLE */
+.attack-row{display:grid;grid-template-columns:2fr 1fr 1fr 1.5fr auto;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(201,168,76,0.1);}
+.attack-header{font-family:'Cinzel',serif;font-size:.75rem;color:var(--gold2);}
+
+/* FEATURE ITEM */
+.feature-item{background:var(--dark3);border:1px solid rgba(201,168,76,0.15);padding:10px;margin-bottom:6px;}
+.feature-name{font-family:'Cinzel',serif;color:var(--gold2);font-size:.9rem;cursor:pointer;}
+.feature-desc{display:none;margin-top:6px;font-size:.88rem;color:var(--parch2);line-height:1.5;}
+.feature-desc.open{display:block;}
+</style>
+</head>
+<body>
+
+<!-- AUTH PAGE -->
+<div id="auth-page" class="page active">
+  <div class="auth-box">
+    <div class="auth-title">Tavern Ledger</div>
+    <div class="auth-sub">D&D Character Forge</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+    <div id="auth-login">
+      <label>Username</label>
+      <input type="text" id="login-user" placeholder="Your name, traveler...">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="Secret passphrase...">
+      <div id="login-err" class="error" style="display:none"></div>
+      <button class="btn btn-gold btn-full" onclick="doLogin()">Enter the Tavern</button>
+    </div>
+    <div id="auth-register" style="display:none">
+      <label>Username</label>
+      <input type="text" id="reg-user" placeholder="Choose a name...">
+      <label>Email (optional)</label>
+      <input type="email" id="reg-email" placeholder="your@email.com">
+      <label>Password</label>
+      <input type="password" id="reg-pass" placeholder="At least 6 characters...">
+      <label>Confirm Password</label>
+      <input type="password" id="reg-pass2" placeholder="Repeat password...">
+      <div id="reg-err" class="error" style="display:none"></div>
+      <button class="btn btn-gold btn-full" onclick="doRegister()">Begin Your Journey</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-page" class="page">
+  <div id="nav">
+    <div class="nav-logo">Tavern Ledger</div>
+    <div class="nav-links">
+      <button class="nav-link active" onclick="showSection('characters')">Characters</button>
+      <button class="nav-link" onclick="showSection('dice')">Dice Roller</button>
+      <button class="nav-link" onclick="showSection('campaigns')">Campaigns</button>
+      <button class="nav-link" onclick="showSection('reference')">Reference</button>
+    </div>
+    <div class="nav-right">
+      <span class="nav-user" id="nav-username"></span>
+      <button class="btn btn-outline btn-sm" onclick="doLogout()">Leave</button>
+    </div>
+  </div>
+
+  <!-- CHARACTERS SECTION -->
+  <div id="section-characters" class="main">
+    <div class="page-title">Your Characters</div>
+    <div class="page-subtitle">All adventurers bound to your account</div>
+    <button class="btn btn-gold" onclick="openCharCreator()" style="margin-bottom:20px">+ New Character</button>
+    <div id="char-list"></div>
+  </div>
+
+  <!-- DICE ROLLER -->
+  <div id="section-dice" class="main" style="display:none">
+    <div class="page-title">Dice Roller</div>
+    <div class="page-subtitle">May fortune favor the bold</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Roll Dice</div>
+        <div style="margin-bottom:12px;display:flex;align-items:center;gap:10px">
+          <input type="number" id="dice-qty" class="qty-input" value="1" min="1" max="99">
+          <span style="color:var(--parch2)">dice of type:</span>
+        </div>
+        <div class="dice-grid">
+          <button class="die-btn" onclick="rollDice(4)">d4</button>
+          <button class="die-btn" onclick="rollDice(6)">d6</button>
+          <button class="die-btn" onclick="rollDice(8)">d8</button>
+          <button class="die-btn" onclick="rollDice(10)">d10</button>
+          <button class="die-btn" onclick="rollDice(12)">d12</button>
+          <button class="die-btn" onclick="rollDice(20)">d20</button>
+          <button class="die-btn" onclick="rollDice(100)">d%</button>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px">
+          <label style="margin:0">Modifier:</label>
+          <input type="number" id="dice-mod" class="qty-input" value="0">
+        </div>
+        <button class="btn btn-gold" onclick="rollCustom()">Roll Custom</button>
+        <div class="roll-result" id="roll-result"><span style="color:var(--parch2);font-size:1rem">Click a die to roll</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Roll History</div>
+        <div class="roll-history" id="roll-history"></div>
+        <button class="btn btn-outline btn-sm" style="margin-top:10px" onclick="clearHistory()">Clear History</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:0">
+      <div class="card-title">Quick Rolls</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button class="btn btn-outline btn-sm" onclick="quickRoll('Advantage',20,2,'high')">Advantage (d20)</button>
+        <button class="btn btn-outline btn-sm" onclick="quickRoll('Disadvantage',20,2,'low')">Disadvantage (d20)</button>
+        <button class="btn btn-outline btn-sm" onclick="rollAbilityScores()">4d6 Drop Lowest (Ability Scores)</button>
+        <button class="btn btn-outline btn-sm" onclick="rollInitiative()">Initiative</button>
+        <button class="btn btn-outline btn-sm" onclick="rollDeathSave()">Death Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CAMPAIGNS -->
+  <div id="section-campaigns" class="main" style="display:none">
+    <div class="page-title">Campaigns</div>
+    <div class="page-subtitle">Track your adventures</div>
+    <button class="btn btn-gold" onclick="openNewCampaign()" style="margin-bottom:20px">+ New Campaign</button>
+    <div id="campaign-list"></div>
+  </div>
+
+  <!-- REFERENCE -->
+  <div id="section-reference" class="main" style="display:none">
+    <div class="page-title">Quick Reference</div>
+    <div class="page-subtitle">Rules at a glance</div>
+    <div class="grid-2">
+      <div class="card">
+        <div class="card-title">Conditions</div>
+        <div id="conditions-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Actions in Combat</div>
+        <div id="actions-list"></div>
+      </div>
+    </div>
+    <div class="grid-2" style="margin-top:0">
+      <div class="card">
+        <div class="card-title">Cover & Vision</div>
+        <div id="cover-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Common DCs</div>
+        <div id="dc-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHARACTER CREATOR MODAL -->
+<div class="modal-bg" id="creator-modal">
+  <div class="modal" style="max-width:900px;width:100%">
+    <div class="modal-title" id="creator-title">Create New Character</div>
+    <button class="modal-close" onclick="closeModal('creator-modal')">✕</button>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="creatorTab('basics')">Basics</button>
+      <button class="tab-btn" onclick="creatorTab('abilities')">Abilities</button>
+      <button class="tab-btn" onclick="creatorTab('combat')">Combat</button>
+      <button class="tab-btn" onclick="creatorTab('skills')">Skills & Saves</button>
+      <button class="tab-btn" onclick="creatorTab('spells')">Spells</button>
+      <button class="tab-btn" onclick="creatorTab('equipment')">Equipment</button>
+      <button class="tab-btn" onclick="creatorTab('features')">Features</button>
+      <button class="tab-btn" onclick="creatorTab('personality')">Personality</button>
+      <button class="tab-btn" onclick="creatorTab('notes')">Notes</button>
+    </div>
+
+    <!-- BASICS -->
+    <div class="tab-panel active" id="creator-basics">
+      <div class="grid-2">
+        <div>
+          <label>Character Name</label>
+          <input type="text" id="c-name" placeholder="Name your hero...">
+          <label>Race</label>
+          <select id="c-race" onchange="updateRaceInfo()">
+            <option value="">— Select Race —</option>
+            <optgroup label="Common">
+              <option value="Dragonborn">Dragonborn</option>
+              <option value="Dwarf (Hill)">Dwarf (Hill)</option>
+              <option value="Dwarf (Mountain)">Dwarf (Mountain)</option>
+              <option value="Elf (High)">Elf (High)</option>
+              <option value="Elf (Wood)">Elf (Wood)</option>
+              <option value="Elf (Drow)">Elf (Drow)</option>
+              <option value="Gnome (Forest)">Gnome (Forest)</option>
+              <option value="Gnome (Rock)">Gnome (Rock)</option>
+              <option value="Half-Elf">Half-Elf</option>
+              <option value="Half-Orc">Half-Orc</option>
+              <option value="Halfling (Lightfoot)">Halfling (Lightfoot)</option>
+              <option value="Halfling (Stout)">Halfling (Stout)</option>
+              <option value="Human">Human</option>
+              <option value="Tiefling">Tiefling</option>
+            </optgroup>
+            <optgroup label="Uncommon (Volo's/Mordy's)">
+              <option value="Aasimar">Aasimar</option>
+              <option value="Bugbear">Bugbear</option>
+              <option value="Firbolg">Firbolg</option>
+              <option value="Goblin">Goblin</option>
+              <option value="Goliath">Goliath</option>
+              <option value="Hobgoblin">Hobgoblin</option>
+              <option value="Kenku">Kenku</option>
+              <option value="Kobold">Kobold</option>
+              <option value="Lizardfolk">Lizardfolk</option>
+              <option value="Orc">Orc</option>
+              <option value="Tabaxi">Tabaxi</option>
+              <option value="Triton">Triton</option>
+              <option value="Yuan-ti Pureblood">Yuan-ti Pureblood</option>
+            </optgroup>
+            <optgroup label="Exotic">
+              <option value="Aarakocra">Aarakocra</option>
+              <option value="Air Genasi">Air Genasi</option>
+              <option value="Earth Genasi">Earth Genasi</option>
+              <option value="Fire Genasi">Fire Genasi</option>
+              <option value="Water Genasi">Water Genasi</option>
+              <option value="Tortle">Tortle</option>
+              <option value="Warforged">Warforged</option>
+              <option value="Changeling">Changeling</option>
+              <option value="Kalashtar">Kalashtar</option>
+              <option value="Shifter">Shifter</option>
+            </optgroup>
+          </select>
+          <div id="race-info" style="font-size:.85rem;color:var(--parch2);font-style:italic;margin-top:-10px;margin-bottom:12px;"></div>
+          <label>Class</label>
+          <select id="c-class" onchange="updateClassInfo()">
+            <option value="">— Select Class —</option>
+            <option value="Artificer">Artificer</option>
+            <option value="Barbarian">Barbarian</option>
+            <option value="Bard">Bard</option>
+            <option value="Cleric">Cleric</option>
+            <option value="Druid">Druid</option>
+            <option value="Fighter">Fighter</option>
+            <option value="Monk">Monk</option>
+            <option value="Paladin">Paladin</option>
+            <option value="Ranger">Ranger</option>
+            <option value="Rogue">Rogue</option>
+            <option value="Sorcerer">Sorcerer</option>
+            <option value="Warlock">Warlock</option>
+            <option value="Wizard">Wizard</option>
+          </select>
+          <div id="class-info" style="font-size:.85rem;color:var(--parch2);font-style:italic;margin-top:-10px;margin-bottom:12px;"></div>
+          <label>Subclass</label>
+          <select id="c-subclass">
+            <option value="">— Select Class First —</option>
+          </select>
+        </div>
+        <div>
+          <label>Level (1-20)</label>
+          <input type="number" id="c-level" value="1" min="1" max="20" onchange="updateLevel()">
+          <label>Background</label>
+          <select id="c-background" onchange="updateBackgroundInfo()">
+            <option value="">— Select Background —</option>
+            <option value="Acolyte">Acolyte</option>
+            <option value="Charlatan">Charlatan</option>
+            <option value="Criminal">Criminal</option>
+            <option value="Entertainer">Entertainer</option>
+            <option value="Folk Hero">Folk Hero</option>
+            <option value="Guild Artisan">Guild Artisan</option>
+            <option value="Hermit">Hermit</option>
+            <option value="Knight">Knight</option>
+            <option value="Noble">Noble</option>
+            <option value="Outlander">Outlander</option>
+            <option value="Sage">Sage</option>
+            <option value="Sailor">Sailor</option>
+            <option value="Soldier">Soldier</option>
+            <option value="Urchin">Urchin</option>
+            <option value="Pirate">Pirate</option>
+            <option value="Spy">Spy</option>
+            <option value="Gladiator">Gladiator</option>
+            <option value="Haunted One">Haunted One</option>
+          </select>
+          <div id="bg-info" style="font-size:.85rem;color:var(--parch2);font-style:italic;margin-top:-10px;margin-bottom:12px;"></div>
+          <label>Alignment</label>
+          <select id="c-alignment">
+            <option value="">— Select —</option>
+            <option>Lawful Good</option><option>Neutral Good</option><option>Chaotic Good</option>
+            <option>Lawful Neutral</option><option>True Neutral</option><option>Chaotic Neutral</option>
+            <option>Lawful Evil</option><option>Neutral Evil</option><option>Chaotic Evil</option>
+          </select>
+          <label>Experience Points</label>
+          <input type="number" id="c-xp" value="0" min="0">
+          <label>Portrait URL (optional)</label>
+          <input type="text" id="c-portrait" placeholder="https://...image url...">
+        </div>
+      </div>
+      <div class="grid-3">
+        <div>
+          <label>Age</label><input type="text" id="c-age" placeholder="e.g. 28">
+        </div>
+        <div>
+          <label>Height</label><input type="text" id="c-height" placeholder="e.g. 5'11&quot;">
+        </div>
+        <div>
+          <label>Weight</label><input type="text" id="c-weight" placeholder="e.g. 160 lbs">
+        </div>
+      </div>
+      <div class="grid-2">
+        <div>
+          <label>Eyes</label><input type="text" id="c-eyes" placeholder="e.g. Amber">
+        </div>
+        <div>
+          <label>Hair</label><input type="text" id="c-hair" placeholder="e.g. Black">
+        </div>
+      </div>
+      <label>Skin / Appearance Notes</label>
+      <input type="text" id="c-skin" placeholder="e.g. Olive skin, scar on left cheek">
+    </div>
+
+    <!-- ABILITIES -->
+    <div class="tab-panel" id="creator-abilities">
+      <div style="margin-bottom:16px">
+        <div class="section-h">Ability Score Method</div>
+        <button class="method-btn active" onclick="setAbilityMethod('standard',this)">Standard Array</button>
+        <button class="method-btn" onclick="setAbilityMethod('pointbuy',this)">Point Buy</button>
+        <button class="method-btn" onclick="setAbilityMethod('roll',this)">Roll 4d6</button>
+        <button class="method-btn" onclick="setAbilityMethod('manual',this)">Manual Entry</button>
+        <div id="ability-method-info" style="margin-top:10px;font-size:.9rem;color:var(--parch2);font-style:italic"></div>
+        <div id="point-buy-remaining" style="display:none;margin-top:8px;font-family:'Cinzel',serif;color:var(--gold)"></div>
+      </div>
+      <div class="grid-3" id="ability-grid">
+        <!-- filled by JS -->
+      </div>
+      <div class="section-h">Racial Bonuses Applied</div>
+      <div id="racial-bonuses" style="font-size:.9rem;color:var(--parch2);font-style:italic">Select a race to see racial bonuses.</div>
+    </div>
+
+    <!-- COMBAT -->
+    <div class="tab-panel" id="creator-combat">
+      <div class="grid-4" style="margin-bottom:16px">
+        <div class="combat-stat">
+          <div class="combat-stat-lbl">Armor Class</div>
+          <input type="number" id="c-ac" value="10" class="stat-input" style="width:70px;font-size:1.4rem;background:transparent;border:none;color:var(--parch);text-align:center">
+        </div>
+        <div class="combat-stat">
+          <div class="combat-stat-lbl">Initiative</div>
+          <div class="combat-stat-val" id="c-init-display">+0</div>
+        </div>
+        <div class="combat-stat">
+          <div class="combat-stat-lbl">Speed</div>
+          <input type="number" id="c-speed" value="30" class="stat-input" style="width:70px;font-size:1.4rem;background:transparent;border:none;color:var(--parch);text-align:center">
+        </div>
+        <div class="combat-stat">
+          <div class="combat-stat-lbl">Prof Bonus</div>
+          <div class="combat-stat-val" id="c-prof-display">+2</div>
+        </div>
+      </div>
+      <div class="grid-3" style="margin-bottom:16px">
+        <div>
+          <label>Max HP</label>
+          <input type="number" id="c-maxhp" value="0" min="0" onchange="updateHP()">
+        </div>
+        <div>
+          <label>Current HP</label>
+          <input type="number" id="c-curhp" value="0" onchange="updateHP()">
+        </div>
+        <div>
+          <label>Temp HP</label>
+          <input type="number" id="c-temphp" value="0">
+        </div>
+      </div>
+      <div class="hp-bar" id="hp-bar"><div class="hp-fill" id="hp-fill" style="width:100%"></div></div>
+      <div class="section-h">Hit Dice</div>
+      <div class="grid-2">
+        <div>
+          <label>Hit Die Type</label>
+          <select id="c-hitdie">
+            <option value="6">d6</option><option value="8" selected>d8</option>
+            <option value="10">d10</option><option value="12">d12</option>
+          </select>
+        </div>
+        <div>
+          <label>Hit Dice Remaining</label>
+          <input type="number" id="c-hitdice-remain" value="1" min="0">
+        </div>
+      </div>
+      <div class="section-h">Death Saving Throws</div>
+      <div style="display:flex;gap:20px;align-items:center">
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:.8rem;color:#55a055;margin-bottom:5px">Successes</div>
+          <div class="save-pips" id="death-success"></div>
+        </div>
+        <div>
+          <div style="font-family:'Cinzel',serif;font-size:.8rem;color:#e05555;margin-bottom:5px">Failures</div>
+          <div class="save-pips" id="death-fail"></div>
+        </div>
+      </div>
+      <div class="section-h">Attacks</div>
+      <div class="attack-row">
+        <span class="attack-header">Name</span>
+        <span class="attack-header">Bonus</span>
+        <span class="attack-header">Damage</span>
+        <span class="attack-header">Type</span>
+        <span></span>
+      </div>
+      <div id="attack-list"></div>
+      <button class="btn btn-outline btn-sm" style="margin-top:8px" onclick="addAttack()">+ Add Attack</button>
+    </div>
+
+    <!-- SKILLS & SAVES -->
+    <div class="tab-panel" id="creator-skills">
+      <div class="grid-2">
+        <div>
+          <div class="section-h">Saving Throws</div>
+          <div id="saving-throws-list"></div>
+        </div>
+        <div>
+          <div class="section-h">Skills</div>
+          <div id="skills-list"></div>
+        </div>
+      </div>
+      <div class="section-h">Passive Perception</div>
+      <div id="passive-perception" style="font-size:1.1rem;font-family:'Cinzel',serif;color:var(--gold)"></div>
+    </div>
+
+    <!-- SPELLS -->
+    <div class="tab-panel" id="creator-spells">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div>
+          <label>Spellcasting Ability</label>
+          <select id="c-spell-ability">
+            <option value="">None</option>
+            <option value="INT">Intelligence</option>
+            <option value="WIS">Wisdom</option>
+            <option value="CHA">Charisma</option>
+          </select>
+        </div>
+        <div>
+          <div style="margin-top:24px;font-family:'Cinzel',serif;font-size:.85rem;">
+            <span style="color:var(--parch2)">Spell Save DC: </span><span id="spell-dc" style="color:var(--gold)">—</span>&nbsp;&nbsp;
+            <span style="color:var(--parch2)">Attack Bonus: </span><span id="spell-atk" style="color:var(--gold)">—</span>
+          </div>
+        </div>
+      </div>
+      <div class="section-h">Spell Slots</div>
+      <div id="spell-slots-ui"></div>
+      <div class="section-h">Spellbook / Known Spells</div>
+      <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(0)">+ Cantrip</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(1)">+ 1st</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(2)">+ 2nd</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(3)">+ 3rd</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(4)">+ 4th</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(5)">+ 5th</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(6)">+ 6th</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(7)">+ 7th</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(8)">+ 8th</button>
+        <button class="btn btn-outline btn-sm" onclick="openAddSpell(9)">+ 9th</button>
+      </div>
+      <div id="spell-list"></div>
+    </div>
+
+    <!-- EQUIPMENT -->
+    <div class="tab-panel" id="creator-equipment">
+      <div class="grid-2" style="margin-bottom:16px">
+        <div>
+          <label>Copper (CP)</label><input type="number" id="c-cp" value="0" min="0">
+          <label>Silver (SP)</label><input type="number" id="c-sp" value="0" min="0">
+          <label>Electrum (EP)</label><input type="number" id="c-ep" value="0" min="0">
+        </div>
+        <div>
+          <label>Gold (GP)</label><input type="number" id="c-gp" value="0" min="0">
+          <label>Platinum (PP)</label><input type="number" id="c-pp" value="0" min="0">
+          <div style="margin-top:12px;font-family:'Cinzel',serif;font-size:.85rem;color:var(--parch2)">
+            Total GP equivalent: <span id="total-gp" style="color:var(--gold)">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="section-h">Inventory</div>
+      <div id="equip-list"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <input type="text" id="new-equip-name" placeholder="Item name..." style="flex:2;margin:0">
+        <input type="number" id="new-equip-qty" placeholder="Qty" value="1" style="width:60px;margin:0">
+        <input type="number" id="new-equip-wt" placeholder="lbs" value="0" style="width:60px;margin:0">
+        <input type="text" id="new-equip-note" placeholder="Notes..." style="flex:2;margin:0">
+        <button class="btn btn-gold btn-sm" onclick="addEquipItem()">Add</button>
+      </div>
+      <div style="margin-top:10px;font-family:'Cinzel',serif;font-size:.85rem;color:var(--parch2)">
+        Total Weight: <span id="total-weight" style="color:var(--gold)">0</span> lbs
+      </div>
+    </div>
+
+    <!-- FEATURES -->
+    <div class="tab-panel" id="creator-features">
+      <div class="section-h">Class & Race Features</div>
+      <div id="features-list"></div>
+      <div class="section-h">Custom Features / Feats</div>
+      <div id="custom-features-list"></div>
+      <div style="display:flex;gap:8px;margin-top:10px;flex-wrap:wrap">
+        <input type="text" id="new-feat-name" placeholder="Feature or feat name..." style="flex:2;margin:0">
+        <textarea id="new-feat-desc" placeholder="Description..." style="flex:3;min-height:40px;margin:0"></textarea>
+        <button class="btn btn-gold btn-sm" onclick="addCustomFeature()">Add</button>
+      </div>
+    </div>
+
+    <!-- PERSONALITY -->
+    <div class="tab-panel" id="creator-personality">
+      <div class="grid-2">
+        <div>
+          <label>Personality Traits</label>
+          <textarea id="c-traits" placeholder="How does your character act? What habits do they have?"></textarea>
+          <label>Ideals</label>
+          <textarea id="c-ideals" placeholder="What drives your character? What do they believe in?"></textarea>
+        </div>
+        <div>
+          <label>Bonds</label>
+          <textarea id="c-bonds" placeholder="What ties does your character have to the world?"></textarea>
+          <label>Flaws</label>
+          <textarea id="c-flaws" placeholder="What are your character's weaknesses or vices?"></textarea>
+        </div>
+      </div>
+      <label>Character Backstory</label>
+      <textarea id="c-backstory" style="min-height:150px" placeholder="Tell your character's story..."></textarea>
+      <label>Allies & Organizations</label>
+      <textarea id="c-allies" placeholder="Friends, enemies, factions..."></textarea>
+      <label>Additional Features & Traits</label>
+      <textarea id="c-extra-traits" placeholder="Languages, proficiencies, other details..."></textarea>
+    </div>
+
+    <!-- NOTES -->
+    <div class="tab-panel" id="creator-notes">
+      <label>Session Notes</label>
+      <textarea id="c-notes" style="min-height:200px" placeholder="Notes from your sessions..."></textarea>
+      <label>Quest Log</label>
+      <textarea id="c-quests" style="min-height:120px" placeholder="Active quests, clues, goals..."></textarea>
+      <label>Treasure & Loot</label>
+      <textarea id="c-treasure" placeholder="Special items, art objects, gems..."></textarea>
+    </div>
+
+    <div style="margin-top:20px;display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-outline" onclick="closeModal('creator-modal')">Cancel</button>
+      <button class="btn btn-gold" onclick="saveCharacter()">Save Character</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD SPELL MODAL -->
+<div class="modal-bg" id="spell-modal">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title">Add Spell</div>
+    <button class="modal-close" onclick="closeModal('spell-modal')">✕</button>
+    <div class="grid-2">
+      <div>
+        <label>Spell Name</label><input type="text" id="new-spell-name" placeholder="Fireball...">
+        <label>Level</label><input type="number" id="new-spell-level" value="0" min="0" max="9">
+        <label>School</label>
+        <select id="new-spell-school">
+          <option>Abjuration</option><option>Conjuration</option><option>Divination</option>
+          <option>Enchantment</option><option>Evocation</option><option>Illusion</option>
+          <option>Necromancy</option><option>Transmutation</option>
+        </select>
+        <label>Casting Time</label><input type="text" id="new-spell-cast" placeholder="1 action">
+        <label>Range</label><input type="text" id="new-spell-range" placeholder="150 feet">
+      </div>
+      <div>
+        <label>Components</label><input type="text" id="new-spell-comp" placeholder="V, S, M (...)">
+        <label>Duration</label><input type="text" id="new-spell-dur" placeholder="Instantaneous">
+        <label>Damage / Effect</label><input type="text" id="new-spell-dmg" placeholder="8d6 fire">
+        <label>Save</label><input type="text" id="new-spell-save" placeholder="DEX save">
+        <label>Concentration?</label>
+        <select id="new-spell-conc"><option value="no">No</option><option value="yes">Yes</option></select>
+      </div>
+    </div>
+    <label>Description</label>
+    <textarea id="new-spell-desc" style="min-height:80px" placeholder="Spell description..."></textarea>
+    <div style="margin-top:16px;text-align:right">
+      <button class="btn btn-gold" onclick="saveSpell()">Add Spell</button>
+    </div>
+  </div>
+</div>
+
+<!-- CAMPAIGN MODAL -->
+<div class="modal-bg" id="campaign-modal">
+  <div class="modal" style="max-width:700px">
+    <div class="modal-title" id="campaign-modal-title">New Campaign</div>
+    <button class="modal-close" onclick="closeModal('campaign-modal')">✕</button>
+    <div id="campaign-modal-body"></div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// DATA
+// ============================================================
+const ABILITIES=['STR','DEX','CON','INT','WIS','CHA'];
+const ABILITY_NAMES={STR:'Strength',DEX:'Dexterity',CON:'Constitution',INT:'Intelligence',WIS:'Wisdom',CHA:'Charisma'};
+const SKILLS_DATA=[
+  {name:'Acrobatics',ability:'DEX'},{name:'Animal Handling',ability:'WIS'},{name:'Arcana',ability:'INT'},
+  {name:'Athletics',ability:'STR'},{name:'Deception',ability:'CHA'},{name:'History',ability:'INT'},
+  {name:'Insight',ability:'WIS'},{name:'Intimidation',ability:'CHA'},{name:'Investigation',ability:'INT'},
+  {name:'Medicine',ability:'WIS'},{name:'Nature',ability:'INT'},{name:'Perception',ability:'WIS'},
+  {name:'Performance',ability:'CHA'},{name:'Persuasion',ability:'CHA'},{name:'Religion',ability:'INT'},
+  {name:'Sleight of Hand',ability:'DEX'},{name:'Stealth',ability:'DEX'},{name:'Survival',ability:'WIS'}
+];
+const CLASS_DATA={
+  Artificer:{hd:8,save:['CON','INT'],primary:'INT',spellAbility:'INT',subclasses:['Alchemist','Armorer','Artillerist','Battle Smith']},
+  Barbarian:{hd:12,save:['STR','CON'],primary:'STR',spellAbility:null,subclasses:['Berserker','Totem Warrior','Storm Herald','Zealot','Ancestral Guardian','Wild Magic','Beast']},
+  Bard:{hd:8,save:['DEX','CHA'],primary:'CHA',spellAbility:'CHA',subclasses:['Lore','Valor','Glamour','Swords','Eloquence','Creation','Spirits']},
+  Cleric:{hd:8,save:['WIS','CHA'],primary:'WIS',spellAbility:'WIS',subclasses:['Life','Light','Trickery','Knowledge','War','Nature','Tempest','Death','Forge','Grave','Order','Peace','Twilight']},
+  Druid:{hd:8,save:['INT','WIS'],primary:'WIS',spellAbility:'WIS',subclasses:['Land','Moon','Dreams','Shepherd','Spores','Stars','Wildfire']},
+  Fighter:{hd:10,save:['STR','CON'],primary:'STR',spellAbility:null,subclasses:['Champion','Battle Master','Eldritch Knight','Arcane Archer','Cavalier','Samurai','Psi Warrior','Rune Knight']},
+  Monk:{hd:8,save:['STR','DEX'],primary:'DEX',spellAbility:null,subclasses:['Open Hand','Shadow','Four Elements','Sun Soul','Kensei','Mercy','Astral Self','Ascendant Dragon']},
+  Paladin:{hd:10,save:['WIS','CHA'],primary:'STR',spellAbility:'CHA',subclasses:['Devotion','Ancients','Vengeance','Conquest','Redemption','Glory','Watchers','Oathbreaker']},
+  Ranger:{hd:10,save:['STR','DEX'],primary:'DEX',spellAbility:'WIS',subclasses:['Hunter','Beast Master','Gloom Stalker','Horizon Walker','Monster Slayer','Fey Wanderer','Swarmkeeper']},
+  Rogue:{hd:8,save:['DEX','INT'],primary:'DEX',spellAbility:null,subclasses:['Thief','Assassin','Arcane Trickster','Inquisitive','Mastermind','Scout','Swashbuckler','Phantom','Soulknife']},
+  Sorcerer:{hd:6,save:['CON','CHA'],primary:'CHA',spellAbility:'CHA',subclasses:['Draconic','Wild Magic','Shadow','Storm','Divine Soul','Aberrant Mind','Clockwork Soul','Lunar']},
+  Warlock:{hd:8,save:['WIS','CHA'],primary:'CHA',spellAbility:'CHA',subclasses:['Archfey','Fiend','Great Old One','Undying','Celestial','Hexblade','Fathomless','Genie']},
+  Wizard:{hd:6,save:['INT','WIS'],primary:'INT',spellAbility:'INT',subclasses:['Abjuration','Conjuration','Divination','Enchantment','Evocation','Illusion','Necromancy','Transmutation','Bladesinging','War Magic','Chronurgy','Graviturgy','Order of Scribes']}
+};
+const RACE_DATA={
+  'Human':{bonuses:{STR:1,DEX:1,CON:1,INT:1,WIS:1,CHA:1},speed:30,size:'Medium',traits:['Extra Language','Extra Skill Proficiency'],info:'Versatile +1 to all stats. Bonus language & skill.'},
+  'Dragonborn':{bonuses:{STR:2,CHA:1},speed:30,size:'Medium',traits:['Draconic Ancestry','Breath Weapon','Damage Resistance'],info:'+2 STR, +1 CHA. Breath weapon & damage resistance based on dragon type.'},
+  'Dwarf (Hill)':{bonuses:{CON:2,WIS:1},speed:25,size:'Medium',traits:['Darkvision','Dwarven Resilience','Stonecunning','Dwarven Toughness'],info:'+2 CON, +1 WIS. +1 HP per level. Resistance to poison.'},
+  'Dwarf (Mountain)':{bonuses:{CON:2,STR:2},speed:25,size:'Medium',traits:['Darkvision','Dwarven Resilience','Stonecunning','Dwarven Armor Training'],info:'+2 CON, +2 STR. Medium & light armor proficiency.'},
+  'Elf (High)':{bonuses:{DEX:2,INT:1},speed:30,size:'Medium',traits:['Darkvision','Keen Senses','Fey Ancestry','Trance','Cantrip'],info:'+2 DEX, +1 INT. One wizard cantrip. Perception proficiency.'},
+  'Elf (Wood)':{bonuses:{DEX:2,WIS:1},speed:35,size:'Medium',traits:['Darkvision','Keen Senses','Fey Ancestry','Mask of the Wild','Fleet of Foot'],info:'+2 DEX, +1 WIS. Speed 35. Can hide in natural terrain.'},
+  'Elf (Drow)':{bonuses:{DEX:2,CHA:1},speed:30,size:'Medium',traits:['Superior Darkvision','Sunlight Sensitivity','Drow Magic','Drow Weapon Training'],info:'+2 DEX, +1 CHA. Superior darkvision 120ft. Sunlight sensitivity.'},
+  'Gnome (Forest)':{bonuses:{INT:2,DEX:1},speed:25,size:'Small',traits:['Darkvision','Gnome Cunning','Natural Illusionist','Speak with Small Beasts'],info:'+2 INT, +1 DEX. Minor Illusion cantrip. Advantage on magic saves.'},
+  'Gnome (Rock)':{bonuses:{INT:2,CON:1},speed:25,size:'Small',traits:['Darkvision','Gnome Cunning','Artificers Lore','Tinker'],info:'+2 INT, +1 CON. Tinker clockwork devices. History proficiency.'},
+  'Half-Elf':{bonuses:{CHA:2,_choose2:true},speed:30,size:'Medium',traits:['Darkvision','Fey Ancestry','Skill Versatility'],info:'+2 CHA, +1 to two other stats of choice. Two extra skill proficiencies.'},
+  'Half-Orc':{bonuses:{STR:2,CON:1},speed:30,size:'Medium',traits:['Darkvision','Menacing','Relentless Endurance','Savage Attacks'],info:'+2 STR, +1 CON. Relentless Endurance once per long rest. Intimidation proficiency.'},
+  'Halfling (Lightfoot)':{bonuses:{DEX:2,CHA:1},speed:25,size:'Small',traits:['Lucky','Brave','Halfling Nimbleness','Naturally Stealthy'],info:'+2 DEX, +1 CHA. Can reroll 1s. Hide behind larger creatures.'},
+  'Halfling (Stout)':{bonuses:{DEX:2,CON:1},speed:25,size:'Small',traits:['Lucky','Brave','Halfling Nimbleness','Stout Resilience'],info:'+2 DEX, +1 CON. Resistance to poison. Advantage on poison saves.'},
+  'Tiefling':{bonuses:{INT:1,CHA:2},speed:30,size:'Medium',traits:['Darkvision','Hellish Resistance','Infernal Legacy'],info:'+1 INT, +2 CHA. Fire resistance. Thaumaturgy, Hellish Rebuke, Darkness spells.'},
+  'Aasimar':{bonuses:{CHA:2},speed:30,size:'Medium',traits:['Darkvision','Celestial Resistance','Healing Hands','Light Bearer'],info:'+2 CHA. Resistance to necrotic & radiant. Healing hands. Light cantrip.'},
+  'Goliath':{bonuses:{STR:2,CON:1},speed:30,size:'Medium',traits:['Stone\'s Endurance','Powerful Build','Mountain Born','Natural Athlete'],info:'+2 STR, +1 CON. Reduce damage once per short rest. Athletics proficiency.'},
+  'Tabaxi':{bonuses:{DEX:2,CHA:1},speed:30,size:'Medium',traits:['Darkvision','Feline Agility','Cat\'s Claws','Cat\'s Talent'],info:'+2 DEX, +1 CHA. Double speed burst once per rest. Claws 1d4. Climb speed 20.'},
+  'Tortle':{bonuses:{STR:2,WIS:1},speed:30,size:'Medium',traits:['Claws','Hold Breath','Natural Armor','Shell Defense','Survival Instinct'],info:'+2 STR, +1 WIS. Natural AC 17. Can retract into shell (4AC). Survival proficiency.'},
+  'Warforged':{bonuses:{CON:2,_choose1:true},speed:30,size:'Medium',traits:['Constructed Resilience','Sentry\'s Rest','Integrated Protection','Specialized Design'],info:'+2 CON, +1 one stat. AC 16 + shield. Immune to disease/poison/sleep magic.'}
+};
+const BG_DATA={
+  Acolyte:{skills:'Insight, Religion',languages:'Two of your choice',feature:'Shelter of the Faithful'},
+  Charlatan:{skills:'Deception, Sleight of Hand',tools:'Disguise kit, Forgery kit',feature:'False Identity'},
+  Criminal:{skills:'Deception, Stealth',tools:"Thieves' tools, gaming set",feature:'Criminal Contact'},
+  Entertainer:{skills:'Acrobatics, Performance',tools:'Disguise kit, musical instrument',feature:'By Popular Demand'},
+  'Folk Hero':{skills:'Animal Handling, Survival',tools:"Artisan's tools, vehicles (land)",feature:'Rustic Hospitality'},
+  'Guild Artisan':{skills:'Insight, Persuasion',tools:"Artisan's tools",languages:'One of your choice',feature:'Guild Membership'},
+  Hermit:{skills:'Medicine, Religion',tools:'Herbalism kit',languages:'One of your choice',feature:'Discovery'},
+  Knight:{skills:'History, Persuasion',tools:'Gaming set',languages:'One of your choice',feature:'Retainers'},
+  Noble:{skills:'History, Persuasion',tools:'Gaming set',languages:'One of your choice',feature:'Position of Privilege'},
+  Outlander:{skills:'Athletics, Survival',tools:'Musical instrument',languages:'One of your choice',feature:'Wanderer'},
+  Sage:{skills:'Arcana, History',languages:'Two of your choice',feature:'Researcher'},
+  Sailor:{skills:'Athletics, Perception',tools:"Navigator's tools, vehicles (water)",feature:"Ship's Passage"},
+  Soldier:{skills:'Athletics, Intimidation',tools:'Gaming set, vehicles (land)',feature:'Military Rank'},
+  Urchin:{skills:'Sleight of Hand, Stealth',tools:"Thieves' tools, disguise kit",feature:'City Secrets'},
+  Pirate:{skills:'Athletics, Perception',tools:"Navigator's tools, vehicles (water)",feature:"Bad Reputation"},
+  Spy:{skills:'Deception, Stealth',tools:"Thieves' tools, gaming set",feature:'Criminal Contact'},
+  Gladiator:{skills:'Acrobatics, Performance',tools:"Unusual weapons",feature:'By Popular Demand'},
+  'Haunted One':{skills:'Choose 2 from Arcana, Investigation, Religion, Survival',languages:'Exotic language',feature:'Heart of Darkness'}
+};
+const PROF_BONUS=[0,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,6,6,6,6];
+const CONDITIONS=[
+  {n:'Blinded',d:'Auto-fail sight checks. Attack rolls against you have advantage. Your attacks have disadvantage.'},
+  {n:'Charmed',d:"Can't attack the charmer. Charmer has advantage on social checks against you."},
+  {n:'Deafened',d:'Auto-fail hearing checks.'},
+  {n:'Exhaustion',d:'1:Disadvantage on checks. 2:Speed halved. 3:Disadvantage attacks/saves. 4:HP max halved. 5:Speed 0. 6:Death.'},
+  {n:'Frightened',d:'Disadvantage on checks/attacks while source is in sight. Cannot move toward source.'},
+  {n:'Grappled',d:'Speed 0. Ends if grappler incapacitated or moved away.'},
+  {n:'Incapacitated',d:"Can't take actions or reactions."},
+  {n:'Invisible',d:'Impossible to see without special sense. Advantage on attacks. Attacks against you have disadvantage.'},
+  {n:'Paralyzed',d:'Incapacitated. Auto-fail STR/DEX saves. Attacks against you have advantage. Hits within 5ft are crits.'},
+  {n:'Petrified',d:'Transformed to stone. Incapacitated. Resistant to all damage. Immune to poison/disease.'},
+  {n:'Poisoned',d:'Disadvantage on attack rolls and ability checks.'},
+  {n:'Prone',d:'Move only by crawling. Disadvantage on attacks. Attacks within 5ft have advantage, ranged have disadvantage.'},
+  {n:'Restrained',d:'Speed 0. Disadvantage on attacks. Attacks against you have advantage. Disadvantage on DEX saves.'},
+  {n:'Stunned',d:'Incapacitated. Auto-fail STR/DEX saves. Attacks against you have advantage.'},
+  {n:'Unconscious',d:'Incapacitated, unaware. Drop what held, fall prone. Attacks have advantage. Hits within 5ft are crits.'}
+];
+const COMBAT_ACTIONS=[
+  {n:'Attack',d:'Make one melee or ranged attack (or more with Extra Attack).'},
+  {n:'Cast a Spell',d:'Cast a spell with a casting time of 1 action.'},
+  {n:'Dash',d:'Double your movement speed this turn.'},
+  {n:'Disengage',d:'Movement does not provoke opportunity attacks for the rest of your turn.'},
+  {n:'Dodge',d:'Attacks against you have disadvantage. You have advantage on DEX saves. Lose if incapacitated or speed 0.'},
+  {n:'Help',d:'Give an ally advantage on their next ability check or attack against a creature you are threatening.'},
+  {n:'Hide',d:'Make a Stealth check. If successful, you are hidden.'},
+  {n:'Ready',d:'Hold an action for a specified trigger. Uses your reaction when triggered.'},
+  {n:'Search',d:'Devote attention to locating something. Perception or Investigation check.'},
+  {n:'Use an Object',d:'Interact with a second object, or use an item requiring action.'},
+  {n:'Grapple',d:'STR (Athletics) vs target\'s STR (Athletics) or DEX (Acrobatics). Success: target is grappled.'},
+  {n:'Shove',d:'STR (Athletics) vs target\'s STR or DEX. Success: knock prone or push 5 feet.'},
+  {n:'Bonus Action',d:'Some class features, spells, or items grant a bonus action. Only one per turn.'},
+  {n:'Reaction',d:'Opportunity attack, readied action, or some features. Only one per round.'}
+];
+const COVER_INFO=[
+  {n:'Half Cover',d:'+2 AC and DEX saves. Low walls, large furniture, other creatures.'},
+  {n:'Three-Quarters Cover',d:'+5 AC and DEX saves. Portcullis, arrow slits, thick tree trunk.'},
+  {n:'Total Cover',d:"Can't be targeted directly. Completely concealed."},
+  {n:'Lightly Obscured',d:'Disadvantage on Perception checks. Dim light, patchy fog, moderate foliage.'},
+  {n:'Heavily Obscured',d:'Effectively blinded. Darkness, opaque fog, dense foliage.'}
+];
+const DC_INFO=[
+  {n:'DC 5',d:'Very Easy — a routine task for most.'},
+  {n:'DC 10',d:'Easy — with some skill or effort.'},
+  {n:'DC 15',d:'Medium — requires training or focus.'},
+  {n:'DC 20',d:'Hard — even skilled characters may fail.'},
+  {n:'DC 25',d:'Very Hard — near the limits of ability.'},
+  {n:'DC 30',d:'Nearly Impossible — legendary feats.'}
+];
+const CLASS_FEATURES={
+  Barbarian:{1:['Rage (2/rest, +2 dmg)','Unarmored Defense (AC = 10+DEX+CON)'],2:['Reckless Attack','Danger Sense'],3:['Primal Path'],4:['ASI'],5:['Extra Attack','Fast Movement'],6:['Path Feature'],7:['Feral Instinct'],8:['ASI'],9:['Brutal Critical (1 die)'],10:['Path Feature'],11:['Relentless Rage'],12:['ASI'],13:['Brutal Critical (2 dice)'],14:['Path Feature'],15:['Persistent Rage'],16:['ASI'],17:['Brutal Critical (3 dice)'],18:['Indomitable Might'],19:['ASI'],20:['Primal Champion (+4 STR/CON, unlimited rage)']},
+  Fighter:{1:['Fighting Style','Second Wind'],2:['Action Surge (1/rest)'],3:['Martial Archetype'],4:['ASI'],5:['Extra Attack'],6:['ASI'],7:['Archetype Feature'],8:['ASI'],9:['Indomitable (1/long rest)'],10:['Archetype Feature'],11:['Extra Attack (2)'],12:['ASI'],13:['Indomitable (2/long rest)'],14:['ASI'],15:['Archetype Feature'],16:['ASI'],17:['Action Surge (2/rest)','Indomitable (3/long rest)'],18:['Archetype Feature'],19:['ASI'],20:['Extra Attack (3)']},
+  Rogue:{1:['Expertise (2 skills)','Sneak Attack 1d6','Thieves\' Cant'],2:['Cunning Action'],3:['Roguish Archetype','Sneak Attack 2d6'],4:['ASI'],5:['Uncanny Dodge','Sneak Attack 3d6'],6:['Expertise (2 more)','Sneak Attack 3d6'],7:['Evasion','Sneak Attack 4d6'],8:['ASI'],9:['Archetype Feature','Sneak Attack 5d6'],10:['ASI','Sneak Attack 5d6'],11:['Reliable Talent','Sneak Attack 6d6'],12:['ASI'],13:['Archetype Feature','Sneak Attack 7d6'],14:['Blindsense','Sneak Attack 7d6'],15:['Slippery Mind','Sneak Attack 8d6'],16:['ASI'],17:['Archetype Feature','Sneak Attack 9d6'],18:['Elusive','Sneak Attack 9d6'],19:['ASI'],20:['Stroke of Luck','Sneak Attack 10d6']},
+  Wizard:{1:['Spellcasting','Arcane Recovery'],2:['Arcane Tradition'],3:['Tradition Feature'],4:['ASI'],5:['Tradition Feature'],6:['Tradition Feature'],7:[],8:['ASI'],9:[],10:['Tradition Feature'],11:[],12:['ASI'],13:[],14:['Tradition Feature'],15:[],16:['ASI'],17:[],18:['Spell Mastery'],19:['ASI'],20:['Signature Spells']},
+  Cleric:{1:['Spellcasting','Divine Domain','Domain Spells'],2:['Channel Divinity (1/rest)','Domain Feature'],3:['Domain Feature'],4:['ASI'],5:['Destroy Undead CR 1/2','Domain Spells'],6:['Channel Divinity (2/rest)','Domain Feature'],7:['Domain Feature'],8:['ASI','Domain Feature','Destroy Undead CR 1'],9:['Domain Spells'],10:['Divine Intervention'],11:['Destroy Undead CR 2'],12:['ASI'],13:[],14:['Destroy Undead CR 3'],15:[],16:['ASI'],17:['Destroy Undead CR 4','Domain Spells'],18:['Channel Divinity (3/rest)'],19:['ASI'],20:['Divine Intervention Improvement']},
+};
+const SPELL_SLOTS_TABLE={1:[2],2:[3],3:[4,2],4:[4,3],5:[4,3,2],6:[4,3,3],7:[4,3,3,1],8:[4,3,3,2],9:[4,3,3,3,1],10:[4,3,3,3,2],11:[4,3,3,3,2,1],12:[4,3,3,3,2,1],13:[4,3,3,3,2,1,1],14:[4,3,3,3,2,1,1],15:[4,3,3,3,2,1,1,1],16:[4,3,3,3,2,1,1,1],17:[4,3,3,3,2,1,1,1,1],18:[4,3,3,3,3,1,1,1,1],19:[4,3,3,3,3,2,1,1,1],20:[4,3,3,3,3,2,2,1,1]};
+const STANDARD_ARRAY=[15,14,13,12,10,8];
+const PB_COSTS={8:0,9:1,10:2,11:3,12:4,13:5,14:7,15:9};
+
+// ============================================================
+// STATE
+// ============================================================
+let currentUser=null;
+let editingCharId=null;
+let abilityMethod='standard';
+let standardArr=[...STANDARD_ARRAY];
+let customSpells=[];
+let customEquip=[];
+let customFeatures=[];
+let attackList=[];
+let deathSuccesses=0,deathFailures=0;
+let spellSlots={};
+let rollHistory=[];
+let activeCampaignId=null;
+
+function getUsers(){return JSON.parse(localStorage.getItem('tl_users')||'{}');}
+function saveUsers(u){localStorage.setItem('tl_users',JSON.stringify(u));}
+function getUserData(un){return JSON.parse(localStorage.getItem('tl_data_'+un)||'{"characters":[],"campaigns":[]}');}
+function saveUserData(d){localStorage.setItem('tl_data_'+currentUser,JSON.stringify(d));}
+
+// ============================================================
+// AUTH
+// ============================================================
+function switchAuthTab(t){
+  document.querySelectorAll('.auth-tab').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('auth-login').style.display=t==='login'?'block':'none';
+  document.getElementById('auth-register').style.display=t==='register'?'block':'none';
+}
+function doLogin(){
+  const u=document.getElementById('login-user').value.trim();
+  const p=document.getElementById('login-pass').value;
+  const users=getUsers();
+  if(!users[u]||users[u].pass!==btoa(p)){
+    document.getElementById('login-err').textContent='Invalid username or password.';
+    document.getElementById('login-err').style.display='block';return;
+  }
+  currentUser=u;
+  document.getElementById('login-err').style.display='none';
+  startApp();
+}
+function doRegister(){
+  const u=document.getElementById('reg-user').value.trim();
+  const p=document.getElementById('reg-pass').value;
+  const p2=document.getElementById('reg-pass2').value;
+  const err=document.getElementById('reg-err');
+  if(!u||u.length<3){err.textContent='Username must be 3+ characters.';err.style.display='block';return;}
+  if(p.length<6){err.textContent='Password must be 6+ characters.';err.style.display='block';return;}
+  if(p!==p2){err.textContent='Passwords do not match.';err.style.display='block';return;}
+  const users=getUsers();
+  if(users[u]){err.textContent='Username already taken.';err.style.display='block';return;}
+  users[u]={pass:btoa(p),email:document.getElementById('reg-email').value};
+  saveUsers(users);
+  currentUser=u;
+  err.style.display='none';
+  startApp();
+}
+function doLogout(){currentUser=null;document.getElementById('app-page').classList.remove('active');document.getElementById('auth-page').classList.add('active');}
+function startApp(){
+  document.getElementById('auth-page').classList.remove('active');
+  document.getElementById('app-page').classList.add('active');
+  document.getElementById('nav-username').textContent=currentUser;
+  renderCharList();renderCampaignList();buildReference();
+}
+
+// ============================================================
+// NAVIGATION
+// ============================================================
+function showSection(s){
+  ['characters','dice','campaigns','reference'].forEach(id=>{
+    document.getElementById('section-'+id).style.display=id===s?'block':'none';
+  });
+  document.querySelectorAll('.nav-link').forEach(b=>{
+    b.classList.toggle('active',b.textContent.trim().toLowerCase().startsWith(s==='reference'?'ref':s));
+  });
+  if(s==='dice')initDice();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function mod(score){return Math.floor((score-10)/2);}
+function fmod(n){return (n>=0?'+':'')+n;}
+function profBonus(lvl){return PROF_BONUS[Math.min(lvl,20)]||2;}
+function getAbilityScores(){
+  const scores={};
+  ABILITIES.forEach(a=>{
+    const el=document.getElementById('ability-'+a);
+    scores[a]=el?parseInt(el.value)||10:10;
+  });
+  return scores;
+}
+
+// ============================================================
+// CHARACTER LIST
+// ============================================================
+function renderCharList(){
+  const data=getUserData(currentUser);
+  const el=document.getElementById('char-list');
+  if(!data.characters.length){el.innerHTML='<div style="color:var(--parch2);font-style:italic;padding:20px 0">No characters yet. Create your first adventurer!</div>';return;}
+  el.innerHTML=data.characters.map(c=>`
+    <div class="char-card">
+      <div>
+        <div class="char-name">${c.name||'Unnamed'}</div>
+        <div class="char-info">Level ${c.level||1} ${c.race||'?'} ${c.cls||'?'} — ${c.alignment||'Unaligned'}</div>
+        <div style="margin-top:4px">${c.background?`<span class="badge badge-gold">${c.background}</span>`:''}</div>
+      </div>
+      <div class="char-actions">
+        <button class="btn btn-outline btn-sm" onclick="viewCharacter('${c.id}')">View</button>
+        <button class="btn btn-outline btn-sm" onclick="editCharacter('${c.id}')">Edit</button>
+        <button class="btn btn-red btn-sm" onclick="deleteCharacter('${c.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+function deleteCharacter(id){
+  if(!confirm('Delete this character?'))return;
+  const data=getUserData(currentUser);
+  data.characters=data.characters.filter(c=>c.id!==id);
+  saveUserData(data);renderCharList();
+}
+
+// ============================================================
+// CHARACTER CREATOR
+// ============================================================
+function openCharCreator(){
+  editingCharId=null;
+  document.getElementById('creator-title').textContent='Create New Character';
+  resetCreatorForm();
+  openModal('creator-modal');
+  creatorTab('basics');
+  buildAbilityGrid();
+  buildSkillsList();
+  buildSavingThrows();
+  buildSpellSlotUI();
+  buildDeathSaves();
+}
+function editCharacter(id){
+  const data=getUserData(currentUser);
+  const c=data.characters.find(x=>x.id===id);
+  if(!c)return;
+  editingCharId=id;
+  document.getElementById('creator-title').textContent='Edit Character';
+  resetCreatorForm();
+  loadCharIntoForm(c);
+  openModal('creator-modal');
+  creatorTab('basics');
+  buildAbilityGrid();
+  loadAbilitiesIntoForm(c);
+  buildSkillsList(c);
+  buildSavingThrows(c);
+  buildSpellSlotUI(c);
+  buildDeathSaves(c);
+  renderAttacks();
+  renderEquipList();
+  renderSpellList();
+  renderFeaturesPanel(c);
+}
+function resetCreatorForm(){
+  ['c-name','c-age','c-height','c-weight','c-eyes','c-hair','c-skin','c-portrait'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['c-race','c-class','c-subclass','c-background','c-alignment','c-spell-ability'].forEach(id=>{const el=document.getElementById(id);if(el)el.selectedIndex=0;});
+  ['c-level','c-xp','c-ac','c-speed','c-maxhp','c-curhp','c-temphp','c-hitdice-remain','c-cp','c-sp','c-ep','c-gp','c-pp'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){const defaults={c_level:1,c_xp:0,c_ac:10,c_speed:30,c_maxhp:0,c_curhp:0,c_temphp:0,c_hitdice_remain:1,c_cp:0,c_sp:0,c_ep:0,c_gp:0,c_pp:0};el.value=defaults[id.replace(/-/g,'_')]||0;}
+  });
+  ['c-traits','c-ideals','c-bonds','c-flaws','c-backstory','c-allies','c-extra-traits','c-notes','c-quests','c-treasure'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  customSpells=[];customEquip=[];customFeatures=[];attackList=[];deathSuccesses=0;deathFailures=0;spellSlots={};
+  abilityMethod='standard';standardArr=[...STANDARD_ARRAY];
+  document.getElementById('race-info').textContent='';
+  document.getElementById('class-info').textContent='';
+  document.getElementById('bg-info').textContent='';
+}
+function loadCharIntoForm(c){
+  const setVal=(id,v)=>{const el=document.getElementById(id);if(el&&v!==undefined)el.value=v;};
+  setVal('c-name',c.name);setVal('c-race',c.race);setVal('c-class',c.cls);setVal('c-level',c.level);
+  setVal('c-background',c.background);setVal('c-alignment',c.alignment);setVal('c-xp',c.xp);
+  setVal('c-portrait',c.portrait);setVal('c-age',c.age);setVal('c-height',c.height);
+  setVal('c-weight',c.weight);setVal('c-eyes',c.eyes);setVal('c-hair',c.hair);setVal('c-skin',c.skin);
+  setVal('c-ac',c.ac);setVal('c-speed',c.speed);setVal('c-maxhp',c.maxhp);setVal('c-curhp',c.curhp);
+  setVal('c-temphp',c.temphp);setVal('c-hitdice-remain',c.hitdiceRemain);setVal('c-hitdie',c.hitdie);
+  setVal('c-cp',c.cp);setVal('c-sp',c.sp);setVal('c-ep',c.ep);setVal('c-gp',c.gp);setVal('c-pp',c.pp);
+  setVal('c-traits',c.traits);setVal('c-ideals',c.ideals);setVal('c-bonds',c.bonds);setVal('c-flaws',c.flaws);
+  setVal('c-backstory',c.backstory);setVal('c-allies',c.allies);setVal('c-extra-traits',c.extraTraits);
+  setVal('c-notes',c.notes);setVal('c-quests',c.quests);setVal('c-treasure',c.treasure);
+  setVal('c-spell-ability',c.spellAbility);
+  if(c.cls){updateClassInfo(c.subclass);}
+  if(c.race)updateRaceInfo();
+  if(c.background)updateBackgroundInfo();
+  customSpells=c.spells||[];
+  customEquip=c.equipment||[];
+  customFeatures=c.customFeatures||[];
+  attackList=c.attacks||[];
+  deathSuccesses=c.deathSuccesses||0;
+  deathFailures=c.deathFailures||0;
+  spellSlots=c.spellSlots||{};
+}
+function loadAbilitiesIntoForm(c){
+  if(!c.abilityScores)return;
+  ABILITIES.forEach(a=>{
+    const el=document.getElementById('ability-'+a);
+    if(el)el.value=c.abilityScores[a]||10;
+  });
+  if(c.skillProfs){
+    SKILLS_DATA.forEach(sk=>{
+      const cb=document.getElementById('skill-'+sk.name.replace(/\s/g,''));
+      if(cb)cb.checked=c.skillProfs.includes(sk.name);
+    });
+  }
+  if(c.saveProfs){
+    ABILITIES.forEach(a=>{
+      const cb=document.getElementById('save-'+a);
+      if(cb)cb.checked=c.saveProfs.includes(a);
+    });
+  }
+}
+function collectCharData(){
+  const gv=id=>{const el=document.getElementById(id);return el?el.value:'';};
+  const gn=id=>{const el=document.getElementById(id);return el?parseInt(el.value)||0:0;};
+  const skillProfs=SKILLS_DATA.filter(sk=>{const cb=document.getElementById('skill-'+sk.name.replace(/\s/g,''));return cb&&cb.checked;}).map(sk=>sk.name);
+  const saveProfs=ABILITIES.filter(a=>{const cb=document.getElementById('save-'+a);return cb&&cb.checked;});
+  return {
+    id:editingCharId||Date.now().toString(),
+    name:gv('c-name'),race:gv('c-race'),cls:gv('c-class'),subclass:gv('c-subclass'),
+    level:gn('c-level')||1,background:gv('c-background'),alignment:gv('c-alignment'),xp:gn('c-xp'),
+    portrait:gv('c-portrait'),age:gv('c-age'),height:gv('c-height'),weight:gv('c-weight'),
+    eyes:gv('c-eyes'),hair:gv('c-hair'),skin:gv('c-skin'),
+    abilityScores:getAbilityScores(),skillProfs,saveProfs,
+    ac:gn('c-ac'),speed:gn('c-speed'),maxhp:gn('c-maxhp'),curhp:gn('c-curhp'),temphp:gn('c-temphp'),
+    hitdie:gv('c-hitdie'),hitdiceRemain:gn('c-hitdice-remain'),
+    cp:gn('c-cp'),sp:gn('c-sp'),ep:gn('c-ep'),gp:gn('c-gp'),pp:gn('c-pp'),
+    traits:gv('c-traits'),ideals:gv('c-ideals'),bonds:gv('c-bonds'),flaws:gv('c-flaws'),
+    backstory:gv('c-backstory'),allies:gv('c-allies'),extraTraits:gv('c-extra-traits'),
+    notes:gv('c-notes'),quests:gv('c-quests'),treasure:gv('c-treasure'),
+    spellAbility:gv('c-spell-ability'),spells:customSpells,equipment:customEquip,
+    attacks:attackList,customFeatures,deathSuccesses,deathFailures,spellSlots
+  };
+}
+function saveCharacter(){
+  const c=collectCharData();
+  if(!c.name){alert('Please enter a character name.');return;}
+  const data=getUserData(currentUser);
+  if(editingCharId){
+    const idx=data.characters.findIndex(x=>x.id===editingCharId);
+    if(idx>=0)data.characters[idx]=c; else data.characters.push(c);
+  } else {data.characters.push(c);}
+  saveUserData(data);renderCharList();closeModal('creator-modal');
+}
+
+// ============================================================
+// RACE/CLASS/BG INFO
+// ============================================================
+function updateRaceInfo(){
+  const r=document.getElementById('c-race').value;
+  const el=document.getElementById('race-info');
+  const rd=RACE_DATA[r];
+  el.textContent=rd?rd.info:'';
+  if(rd){document.getElementById('c-speed').value=rd.speed;}
+  updateRacialBonuses();
+}
+function updateRacialBonuses(){
+  const r=document.getElementById('c-race').value;
+  const rd=RACE_DATA[r];
+  const el=document.getElementById('racial-bonuses');
+  if(!rd){el.textContent='Select a race to see racial bonuses.';return;}
+  const lines=Object.entries(rd.bonuses).filter(([k])=>!k.startsWith('_')).map(([k,v])=>`${k} +${v}`);
+  el.innerHTML=`<strong style="color:var(--gold)">${r}:</strong> ${lines.join(', ')}<br><small style="color:var(--parch2)">${rd.traits.join(' • ')}</small>`;
+}
+function updateClassInfo(forceSub){
+  const cls=document.getElementById('c-class').value;
+  const el=document.getElementById('class-info');
+  const cd=CLASS_DATA[cls];
+  if(!cd){el.textContent='';document.getElementById('c-subclass').innerHTML='<option value="">— Select Class First —</option>';return;}
+  const hd=cd.hd;const pb=profBonus(parseInt(document.getElementById('c-level').value)||1);
+  el.textContent=`Hit Die: d${hd} | Saves: ${cd.save.join(', ')} | Spellcasting: ${cd.spellAbility||'None'}`;
+  const sub=document.getElementById('c-subclass');
+  sub.innerHTML='<option value="">— Select Subclass —</option>'+cd.subclasses.map(s=>`<option value="${s}">${s}</option>`).join('');
+  if(forceSub)sub.value=forceSub;
+  if(cd.spellAbility){document.getElementById('c-spell-ability').value=cd.spellAbility;}
+  renderFeaturesPanel();
+}
+function updateBackgroundInfo(){
+  const bg=document.getElementById('c-background').value;
+  const bd=BG_DATA[bg];
+  const el=document.getElementById('bg-info');
+  if(!bd){el.textContent='';return;}
+  el.textContent=`Skills: ${bd.skills||'—'} | ${bd.tools?'Tools: '+bd.tools+' | ':''}${bd.languages?'Languages: '+bd.languages+' | ':''}Feature: ${bd.feature}`;
+}
+function updateLevel(){
+  const lvl=parseInt(document.getElementById('c-level').value)||1;
+  document.getElementById('c-prof-display').textContent=fmod(profBonus(lvl));
+  buildSpellSlotUI();renderFeaturesPanel();
+}
+
+// ============================================================
+// ABILITY SCORES
+// ============================================================
+function buildAbilityGrid(){
+  const grid=document.getElementById('ability-grid');
+  grid.innerHTML=ABILITIES.map((a,i)=>`
+    <div class="stat-box">
+      <span class="stat-label">${ABILITY_NAMES[a]}</span>
+      <input type="number" class="stat-input" id="ability-${a}" value="${standardArr[i]||10}" min="1" max="30"
+        onchange="onAbilityChange('${a}',this.value)">
+      <div class="stat-mod" id="mod-${a}">${fmod(mod(standardArr[i]||10))}</div>
+    </div>
+  `).join('');
+  setAbilityMethod('standard',document.querySelector('.method-btn'));
+}
+function onAbilityChange(a,v){
+  const score=parseInt(v)||10;
+  document.getElementById('mod-'+a).textContent=fmod(mod(score));
+  updateDerivedStats();
+  if(abilityMethod==='pointbuy')updatePointBuy();
+}
+function setAbilityMethod(method,btn){
+  abilityMethod=method;
+  document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const info=document.getElementById('ability-method-info');
+  const pb=document.getElementById('point-buy-remaining');
+  if(method==='standard'){
+    info.textContent='Standard Array: 15, 14, 13, 12, 10, 8 — assign one to each ability.';
+    standardArr=[...STANDARD_ARRAY];
+    ABILITIES.forEach((a,i)=>{const el=document.getElementById('ability-'+a);if(el){el.value=standardArr[i];el.readOnly=false;onAbilityChange(a,standardArr[i]);}});
+    pb.style.display='none';
+  } else if(method==='pointbuy'){
+    info.textContent='Point Buy: Start with 27 points. Scores 8-15 (before racial). Increasing from 13 costs 1 extra each.';
+    ABILITIES.forEach(a=>{const el=document.getElementById('ability-'+a);if(el){el.value=8;el.readOnly=false;onAbilityChange(a,8);}});
+    pb.style.display='block';updatePointBuy();
+  } else if(method==='roll'){
+    info.textContent='Rolling 4d6, drop lowest for each ability score.';
+    pb.style.display='none';
+    ABILITIES.forEach(a=>{
+      const rolls=[1,2,3,4].map(()=>Math.ceil(Math.random()*6));
+      const score=rolls.sort((a,b)=>b-a).slice(0,3).reduce((s,n)=>s+n,0);
+      const el=document.getElementById('ability-'+a);
+      if(el){el.value=score;el.readOnly=false;onAbilityChange(a,score);}
+    });
+  } else {
+    info.textContent='Manual Entry: Enter any values you choose.';
+    pb.style.display='none';
+    ABILITIES.forEach(a=>{const el=document.getElementById('ability-'+a);if(el)el.readOnly=false;});
+  }
+}
+function updatePointBuy(){
+  let spent=0;
+  ABILITIES.forEach(a=>{
+    const v=parseInt(document.getElementById('ability-'+a)?.value)||8;
+    spent+=PB_COSTS[Math.min(Math.max(v,8),15)]||0;
+  });
+  document.getElementById('point-buy-remaining').textContent=`Points Spent: ${spent}/27 (${27-spent} remaining)`;
+}
+function updateDerivedStats(){
+  const scores=getAbilityScores();
+  const dexMod=mod(scores.DEX);
+  document.getElementById('c-init-display').textContent=fmod(dexMod);
+  updateSkillsList();updateSavesList();updateSpellStats();
+}
+
+// ============================================================
+// SKILLS & SAVES
+// ============================================================
+function buildSkillsList(c){
+  const el=document.getElementById('skills-list');
+  el.innerHTML=SKILLS_DATA.map(sk=>`
+    <div class="skill-row">
+      <input type="checkbox" id="skill-${sk.name.replace(/\s/g,'')}" onchange="updateSkillsList()">
+      <span class="prof-dot" id="skilldot-${sk.name.replace(/\s/g,'')}"></span>
+      <span class="skill-name">${sk.name} <small style="color:var(--parch2)">(${sk.ability})</small></span>
+      <span class="skill-bonus" id="skillbonus-${sk.name.replace(/\s/g,'')}">+0</span>
+    </div>
+  `).join('');
+  if(c)c.skillProfs&&c.skillProfs.forEach(sn=>{const cb=document.getElementById('skill-'+sn.replace(/\s/g,''));if(cb)cb.checked=true;});
+  updateSkillsList();
+}
+function updateSkillsList(){
+  const scores=getAbilityScores();
+  const lvl=parseInt(document.getElementById('c-level').value)||1;
+  const pb=profBonus(lvl);
+  SKILLS_DATA.forEach(sk=>{
+    const id=sk.name.replace(/\s/g,'');
+    const cb=document.getElementById('skill-'+id);
+    const dot=document.getElementById('skilldot-'+id);
+    const bon=document.getElementById('skillbonus-'+id);
+    if(!cb)return;
+    const prof=cb.checked?pb:0;
+    const total=mod(scores[sk.ability])+prof;
+    if(bon)bon.textContent=fmod(total);
+    if(dot)dot.className='prof-dot'+(cb.checked?' filled':'');
+  });
+  updatePassivePerception();
+}
+function buildSavingThrows(c){
+  const el=document.getElementById('saving-throws-list');
+  el.innerHTML=ABILITIES.map(a=>`
+    <div class="skill-row">
+      <input type="checkbox" id="save-${a}" onchange="updateSavesList()">
+      <span class="prof-dot" id="savedot-${a}"></span>
+      <span class="skill-name">${ABILITY_NAMES[a]}</span>
+      <span class="skill-bonus" id="savebonus-${a}">+0</span>
+    </div>
+  `).join('');
+  if(c){
+    const cls=c.cls;const cd=CLASS_DATA[cls];
+    const classSaves=cd?cd.save:[];
+    ABILITIES.forEach(a=>{
+      const cb=document.getElementById('save-'+a);
+      if(cb)cb.checked=c.saveProfs?c.saveProfs.includes(a):classSaves.includes(a);
+    });
+  } else {
+    const cls=document.getElementById('c-class').value;
+    const cd=CLASS_DATA[cls];
+    if(cd)cd.save.forEach(a=>{const cb=document.getElementById('save-'+a);if(cb)cb.checked=true;});
+  }
+  updateSavesList();
+}
+function updateSavesList(){
+  const scores=getAbilityScores();
+  const lvl=parseInt(document.getElementById('c-level').value)||1;
+  const pb=profBonus(lvl);
+  ABILITIES.forEach(a=>{
+    const cb=document.getElementById('save-'+a);
+    const dot=document.getElementById('savedot-'+a);
+    const bon=document.getElementById('savebonus-'+a);
+    if(!cb)return;
+    const total=mod(scores[a])+(cb.checked?pb:0);
+    if(bon)bon.textContent=fmod(total);
+    if(dot)dot.className='prof-dot'+(cb.checked?' filled':'');
+  });
+}
+function updatePassivePerception(){
+  const scores=getAbilityScores();
+  const cb=document.getElementById('skill-Perception');
+  const lvl=parseInt(document.getElementById('c-level').value)||1;
+  const prof=cb&&cb.checked?profBonus(lvl):0;
+  const pp=10+mod(scores.WIS)+prof;
+  const el=document.getElementById('passive-perception');
+  if(el)el.textContent='Passive Perception: '+pp;
+}
+
+// ============================================================
+// ATTACKS
+// ============================================================
+function addAttack(){
+  attackList.push({name:'',bonus:'+0',dmg:'1d6',type:'Slashing'});
+  renderAttacks();
+}
+function renderAttacks(){
+  const el=document.getElementById('attack-list');
+  el.innerHTML=attackList.map((a,i)=>`
+    <div class="attack-row">
+      <input type="text" value="${a.name}" placeholder="Longsword" style="margin:0;padding:6px" onchange="attackList[${i}].name=this.value">
+      <input type="text" value="${a.bonus}" style="margin:0;padding:6px;width:100%" onchange="attackList[${i}].bonus=this.value">
+      <input type="text" value="${a.dmg}" style="margin:0;padding:6px;width:100%" onchange="attackList[${i}].dmg=this.value">
+      <input type="text" value="${a.type}" style="margin:0;padding:6px;width:100%" onchange="attackList[${i}].type=this.value">
+      <button class="btn btn-red btn-sm" onclick="attackList.splice(${i},1);renderAttacks()">✕</button>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// SPELL SLOTS
+// ============================================================
+function buildSpellSlotUI(c){
+  const lvl=parseInt(document.getElementById('c-level')?.value)||1;
+  const cls=document.getElementById('c-class')?.value;
+  const slots=SPELL_SLOTS_TABLE[Math.min(lvl,20)]||[];
+  const el=document.getElementById('spell-slots-ui');
+  if(!el)return;
+  if(!slots.length||!cls||!CLASS_DATA[cls]?.spellAbility){el.innerHTML='<span style="color:var(--parch2);font-style:italic">No spellcasting for selected class/level.</span>';return;}
+  if(!Object.keys(spellSlots).length){slots.forEach((n,i)=>{spellSlots[i+1]={total:n,used:c?(c.spellSlots&&c.spellSlots[i+1]?.used)||0:0};});}
+  el.innerHTML=slots.map((n,i)=>{
+    const lvlNum=i+1;
+    const used=spellSlots[lvlNum]?.used||0;
+    const pips=Array(n).fill(0).map((_,p)=>`<div class="slot-pip ${p<n-used?'available':'used'}" onclick="toggleSlot(${lvlNum},${p+1},${n})"></div>`).join('');
+    return `<div class="slot-row"><span class="skill-name" style="font-family:'Cinzel',serif;font-size:.8rem;color:var(--gold2);min-width:70px">Level ${lvlNum}</span>${pips}<span style="color:var(--parch2);font-size:.85rem;margin-left:8px">${n-used}/${n}</span></div>`;
+  }).join('');
+  updateSpellStats();
+}
+function toggleSlot(lvl,pip,total){
+  if(!spellSlots[lvl])spellSlots[lvl]={total,used:0};
+  const s=spellSlots[lvl];
+  if(pip<=total-s.used)s.used=total-pip+1-1+1;
+  else s.used=Math.max(0,s.used-1);
+  s.used=Math.min(s.used,total);
+  buildSpellSlotUI();
+}
+function updateSpellStats(){
+  const ability=document.getElementById('c-spell-ability')?.value;
+  const scores=getAbilityScores();
+  const lvl=parseInt(document.getElementById('c-level')?.value)||1;
+  const pb=profBonus(lvl);
+  const dcEl=document.getElementById('spell-dc');
+  const atkEl=document.getElementById('spell-atk');
+  if(!ability||!scores[ability]){if(dcEl)dcEl.textContent='—';if(atkEl)atkEl.textContent='—';return;}
+  const m=mod(scores[ability]);
+  if(dcEl)dcEl.textContent=8+pb+m;
+  if(atkEl)atkEl.textContent=fmod(pb+m);
+}
+
+// ============================================================
+// SPELLS
+// ============================================================
+function openAddSpell(lvl){
+  document.getElementById('new-spell-level').value=lvl;
+  document.getElementById('new-spell-name').value='';
+  document.getElementById('new-spell-desc').value='';
+  openModal('spell-modal');
+}
+function saveSpell(){
+  const spell={
+    name:document.getElementById('new-spell-name').value,
+    level:parseInt(document.getElementById('new-spell-level').value)||0,
+    school:document.getElementById('new-spell-school').value,
+    castTime:document.getElementById('new-spell-cast').value,
+    range:document.getElementById('new-spell-range').value,
+    components:document.getElementById('new-spell-comp').value,
+    duration:document.getElementById('new-spell-dur').value,
+    damage:document.getElementById('new-spell-dmg').value,
+    save:document.getElementById('new-spell-save').value,
+    concentration:document.getElementById('new-spell-conc').value,
+    desc:document.getElementById('new-spell-desc').value
+  };
+  if(!spell.name)return;
+  customSpells.push(spell);
+  closeModal('spell-modal');
+  renderSpellList();
+}
+function renderSpellList(){
+  const el=document.getElementById('spell-list');
+  if(!el)return;
+  const byLevel={};
+  customSpells.forEach((s,i)=>{if(!byLevel[s.level])byLevel[s.level]=[];byLevel[s.level].push({...s,idx:i});});
+  el.innerHTML=Object.keys(byLevel).sort((a,b)=>a-b).map(lvl=>`
+    <div style="margin-bottom:10px">
+      <div class="section-h" style="margin:8px 0 6px">${lvl==='0'?'Cantrips':'Level '+lvl+' Spells'}</div>
+      ${byLevel[lvl].map(s=>`
+        <div class="spell-item">
+          <div class="spell-header" onclick="this.nextElementSibling.classList.toggle('open')">
+            <span class="spell-name">${s.name}${s.concentration==='yes'?' ©':''}</span>
+            <span style="display:flex;align-items:center;gap:8px">
+              <span class="spell-level">${s.school}</span>
+              <button class="btn btn-red btn-sm" onclick="event.stopPropagation();customSpells.splice(${s.idx},1);renderSpellList()">✕</button>
+            </span>
+          </div>
+          <div class="spell-body">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;font-size:.85rem;margin-bottom:6px">
+              <span><b>Cast:</b> ${s.castTime||'—'}</span>
+              <span><b>Range:</b> ${s.range||'—'}</span>
+              <span><b>Duration:</b> ${s.duration||'—'}</span>
+              <span><b>Components:</b> ${s.components||'—'}</span>
+              ${s.damage?`<span><b>Damage:</b> ${s.damage}</span>`:''}
+              ${s.save?`<span><b>Save:</b> ${s.save}</span>`:''}
+            </div>
+            ${s.desc?`<p style="font-size:.88rem;color:var(--parch2)">${s.desc}</p>`:''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// EQUIPMENT
+// ============================================================
+function addEquipItem(){
+  const name=document.getElementById('new-equip-name').value.trim();
+  if(!name)return;
+  customEquip.push({
+    name,qty:parseInt(document.getElementById('new-equip-qty').value)||1,
+    wt:parseFloat(document.getElementById('new-equip-wt').value)||0,
+    note:document.getElementById('new-equip-note').value
+  });
+  document.getElementById('new-equip-name').value='';
+  document.getElementById('new-equip-note').value='';
+  renderEquipList();
+}
+function renderEquipList(){
+  const el=document.getElementById('equip-list');
+  if(!el)return;
+  let total=0;
+  el.innerHTML=customEquip.map((item,i)=>{
+    total+=item.wt*item.qty;
+    return `<div class="equip-row">
+      <span class="equip-name">${item.name}${item.note?` <small style="color:var(--parch2)">(${item.note})</small>`:''}</span>
+      <input type="number" class="equip-qty" value="${item.qty}" min="1" onchange="customEquip[${i}].qty=parseInt(this.value)||1;renderEquipList()">
+      <span class="equip-wt">${item.wt} lb</span>
+      <button class="btn btn-red btn-sm" onclick="customEquip.splice(${i},1);renderEquipList()">✕</button>
+    </div>`;
+  }).join('');
+  document.getElementById('total-weight').textContent=total.toFixed(1);
+  updateCurrency();
+}
+function updateCurrency(){
+  const cp=parseInt(document.getElementById('c-cp')?.value)||0;
+  const sp=parseInt(document.getElementById('c-sp')?.value)||0;
+  const ep=parseInt(document.getElementById('c-ep')?.value)||0;
+  const gp=parseInt(document.getElementById('c-gp')?.value)||0;
+  const pp=parseInt(document.getElementById('c-pp')?.value)||0;
+  const total=(cp/100)+(sp/10)+(ep/2)+gp+(pp*10);
+  const el=document.getElementById('total-gp');
+  if(el)el.textContent=total.toFixed(2);
+}
+
+// ============================================================
+// FEATURES
+// ============================================================
+function addCustomFeature(){
+  const name=document.getElementById('new-feat-name').value.trim();
+  const desc=document.getElementById('new-feat-desc').value.trim();
+  if(!name)return;
+  customFeatures.push({name,desc});
+  document.getElementById('new-feat-name').value='';
+  document.getElementById('new-feat-desc').value='';
+  renderFeaturesPanel();
+}
+function renderFeaturesPanel(c){
+  const cls=document.getElementById('c-class')?.value;
+  const lvl=parseInt(document.getElementById('c-level')?.value)||1;
+  const el=document.getElementById('features-list');
+  const cel=document.getElementById('custom-features-list');
+  if(!el)return;
+  const feats=CLASS_FEATURES[cls]||{};
+  const items=[];
+  for(let i=1;i<=lvl;i++){if(feats[i])feats[i].forEach(f=>items.push(f));}
+  const race=document.getElementById('c-race')?.value;
+  const rd=RACE_DATA[race];
+  const raceTraits=rd?rd.traits:[];
+  el.innerHTML=[...raceTraits.map(t=>`<div class="feature-item"><div class="feature-name" onclick="this.nextElementSibling.classList.toggle('open')">${t}</div><div class="feature-desc"></div></div>`),
+    ...items.map(f=>`<div class="feature-item"><div class="feature-name" onclick="this.nextElementSibling.classList.toggle('open')">${f}</div><div class="feature-desc"></div></div>`)].join('')||'<span style="color:var(--parch2);font-style:italic">No features for selected class/race/level.</span>';
+  if(cel)cel.innerHTML=customFeatures.map((f,i)=>`
+    <div class="feature-item">
+      <div style="display:flex;justify-content:space-between;align-items:center">
+        <div class="feature-name" onclick="this.parentElement.nextElementSibling.classList.toggle('open')">${f.name}</div>
+        <button class="btn btn-red btn-sm" onclick="customFeatures.splice(${i},1);renderFeaturesPanel()">✕</button>
+      </div>
+      <div class="feature-desc">${f.desc}</div>
+    </div>
+  `).join('');
+}
+
+// ============================================================
+// DEATH SAVES
+// ============================================================
+function buildDeathSaves(c){
+  if(c){deathSuccesses=c.deathSuccesses||0;deathFailures=c.deathFailures||0;}
+  const se=document.getElementById('death-success');
+  const fe=document.getElementById('death-fail');
+  if(!se||!fe)return;
+  se.innerHTML=[0,1,2].map(i=>`<div class="save-pip save-success ${i<deathSuccesses?'filled':''}" onclick="toggleDeathSave('success',${i})"></div>`).join('');
+  fe.innerHTML=[0,1,2].map(i=>`<div class="save-pip save-fail ${i<deathFailures?'filled':''}" onclick="toggleDeathSave('fail',${i})"></div>`).join('');
+}
+function toggleDeathSave(type,idx){
+  if(type==='success')deathSuccesses=deathSuccesses===idx+1?idx:idx+1;
+  else deathFailures=deathFailures===idx+1?idx:idx+1;
+  buildDeathSaves();
+}
+
+// ============================================================
+// HP
+// ============================================================
+function updateHP(){
+  const max=parseInt(document.getElementById('c-maxhp')?.value)||0;
+  const cur=parseInt(document.getElementById('c-curhp')?.value)||0;
+  const fill=document.getElementById('hp-fill');
+  if(fill&&max>0)fill.style.width=Math.max(0,Math.min(100,(cur/max)*100))+'%';
+}
+
+// ============================================================
+// DICE ROLLER
+// ============================================================
+function initDice(){}
+function rollDice(sides){
+  const qty=parseInt(document.getElementById('dice-qty').value)||1;
+  const mod2=parseInt(document.getElementById('dice-mod').value)||0;
+  const rolls=Array(qty).fill(0).map(()=>Math.ceil(Math.random()*sides));
+  const total=rolls.reduce((s,n)=>s+n,0)+mod2;
+  showRoll(`${qty}d${sides}${mod2?fmod(mod2):''}`,rolls,total);
+}
+function rollCustom(){rollDice(parseInt(prompt('Enter die size (e.g. 6 for d6):')||'6'));}
+function showRoll(label,rolls,total){
+  const el=document.getElementById('roll-result');
+  el.innerHTML=`<span style="font-size:1.2rem;color:var(--parch2)">${label}</span><span style="font-size:3rem">${total}</span>${rolls.length>1?`<span style="font-size:.9rem;color:var(--parch2)">[${rolls.join(', ')}]</span>`:''}`;
+  const entry={label,rolls,total,time:new Date().toLocaleTimeString()};
+  rollHistory.unshift(entry);
+  if(rollHistory.length>50)rollHistory.pop();
+  renderRollHistory();
+}
+function renderRollHistory(){
+  const el=document.getElementById('roll-history');
+  if(!el)return;
+  el.innerHTML=rollHistory.map(e=>`<div class="roll-entry"><strong style="color:var(--gold)">${e.total}</strong> — ${e.label}${e.rolls.length>1?' ['+e.rolls.join(',')+']':''} <span style="float:right;color:var(--parch2);font-size:.8rem">${e.time}</span></div>`).join('');
+}
+function clearHistory(){rollHistory=[];renderRollHistory();}
+function quickRoll(label,sides,qty,pick){
+  const rolls=Array(qty).fill(0).map(()=>Math.ceil(Math.random()*sides));
+  const total=pick==='high'?Math.max(...rolls):pick==='low'?Math.min(...rolls):rolls.reduce((s,n)=>s+n,0);
+  showRoll(label,rolls,total);
+}
+function rollAbilityScores(){
+  const sets=Array(6).fill(0).map(()=>{
+    const r=[1,2,3,4].map(()=>Math.ceil(Math.random()*6));
+    return r.sort((a,b)=>b-a).slice(0,3).reduce((s,n)=>s+n,0);
+  });
+  const el=document.getElementById('roll-result');
+  el.innerHTML=`<div style="font-size:1rem"><div style="color:var(--parch2);margin-bottom:8px">Ability Score Sets (4d6 drop lowest)</div>${sets.map((v,i)=>['STR','DEX','CON','INT','WIS','CHA'][i]+': <strong style="color:var(--gold)">${v}</strong>').join(' &nbsp;|&nbsp; ')}</div>`;
+}
+function rollInitiative(){
+  const roll=Math.ceil(Math.random()*20);
+  showRoll('Initiative (d20)',[ roll],roll);
+}
+function rollDeathSave(){
+  const roll=Math.ceil(Math.random()*20);
+  const result=roll===20?'Critical Success! Regain 1 HP':roll>=10?'Success':roll===1?'Critical Fail (2 failures)':'Failure';
+  const el=document.getElementById('roll-result');
+  el.innerHTML=`<span style="font-size:1.2rem;color:var(--parch2)">Death Save</span><span style="font-size:2.5rem">${roll}</span><span style="font-size:1rem;color:${roll>=10?'#55a055':'#e05555'}">${result}</span>`;
+}
+
+// ============================================================
+// CAMPAIGNS
+// ============================================================
+function renderCampaignList(){
+  const data=getUserData(currentUser);
+  const el=document.getElementById('campaign-list');
+  if(!data.campaigns||!data.campaigns.length){
+    el.innerHTML='<div style="color:var(--parch2);font-style:italic;padding:20px 0">No campaigns yet. Start a new adventure!</div>';return;
+  }
+  el.innerHTML=data.campaigns.map(cp=>`
+    <div class="campaign-card">
+      <div class="campaign-name">${cp.name}</div>
+      <div style="color:var(--parch2);font-size:.9rem;font-style:italic;margin-bottom:10px">${cp.setting||'No setting'} — DM: ${cp.dm||'Unknown'}</div>
+      <div style="margin-bottom:10px;font-size:.9rem">${cp.desc||''}</div>
+      <div style="margin-bottom:10px">
+        <strong style="font-family:'Cinzel',serif;font-size:.8rem;color:var(--gold2)">Session Journal</strong>
+        ${(cp.journal||[]).map(j=>`<div class="journal-entry"><div class="journal-date">${j.date}</div><div>${j.text}</div></div>`).join('')}
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="addJournalEntry('${cp.id}')">+ Journal Entry</button>
+        <button class="btn btn-red btn-sm" onclick="deleteCampaign('${cp.id}')">Delete</button>
+      </div>
+    </div>
+  `).join('');
+}
+function openNewCampaign(){
+  const modal=document.getElementById('campaign-modal');
+  document.getElementById('campaign-modal-title').textContent='New Campaign';
+  document.getElementById('campaign-modal-body').innerHTML=`
+    <label>Campaign Name</label><input type="text" id="new-cp-name" placeholder="The Lost Mine of Phandelver...">
+    <label>Setting / World</label><input type="text" id="new-cp-setting" placeholder="Forgotten Realms...">
+    <label>DM Name</label><input type="text" id="new-cp-dm" placeholder="Your DM...">
+    <label>Description</label><textarea id="new-cp-desc" placeholder="Brief summary of the campaign..."></textarea>
+    <div style="text-align:right;margin-top:12px"><button class="btn btn-gold" onclick="saveCampaign()">Create Campaign</button></div>
+  `;
+  openModal('campaign-modal');
+}
+function saveCampaign(){
+  const name=document.getElementById('new-cp-name').value.trim();
+  if(!name)return;
+  const data=getUserData(currentUser);
+  data.campaigns=data.campaigns||[];
+  data.campaigns.push({
+    id:Date.now().toString(),name,
+    setting:document.getElementById('new-cp-setting').value,
+    dm:document.getElementById('new-cp-dm').value,
+    desc:document.getElementById('new-cp-desc').value,
+    journal:[]
+  });
+  saveUserData(data);closeModal('campaign-modal');renderCampaignList();
+}
+function deleteCampaign(id){
+  if(!confirm('Delete this campaign?'))return;
+  const data=getUserData(currentUser);
+  data.campaigns=data.campaigns.filter(c=>c.id!==id);
+  saveUserData(data);renderCampaignList();
+}
+function addJournalEntry(id){
+  const text=prompt('Journal entry:');
+  if(!text)return;
+  const data=getUserData(currentUser);
+  const cp=data.campaigns.find(c=>c.id===id);
+  if(!cp)return;
+  cp.journal=cp.journal||[];
+  cp.journal.push({date:new Date().toLocaleDateString(),text});
+  saveUserData(data);renderCampaignList();
+}
+
+// ============================================================
+// REFERENCE
+// ============================================================
+function buildReference(){
+  const condEl=document.getElementById('conditions-list');
+  if(condEl)condEl.innerHTML=CONDITIONS.map(c=>`<div class="feature-item"><div class="feature-name" onclick="this.nextElementSibling.classList.toggle('open')">${c.n}</div><div class="feature-desc">${c.d}</div></div>`).join('');
+  const actEl=document.getElementById('actions-list');
+  if(actEl)actEl.innerHTML=COMBAT_ACTIONS.map(c=>`<div class="feature-item"><div class="feature-name" onclick="this.nextElementSibling.classList.toggle('open')">${c.n}</div><div class="feature-desc">${c.d}</div></div>`).join('');
+  const covEl=document.getElementById('cover-list');
+  if(covEl)covEl.innerHTML=COVER_INFO.map(c=>`<div class="feature-item"><div class="feature-name" onclick="this.nextElementSibling.classList.toggle('open')">${c.n}</div><div class="feature-desc">${c.d}</div></div>`).join('');
+  const dcEl=document.getElementById('dc-list');
+  if(dcEl)dcEl.innerHTML=DC_INFO.map(c=>`<div class="feature-item"><div class="feature-name" onclick="this.nextElementSibling.classList.toggle('open')">${c.n}</div><div class="feature-desc">${c.d}</div></div>`).join('');
+}
+
+// ============================================================
+// VIEW CHARACTER (Sheet View)
+// ============================================================
+function viewCharacter(id){
+  const data=getUserData(currentUser);
+  const c=data.characters.find(x=>x.id===id);
+  if(!c)return;
+  const win=window.open('','_blank');
+  const scores=c.abilityScores||{STR:10,DEX:10,CON:10,INT:10,WIS:10,CHA:10};
+  const lvl=c.level||1;const pb=profBonus(lvl);
+  const skillRows=SKILLS_DATA.map(sk=>{
+    const prof=c.skillProfs&&c.skillProfs.includes(sk.name);
+    const total=mod(scores[sk.ability])+(prof?pb:0);
+    return `<tr><td>${prof?'●':'○'}</td><td>${sk.name}</td><td>${fmod(total)}</td></tr>`;
+  }).join('');
+  const saveRows=ABILITIES.map(a=>{
+    const prof=c.saveProfs&&c.saveProfs.includes(a);
+    const total=mod(scores[a])+(prof?pb:0);
+    return `<tr><td>${prof?'●':'○'}</td><td>${ABILITY_NAMES[a]}</td><td>${fmod(total)}</td></tr>`;
+  }).join('');
+  win.document.write(`<!DOCTYPE html><html><head><title>${c.name||'Character'} — Tavern Ledger</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Crimson+Text:ital,wght@0,400;1,400&display=swap" rel="stylesheet">
+  <style>body{font-family:'Crimson Text',serif;background:#f5ead0;color:#1a1000;max-width:900px;margin:0 auto;padding:20px;}
+  h1,h2,h3{font-family:'Cinzel',serif;color:#7a4800;}h1{font-size:2rem;border-bottom:2px solid #c9a84c;padding-bottom:8px;}
+  .grid{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:16px 0;}
+  .ab{background:#fff;border:2px solid #c9a84c;padding:8px;text-align:center;border-radius:4px;}
+  .ab .lbl{font-family:'Cinzel',serif;font-size:.65rem;color:#7a4800;}
+  .ab .sc{font-size:1.8rem;font-weight:700;}.ab .md{color:#c9a84c;}
+  table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+  td,th{padding:4px 8px;border-bottom:1px solid #c9a84c22;}
+  .section{background:#fff;border:1px solid #c9a84c;padding:14px;margin-bottom:14px;}
+  .sh{font-family:'Cinzel',serif;color:#7a4800;font-size:.9rem;margin-bottom:8px;border-bottom:1px solid #c9a84c44;padding-bottom:4px;}
+  .combat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0;}
+  .cs{border:2px solid #c9a84c;padding:8px;text-align:center;background:#fff;}
+  .cs .val{font-size:1.6rem;font-family:'Cinzel',serif;}.cs .lbl{font-size:.65rem;color:#7a4800;font-family:'Cinzel',serif;}
+  @media print{body{max-width:100%;}}</style></head><body>
+  <div style="display:flex;justify-content:space-between;align-items:flex-start">
+    <div><h1>${c.name||'Unnamed'}</h1>
+    <div style="font-style:italic;color:#555;margin-bottom:8px">Level ${lvl} ${c.race||'?'} ${c.cls||'?'}${c.subclass?' ('+c.subclass+')':''} — ${c.background||'No Background'} — ${c.alignment||'Unaligned'}</div>
+    <div>XP: ${c.xp||0} | HP: ${c.curhp||0}/${c.maxhp||0} | AC: ${c.ac||10} | Speed: ${c.speed||30}ft | Prof Bonus: ${fmod(pb)}</div></div>
+    ${c.portrait?`<img src="${c.portrait}" style="width:100px;height:120px;object-fit:cover;border:2px solid #c9a84c">`: '<div style="width:100px;height:120px;border:2px solid #c9a84c;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:#999">No Portrait</div>'}
+  </div>
+  <div class="grid">${ABILITIES.map(a=>`<div class="ab"><div class="lbl">${ABILITY_NAMES[a]}</div><div class="sc">${scores[a]||10}</div><div class="md">${fmod(mod(scores[a]||10))}</div></div>`).join('')}</div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+    <div class="section"><div class="sh">Saving Throws</div><table>${saveRows}</table></div>
+    <div class="section"><div class="sh">Skills</div><table>${skillRows}</table></div>
+  </div>
+  ${(c.attacks&&c.attacks.length)?`<div class="section"><div class="sh">Attacks</div><table><tr><th>Name</th><th>Bonus</th><th>Damage</th><th>Type</th></tr>${c.attacks.map(a=>`<tr><td>${a.name}</td><td>${a.bonus}</td><td>${a.dmg}</td><td>${a.type}</td></tr>`).join('')}</table></div>`:''}
+  ${(c.spells&&c.spells.length)?`<div class="section"><div class="sh">Spells</div><table><tr><th>Name</th><th>Level</th><th>School</th><th>Cast</th><th>Damage</th></tr>${c.spells.map(s=>`<tr><td>${s.name}</td><td>${s.level===0?'Cantrip':'Level '+s.level}</td><td>${s.school}</td><td>${s.castTime}</td><td>${s.damage||'—'}</td></tr>`).join('')}</table></div>`:''}
+  ${(c.equipment&&c.equipment.length)?`<div class="section"><div class="sh">Equipment</div><table><tr><th>Item</th><th>Qty</th><th>Weight</th><th>Notes</th></tr>${c.equipment.map(e=>`<tr><td>${e.name}</td><td>${e.qty}</td><td>${e.wt} lb</td><td>${e.note||''}</td></tr>`).join('')}</table></div>`:''}
+  ${c.traits||c.ideals||c.bonds||c.flaws?`<div class="section"><div class="sh">Personality</div>
+    ${c.traits?`<p><strong>Traits:</strong> ${c.traits}</p>`:''}${c.ideals?`<p><strong>Ideals:</strong> ${c.ideals}</p>`:''}
+    ${c.bonds?`<p><strong>Bonds:</strong> ${c.bonds}</p>`:''}${c.flaws?`<p><strong>Flaws:</strong> ${c.flaws}</p>`:''}</div>`:''}
+  ${c.backstory?`<div class="section"><div class="sh">Backstory</div><p>${c.backstory}</p></div>`:''}
+  <div style="text-align:right;margin-top:10px"><button onclick="window.print()" style="padding:8px 20px;background:#c9a84c;border:none;font-family:'Cinzel',serif;cursor:pointer">Print / Save PDF</button></div>
+  </body></html>`);
+}
+
+// ============================================================
+// CREATOR TABS
+// ============================================================
+function creatorTab(tab){
+  document.querySelectorAll('#creator-modal .tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('#creator-modal .tab-panel').forEach(p=>p.classList.remove('active'));
+  const btn=Array.from(document.querySelectorAll('#creator-modal .tab-btn')).find(b=>b.textContent.trim().toLowerCase().startsWith(tab));
+  if(btn)btn.classList.add('active');
+  const panel=document.getElementById('creator-'+tab);
+  if(panel)panel.classList.add('active');
+  if(tab==='skills'){updateSkillsList();updateSavesList();}
+  if(tab==='spells'){buildSpellSlotUI();renderSpellList();updateSpellStats();}
+  if(tab==='equipment'){renderEquipList();}
+  if(tab==='features'){renderFeaturesPanel();}
+  if(tab==='abilities'){buildAbilityGrid();}
+  if(tab==='combat'){buildDeathSaves();renderAttacks();updateHP();}
+}
+
+// ============================================================
+// MODAL HELPERS
+// ============================================================
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+window.onclick=e=>{if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open');};
+
+// ============================================================
+// INIT
+// ============================================================
+buildAbilityGrid();
+</script>
+</body>
+</html>
+
