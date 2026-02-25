@@ -126,6 +126,9 @@
             text-transform: uppercase;
             letter-spacing: 1px;
             position: relative;
+            /* iOS Safari fix - make buttons tappable */
+            -webkit-tap-highlight-color: rgba(0, 255, 0, 0.2);
+            touch-action: manipulation;
         }
 
         .tab-btn:last-child {
@@ -1979,7 +1982,7 @@
             <span class="faq-toggle">▼</span>
         </div>
         <div class="faq-answer">
-            Quality is our priority! If there's any issue with your print, contact us immediately at rc54871@stu.alaschools.org or sl70590@stu.alaschools.org. We'll either fix the issue or refund your item. **Must have proof of damage**
+            Quality is our priority! If there's any issue with your print, contact us immediately at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1a68792f2e222d2b5a696e6f347b767b697972757576693475687d">[email&#160;protected]</a> or <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="aad9c69d9a9f939aead9dedf84cbc6cbd9c9c2c5c5c6d984c5d8cd">[email&#160;protected]</a>. We'll either fix the issue or refund your item. **Must have proof of damage**
         </div>
     </div>
 
@@ -2084,7 +2087,7 @@
         </div>
     </div>
     
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ============================================
 // API ENDPOINTS - REPLACE WITH YOUR URLS
 // ============================================
@@ -3231,13 +3234,43 @@ async function lookupOrder() {
             <div class="order-status-display">
                 <p style="color: #ff6600; text-align: center;">
                     Error loading orders. Please try again or contact us at:<br>
-                    <strong>rc54871@stu.alaschools.org</strong>
+                             <strong>rc54871@stu.alaschools.org</strong>
                 </p>
             </div>
         `;
     }
 }
 
+// ============================================
+// MOBILE TAB FIX - iOS Safari Support
+// ============================================
+function initializeMobileTabs() {
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    tabButtons.forEach(button => {
+        // Add touch event listener for iOS Safari
+        button.addEventListener('touchend', function(e) {
+            e.preventDefault(); // Prevent double-firing
+            
+            // Extract tab name from onclick attribute
+            const onclickAttr = this.getAttribute('onclick');
+            if (onclickAttr) {
+                // Execute the openTab function
+                const match = onclickAttr.match(/openTab\(event,\s*'(\w+)'\)/);
+                if (match) {
+                    openTab(e, match[1]);
+                }
+            }
+        }, { passive: false });
+        
+        // Ensure button is recognized as clickable on iOS
+        button.style.cursor = 'pointer';
+    });
+    
+    console.log('Mobile tabs initialized for iOS Safari');
+}
+
+// Initialize everything when page loads
 window.onload = async function() {
     populateProductSelect();
     renderColorOptions();
@@ -3246,6 +3279,11 @@ window.onload = async function() {
     // Load reviews from Google Sheets
     await loadAllReviews();
     updateAllProductRatings();
+    
+    // Initialize mobile tab support
+    initializeMobileTabs();
+    
+    console.log('Page fully loaded and mobile-ready!');
 };
     </script>
 </body>
