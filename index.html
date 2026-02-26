@@ -2483,9 +2483,7 @@ let selectedRating = 0;
             }
 
             const grams = selectedProduct.grams;
-            const hours = selectedProduct.hours;
             
-            let baseCost = 1 + (hours);
             let pricePerGram = 0;
             
             if (selectedColor.startsWith('multi-')) {
@@ -2500,7 +2498,7 @@ let selectedRating = 0;
             }
             
             let materialCost = pricePerGram * grams;
-            let subtotal = baseCost + materialCost;
+            let subtotal = 1 + (materialCost / 0.2);
             
             let discount = 0;
             if (subtotal > 20) {
@@ -2531,8 +2529,6 @@ let selectedRating = 0;
             }
 
             const grams = selectedProduct.grams;
-            const hours = selectedProduct.hours;
-            let baseCost = 1 + (hours);
             let pricePerGram = 0;
             
             if (selectedColor.startsWith('multi-')) {
@@ -2546,7 +2542,7 @@ let selectedRating = 0;
             }
             
             let materialCost = pricePerGram * grams;
-            let subtotal = baseCost + materialCost;
+            let subtotal = 1 + (materialCost / 0.2);
             
             if (subtotal > 10) {
                 subtotal -= (subtotal - 10) * 0.10;
