@@ -73,6 +73,7 @@
                 rgba(0, 255, 0, 0.03) 4px
             );
             animation: scan 8s linear infinite;
+            pointer-events: none;
         }
 
         @keyframes scan {
@@ -935,11 +936,10 @@
         overflow-y: auto;
     }
     
-    /* Sticky header on mobile */
+    /* Keep header non-sticky on mobile so it never blocks tab taps */
     header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
+        position: relative;
+        z-index: 1;
     }
     
     /* Better tab navigation on mobile */
@@ -3082,13 +3082,16 @@ function handleSearch() {
     }
 }
 
-// Close search results when clicking outside
-document.addEventListener('click', function(event) {
+// Close search results when interacting outside the search UI
+function closeSearchResultsOnOutsideInteraction(event) {
     const searchContainer = document.querySelector('.search-container');
     if (!searchContainer.contains(event.target)) {
         document.getElementById('searchResults').style.display = 'none';
     }
-});
+}
+
+document.addEventListener('click', closeSearchResultsOnOutsideInteraction);
+document.addEventListener('touchstart', closeSearchResultsOnOutsideInteraction, { passive: true });
         
 
 window.addEventListener('resize', positionSearchResults);
@@ -3248,22 +3251,7 @@ function initializeMobileTabs() {
     const tabButtons = document.querySelectorAll('.tab-btn');
     
     tabButtons.forEach(button => {
-        // Add touch event listener for iOS Safari
-        button.addEventListener('touchend', function(e) {
-            e.preventDefault(); // Prevent double-firing
-            
-            // Extract tab name from onclick attribute
-            const onclickAttr = this.getAttribute('onclick');
-            if (onclickAttr) {
-                // Execute the openTab function
-                const match = onclickAttr.match(/openTab\(event,\s*'(\w+)'\)/);
-                if (match) {
-                    openTab(e, match[1]);
-                }
-            }
-        }, { passive: false });
-        
-        // Ensure button is recognized as clickable on iOS
+        // Ensure buttons are recognized as tappable on iOS Safari
         button.style.cursor = 'pointer';
     });
     
