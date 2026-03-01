@@ -8,6 +8,23 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>The Maker Matrix - 3D Printing Services</title>
     <style>
+        <script>
+// ============================================
+// FIREBASE INITIALIZATION
+// ============================================
+const firebaseConfig = {
+  apiKey: "AIzaSyCYSNy8ysm9pvfH8NZhvDjxH3aX24njc50",
+  authDomain: "themakermatrix-74ec2.firebaseapp.com",
+  projectId: "themakermatrix-74ec2",
+  storageBucket: "themakermatrix-74ec2.firebasestorage.app",
+  messagingSenderId: "756329790879",
+  appId: "1:756329790879:web:ce95a38b85efd3dbba11aa"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+console.log('✅ Firebase initialized successfully!');
         * {
             margin: 0;
             padding: 0;
@@ -1319,6 +1336,8 @@
     background: rgba(0, 77, 0, 0.3);
     border-radius: 8px;
 }
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     </style>
     
 </head>
@@ -2092,18 +2111,6 @@
 // API ENDPOINTS - REPLACE WITH YOUR URLS
 // ============================================
 
-const REVIEWS_API_URL = 'https://script.google.com/a/macros/stu.alaschools.org/s/AKfycbxSw1CqS1DrgcR3_QJpJrklw92RogqNaw4GSHo7kWh65Q8Hhb2icUfOViHTMTu6Zw7W/exec';
-const ORDERS_API_URL = 'https://script.google.com/a/macros/stu.alaschools.org/s/AKfycbzgslR3PThep4oNnCjhvL-1ggDZmdnJJus7G-I3w70uI6xU0piQEMnkV22Q6s0Plvxrbg/exec';
-
-// Reviews Google Form Configuration
-const REVIEWS_FORM_URL = 'https://docs.google.com/forms/u/1/d/e/1FAIpQLSdBFg70qKMG2bkWJDsPXal1m6fA8XZhHupDCXUtX_ErOYVRNQ/formResponse';
-const REVIEWS_FORM_FIELDS = {
-    productName: 'entry.615009872',  // Replace with your field ID
-    author: 'entry.1320933195',       // Replace with your field ID
-    rating: 'entry.1692962237',       // Replace with your field ID
-    reviewText: 'entry.1852561505'    // Replace with your field ID
-};
-
 // Global reviews cache
 let globalReviews = {};
 let selectedRating = 0;
@@ -2651,10 +2658,30 @@ let selectedRating = 0;
 // Load all reviews from Google Sheets
 async function loadAllReviews() {
     try {
-        const response = await fetch(REVIEWS_API_URL);
-        const reviews = await response.json();
-        globalReviews = reviews;
-        return reviews;
+        console.log('Loading reviews...');
+        
+        const reviewsSnapshot = await db.collection('reviews').get();
+        globalReviews = {};
+        
+        reviewsSnapshot.forEach(doc => {
+            const review = doc.data();
+            const productId = review.productId;
+            
+            if (!globalReviews[productId]) {
+                globalReviews[productId] = [];
+            }
+            
+            globalReviews[productId].push({
+                author: review.author,
+                stars: review.stars,
+                text: review.text,
+                timestamp: review.timestamp
+            });
+        });
+        
+        console.log('Reviews loaded:', globalReviews);
+        return globalReviews;
+        
     } catch (error) {
         console.error('Error loading reviews:', error);
         return {};
@@ -2788,7 +2815,6 @@ function updateStarDisplay() {
     });
 }
 
-// Submit review to Google Form
 async function submitReview(productId, productName) {
     const author = document.getElementById('reviewAuthor').value.trim();
     const text = document.getElementById('reviewText').value.trim();
@@ -2809,37 +2835,35 @@ async function submitReview(productId, productName) {
     }
     
     // Show loading
-    document.querySelector('.review-submit-btn').textContent = 'Submitting...';
-    document.querySelector('.review-submit-btn').disabled = true;
+    const submitBtn = document.querySelector('.review-submit-btn');
+    submitBtn.textContent = 'Submitting...';
+    submitBtn.disabled = true;
     
     try {
-        // Submit to Google Form
-        const formData = new FormData();
-        formData.append(REVIEWS_FORM_FIELDS.productName, productName);
-        formData.append(REVIEWS_FORM_FIELDS.author, author);
-        formData.append(REVIEWS_FORM_FIELDS.rating, selectedRating);
-        formData.append(REVIEWS_FORM_FIELDS.reviewText, text);
-        
-        await fetch(REVIEWS_FORM_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
+        // Save to Firebase
+        await db.collection('reviews').add({
+            productId: productId,
+            productName: productName,
+            author: author,
+            stars: selectedRating,
+            text: text,
+            timestamp: new Date().toISOString()
         });
         
-        alert('Thank you for your review! It will appear shortly. ⭐');
+        console.log('Review submitted, thanks for your feedback!');
         
-        // Reload reviews after short delay
-        setTimeout(async () => {
-            await loadAllReviews();
-            displayProductReviews(productId);
-            updateAllProductRatings();
-        }, 2000);
+        alert('Thank you for your review! ⭐');
+        
+        // Reload reviews
+        await loadAllReviews();
+        displayProductReviews(productId);
+        updateAllProductRatings();
         
     } catch (error) {
-        console.error('Error submitting review:', error);
+        console.error('❌ Error submitting review:', error);
         alert('There was an error submitting your review. Please try again.');
-        document.querySelector('.review-submit-btn').textContent = 'Submit Review';
-        document.querySelector('.review-submit-btn').disabled = false;
+        submitBtn.textContent = 'Submit Review';
+        submitBtn.disabled = false;
     }
 }
 
@@ -2861,6 +2885,11 @@ function updateAllProductRatings() {
     });
 }
         // Checkout and send order to Google Forms
+// ============================================
+// FIREBASE ORDER SUBMISSION
+// Replace your existing checkout function with this
+// ============================================
+
 async function checkout() {
     const customerName = document.getElementById('customerName').value.trim();
     const homeroom = document.getElementById('customerHomeroom').value.trim();
@@ -2877,7 +2906,7 @@ async function checkout() {
         return;
     }
 
-    // Calculate total with bundle pricing for $5 Deal items
+    // Calculate total with bundle pricing
     const dealItems = cart.filter(item => item.product.category === '$5 Deal');
     const otherItems = cart.filter(item => item.product.category !== '$5 Deal');
 
@@ -2887,35 +2916,34 @@ async function checkout() {
     if (dealItems.length >= 5) {
         const bundleCount = Math.floor(dealItems.length / 5);
         const remainingDeals = dealItems.length % 5;
-        subtotal += bundleCount * 5;  // $5 for each bundle of 5
+        subtotal += bundleCount * 5;
         for (let i = 0; i < remainingDeals; i++) subtotal += dealItems[i].price;
     } else {
         dealItems.forEach(item => subtotal += item.price);
     }
 
-    // Add other items to subtotal
+    // Add other items
     otherItems.forEach(item => subtotal += item.price);
 
-    // Apply tiered cart discounts to the subtotal
+    // Apply tiered cart discounts
     if (subtotal > 30) {
-        subtotal -= subtotal * 0.20;  // 20% off entire cart
+        subtotal -= subtotal * 0.20;
     } else if (subtotal > 20) {
-        subtotal -= subtotal * 0.15;  // 15% off entire cart
+        subtotal -= subtotal * 0.15;
     } else if (subtotal > 10) {
-        subtotal -= subtotal * 0.10;  // 10% off entire cart
+        subtotal -= subtotal * 0.10;
     }
 
     let total = subtotal;
     
-    // Create order details
+    // Create order details text
     let orderDetails = '';
     cart.forEach((item, index) => {
         orderDetails += `\nItem ${index + 1}: ${item.product.name}\n`;
         orderDetails += `  Category: ${item.product.category}\n`;
         
-        // Check if it's a custom order
         if (item.customDescription) {
-            orderDetails += `  CUSTOM ORDER DESCRIPTION: ${item.customDescription}\n`;
+            orderDetails += `  CUSTOM ORDER: ${item.customDescription}\n`;
             orderDetails += `  Price: QUOTE NEEDED\n`;
         } else {
             orderDetails += `  Material: ${item.material.toUpperCase()}\n`;
@@ -2927,7 +2955,7 @@ async function checkout() {
 
     if (dealItems.length >= 5) {
         const bundleCount = Math.floor(dealItems.length / 5);
-        orderDetails += `\n**BUNDLE DEAL APPLIED: ${bundleCount} set(s) of 5 items = $${(bundleCount * 5).toFixed(2)}**\n`;
+        orderDetails += `\n**BUNDLE DEAL: ${bundleCount} set(s) of 5 = $${(bundleCount * 5).toFixed(2)}**\n`;
     }
 
     orderDetails += `\nTOTAL: $${total.toFixed(2)}`;
@@ -2941,20 +2969,40 @@ async function checkout() {
         </div>
     `;
 
-    // Submit to Google Forms
     try {
-        const formData = new FormData();
-        formData.append('entry.957937954', customerName);
-        formData.append('entry.702310277', homeroom);
-        formData.append('entry.1216365344', payment);
-        formData.append('entry.1979507159', orderDetails);
-        formData.append('entry.759705507', notes || 'None');
-
-        await fetch('https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse', {
-            method: 'POST',
-            mode: 'no-cors',
-            body: formData
+        // Save to Firebase
+        const orderRef = await db.collection('orders').add({
+            customerName: customerName,
+            homeroom: homeroom,
+            paymentMethod: payment,
+            orderDetails: orderDetails,
+            notes: notes || 'None',
+            total: `$${total.toFixed(2)}`,
+            status: 'Pending',
+            timestamp: new Date().toISOString(),
+            statusUpdated: new Date().toISOString()
         });
+
+        console.log('✅ Order saved to Firebase:', orderRef.id);
+
+        // ALSO submit to Google Form (backup)
+        try {
+            const formData = new FormData();
+            formData.append('entry.957937954', customerName);
+            formData.append('entry.702310277', homeroom);
+            formData.append('entry.1216365344', payment);
+            formData.append('entry.1979507159', orderDetails);
+            formData.append('entry.759705507', notes || 'None');
+
+            await fetch('https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse', {
+                method: 'POST',
+                mode: 'no-cors',
+                body: formData
+            });
+            console.log('✅ Order also saved to Google Sheets (backup)');
+        } catch (formError) {
+            console.warn('⚠️ Google Form backup failed (not critical):', formError);
+        }
 
         // Show success
         cartItemsContainer.innerHTML = `
@@ -2962,9 +3010,10 @@ async function checkout() {
                 <h3>✓ Order Submitted Successfully!</h3>
                 <p style="font-size: 1.1em; margin-top: 15px; color: #00dd00;">
                     Thank you, ${customerName}!<br><br>
-                    Your order has been received and we'll contact you at:<br>
-                    <strong>${homeroom}</strong><br><br>
-                    Total: $${total.toFixed(2)}
+                    Your order has been received.<br>
+                    <strong>Order ID:</strong> ${orderRef.id.substring(0, 8).toUpperCase()}<br>
+                    <strong>Total:</strong> $${total.toFixed(2)}<br><br>
+                    Track your order status in the "My Orders" tab!
                 </p>
             </div>
         `;
@@ -2982,8 +3031,8 @@ async function checkout() {
         }, 3000);
 
     } catch (error) {
-        console.error('Submission error:', error);
-        alert('There was an error submitting your order. Please try again or contact us directly at rc54871@stu.alaschools.org or sl70590@stu.alaschools.org');
+        console.error('❌ Submission error:', error);
+        alert('There was an error submitting your order. Please try again or contact us directly.');
         updateCartDisplay();
     }
 }
@@ -3105,6 +3154,11 @@ function toggleFAQ(element) {
 // REAL-TIME ORDER TRACKING
 // ============================================
 
+// ============================================
+// FIREBASE ORDER TRACKING
+// Replace your existing lookupOrder function with this
+// ============================================
+
 async function lookupOrder() {
     const name = document.getElementById('orderLookupName').value.trim();
     const homeroom = document.getElementById('orderLookupHomeroom').value.trim();
@@ -3124,20 +3178,15 @@ async function lookupOrder() {
     `;
     
     try {
-        // Fetch orders from Google Sheets
-        const response = await fetch(`${ORDERS_API_URL}?name=${encodeURIComponent(name)}&homeroom=${encodeURIComponent(homeroom)}`);
-        const data = await response.json();
+        console.log('🔍 Searching for orders:', { name, homeroom });
         
-        if (data.error) {
-            resultsDiv.innerHTML = `
-                <div class="order-status-display">
-                    <p style="color: #ff6600; text-align: center;">Error: ${data.error}</p>
-                </div>
-            `;
-            return;
-        }
+        // Query Firebase for matching orders
+        const ordersSnapshot = await db.collection('orders')
+            .where('customerName', '==', name)
+            .where('homeroom', '==', homeroom)
+            .get();
         
-        if (data.orders.length === 0) {
+        if (ordersSnapshot.empty) {
             resultsDiv.innerHTML = `
                 <div class="order-status-display">
                     <h3 style="color: #00ff00; margin-bottom: 20px;">No Orders Found</h3>
@@ -3152,7 +3201,21 @@ async function lookupOrder() {
             return;
         }
         
-        // Display all orders
+        // Collect all orders
+        const orders = [];
+        ordersSnapshot.forEach(doc => {
+            orders.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+        
+        // Sort by timestamp (newest first)
+        orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        
+        console.log('✅ Found orders:', orders);
+        
+        // Display orders
         let html = `
             <div class="order-status-display">
                 <h3 style="color: #00ff00; margin-bottom: 20px;">Orders for ${name}</h3>
@@ -3161,23 +3224,23 @@ async function lookupOrder() {
                 </p>
         `;
         
-        // Sort orders by date (newest first)
-        data.orders.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-        
-        data.orders.forEach((order, index) => {
+        orders.forEach((order, index) => {
             const orderDate = new Date(order.timestamp).toLocaleDateString();
-            const statusUpdated = new Date(order.statusUpdated).toLocaleDateString();
+            const statusUpdated = order.statusUpdated ? 
+                new Date(order.statusUpdated).toLocaleDateString() : orderDate;
             
             // Determine status class and message
             let statusClass = 'status-pending';
             let statusMessage = 'Your order is in the queue waiting to be printed.';
             let estimatedTime = '2-3 days';
             
-            if (order.status === 'Printing' || order.status === 'PRINTING') {
+            const status = (order.status || 'Pending').toUpperCase();
+            
+            if (status === 'PRINTING') {
                 statusClass = 'status-printing';
                 statusMessage = 'Your order is currently being printed!';
                 estimatedTime = '1-2 days';
-            } else if (order.status === 'Ready' || order.status === 'READY') {
+            } else if (status === 'READY') {
                 statusClass = 'status-ready';
                 statusMessage = 'Your order is complete and ready for pickup!';
                 estimatedTime = 'Ready now';
@@ -3187,18 +3250,18 @@ async function lookupOrder() {
                 <div style="margin-top: ${index > 0 ? '30px' : '0'}; padding: 20px; background: rgba(0, 51, 0, 0.3); border-radius: 10px; border: 2px solid #00ff00;">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                         <div>
-                            <strong style="color: #00ff00; font-size: 1.1em;">Order #${data.orders.length - index}</strong>
+                            <strong style="color: #00ff00; font-size: 1.1em;">Order #${orders.length - index}</strong>
                             <div style="color: #00aa00; font-size: 0.9em; margin-top: 5px;">Placed on ${orderDate}</div>
                         </div>
-                        <span class="status-indicator ${statusClass}">${order.status}</span>
+                        <span class="status-indicator ${statusClass}">${order.status || 'Pending'}</span>
                     </div>
                     
                     <div style="color: #00dd00; margin-bottom: 10px;">
-                        <strong>Total:</strong> ${order.total || 'Quote needed'}
+                        <strong>Total:</strong> ${order.total || 'Calculating...'}
                     </div>
                     
                     <div style="color: #00dd00; margin-bottom: 10px;">
-                        <strong>Payment:</strong> ${order.payment}
+                        <strong>Payment:</strong> ${order.paymentMethod}
                     </div>
                     
                     <div style="color: #00aa00; margin-top: 15px; padding: 15px; background: rgba(0, 26, 0, 0.5); border-radius: 8px;">
@@ -3213,6 +3276,13 @@ async function lookupOrder() {
                             <div style="color: #00aa00; margin-top: 5px;">${order.notes}</div>
                         </div>
                     ` : ''}
+                    
+                    <details style="margin-top: 15px;">
+                        <summary style="color: #00cc00; cursor: pointer; font-weight: bold;">View Order Details</summary>
+                        <div style="color: #00aa00; margin-top: 10px; padding: 10px; background: rgba(0, 26, 0, 0.5); border-radius: 5px; white-space: pre-wrap; font-size: 0.9em;">
+                            ${order.orderDetails}
+                        </div>
+                    </details>
                 </div>
             `;
         });
@@ -3220,20 +3290,21 @@ async function lookupOrder() {
         html += `
             </div>
             <div class="notice-box" style="margin-top: 20px;">
-                <strong>💡 How to update your order:</strong><br>
-                Status is updated manually in our system. Check back regularly for updates!
+                <strong>💡 Real-time tracking:</strong><br>
+                Status updates automatically! Just refresh this page to see the latest.
             </div>
         `;
         
         resultsDiv.innerHTML = html;
         
     } catch (error) {
-        console.error('Error fetching orders:', error);
+        console.error('❌ Error fetching orders:', error);
         resultsDiv.innerHTML = `
             <div class="order-status-display">
                 <p style="color: #ff6600; text-align: center;">
-                    Error loading orders. Please try again or contact us at:<br>
-                             <strong>rc54871@stu.alaschools.org</strong> or <strong>sl70590@stu.alaschools.org</strong>
+                    Error loading orders: ${error.message}<br><br>
+                    Please contact us at:<br>
+                    <strong>rc54871@stu.alaschools.org</strong>
                 </p>
             </div>
         `;
