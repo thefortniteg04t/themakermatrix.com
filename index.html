@@ -1338,7 +1338,7 @@
     const db = firebase.firestore();
 
     console.log('✅ Firebase initialized successfully!');
-    let siteConfig = {
+let siteConfig = {
     pricing: { rounding: 'none', hourlyRate: 1.0, customRoundUp: false, dealRoundDown: false },
     promotions: [],
     inventory: { pla: {}, petg: {} },
@@ -1414,7 +1414,7 @@ function applyRounding(price, category) {
         case 'nearest': return Math.round(price);
         case 'half': return Math.round(price * 2) / 2;
         case 'quarter': return Math.round(price * 4) / 4;
-        default: return price; // No rounding
+        default: return price;
     }
 }
 
@@ -1424,6 +1424,7 @@ function filterInventoryColors() {
     window.inventoryStatus = siteConfig.inventory;
 }
 
+// Check if a color is in stock
 // Check if a color is in stock
 function isColorInStock(material, color) {
     if (!window.inventoryStatus) return true;
@@ -2461,7 +2462,10 @@ let selectedRating = 0;
             }
             scrollPageToTop();
         }
-        
+const bannerTextEl = document.getElementById('bannerText');
+if (bannerTextEl) {
+    bannerTextEl.value = banner.text || '';
+}
         // Category Expansion
         function toggleCategory(category) {
             const grid = document.getElementById(category + '-grid');
@@ -2515,7 +2519,26 @@ let selectedRating = 0;
                 select.appendChild(option);
             });
         }
-
+function renderColorOptions(material) {
+    // Get the original colors array
+    let colorOptions = [...colors]; // Create a copy
+    
+    // Filter out-of-stock colors
+    colorOptions = colorOptions.filter(color => {
+        const colorKey = color.value.toLowerCase();
+        return isColorInStock(material, colorKey);
+    });
+    
+    // Safety: if no colors available, show all
+    if (colorOptions.length === 0) {
+        colorOptions = colors;
+    }
+    
+    // Then use colorOptions to render
+    colorOptions.forEach(color => {
+        // Your rendering code here
+    });
+}
         // Product selection in calculator
         function onProductSelect() {
             const select = document.getElementById('productSelect');
@@ -3228,7 +3251,7 @@ async function checkout() {
     // Apply promo code if one was entered
     if (window.appliedPromo && window.appliedPromo.newTotal) {
         total = window.appliedPromo.newTotal;
-        orderDetails += `\n\n**PROMO CODE APPLIED: ${window.appliedPromo.code}**`;
+        orderDetails += `\n\nPROMO CODE APPLIED: ${window.appliedPromo.code}`;
     }
     // Create order details text
     let orderDetails = '';
@@ -3621,6 +3644,7 @@ function initializeMobileTabs() {
 
 // Initialize everything when page loads
 window.onload = async function() {
+    await loadSiteConfig();
     populateProductSelect();
     renderColorOptions();
     updateCartDisplay();
