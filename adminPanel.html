@@ -775,39 +775,39 @@
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+<!-- Firebase SDK - MUST be before your script -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
-    <script>
-        // Initialize Firebase
-        const firebaseConfig = {
-            apiKey: "AIzaSyCYSNy8ysm9pvfH8NZhvDjxH3aX24njc50",
-            authDomain: "themakermatrix-74ec2.firebaseapp.com",
-            projectId: "themakermatrix-74ec2",
-            storageBucket: "themakermatrix-74ec2.firebasestorage.app",
-            messagingSenderId: "756329790879",
-            appId: "1:756329790879:web:ce95a38b85efd3dbba11aa"
-        };
+<script>
+    // Initialize Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyCYSNy8ysm9pvfH8NZhvDjxH3aX24njc50",
+        authDomain: "themakermatrix-74ec2.firebaseapp.com",
+        projectId: "themakermatrix-74ec2",
+        storageBucket: "themakermatrix-74ec2.firebasestorage.app",
+        messagingSenderId: "756329790879",
+        appId: "1:756329790879:web:ce95a38b85efd3dbba11aa"
+    };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-
-        console.log('✅ Ultimate Admin Panel - Firebase initialized!');
-
-        // Global data
-        let allOrders = [];
-        let allReviews = [];
-        let currentRounding = 'none';
-        let activePromotions = [];
-        let inventory = {
-            pla: {
-                red: true, black: true, white: true, gold: true, yellow: true,
-                purple: true, blue: true, green: true, orange: true,
-                'multi-rg': true, 'multi-rb': true, 'multi-rgold': true, 'multi-bg': true
-            },
-            petg: { greyblue: true }
-        };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    
+    console.log('✅ Firebase initialized!');
+    
+// Global data
+let allOrders = [];
+let allReviews = [];
+let currentRounding = 'none';
+let activePromotions = [];
+let inventory = {
+    pla: {
+        red: true, black: true, white: true, gold: true, yellow: true,
+        purple: true, blue: true, green: true, orange: true,
+        'multi-rg': true, 'multi-rb': true, 'multi-rgold': true, 'multi-bg': true
+    },
+    petg: { greyblue: true }
+};
 
         // Load from localStorage
         function loadSettings() {
@@ -831,7 +831,52 @@
             localStorage.setItem('makerMatrixSettings', JSON.stringify(settings));
             document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
         }
+function renderInventory() {
+    const colors = {
+        red: '#FF0000', black: '#000000', white: '#FFFFFF', gold: '#FFD700',
+        yellow: '#FFFF00', purple: '#800080', blue: '#4169E1', green: '#D0ED78',
+        orange: '#FFA500', greyblue: '#5B7C99',
+        'multi-rg': 'linear-gradient(135deg, #FF0000 50%, #008000 50%)',
+        'multi-rb': 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)',
+        'multi-rgold': 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)',
+        'multi-bg': 'linear-gradient(135deg, #4169E1 50%, #008000 50%)'
+    };
+    
+    // PLA Colors
+    let plaHTML = '';
+    for (let color in inventory.pla) {
+        const inStock = inventory.pla[color];
+        plaHTML += `
+            <div style="padding:15px;border:2px solid ${inStock?'#00ff00':'#ff0000'};border-radius:8px;text-align:center;cursor:pointer;" onclick="toggleInventory('pla','${color}')">
+                <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 10px;background:${colors[color]};border:2px solid #003300;"></div>
+                <div style="font-weight:bold;">${color}</div>
+                <div style="margin-top:5px;">${inStock ? '✅ In Stock' : '❌ Out'}</div>
+            </div>
+        `;
+    }
+    const plaDiv = document.getElementById('plaInventory');
+    if (plaDiv) plaDiv.innerHTML = plaHTML;
+    
+    // PETG Colors
+    let petgHTML = '';
+    for (let color in inventory.petg) {
+        const inStock = inventory.petg[color];
+        petgHTML += `
+            <div style="padding:15px;border:2px solid ${inStock?'#00ff00':'#ff0000'};border-radius:8px;text-align:center;cursor:pointer;" onclick="toggleInventory('petg','${color}')">
+                <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 10px;background:${colors[color]};border:2px solid #003300;"></div>
+                <div style="font-weight:bold;">${color}</div>
+                <div style="margin-top:5px;">${inStock ? '✅ In Stock' : '❌ Out'}</div>
+            </div>
+        `;
+    }
+    const petgDiv = document.getElementById('petgInventory');
+    if (petgDiv) petgDiv.innerHTML = petgHTML;
+}
 
+function toggleInventory(material, color) {
+    inventory[material][color] = !inventory[material][color];
+    renderInventory();
+}
         // Tab navigation
         function openTab(tabName) {
             const tabs = document.querySelectorAll('.tab-content');
@@ -1018,25 +1063,28 @@
             updatePreviewPrice();
         }
 
-        function updatePreviewPrice() {
-            // Sample calculation
-            const hours = 0.75;
-            const grams = 8;
-            const pricePerGram = 0.03;
-            
-            let price = 1 + hours + (pricePerGram * grams);
-            
-            // Apply rounding
-            switch(currentRounding) {
-                case 'up': price = Math.ceil(price); break;
-                case 'down': price = Math.floor(price); break;
-                case 'nearest': price = Math.round(price); break;
-                case 'half': price = Math.round(price * 2) / 2; break;
-                case 'quarter': price = Math.round(price * 4) / 4; break;
-            }
-            
-            document.getElementById('previewPrice').textContent = '$' + price.toFixed(2);
-        }
+function updatePreviewPrice() {
+    // Sample calculation for Keychain
+    const hours = 0.75;
+    const grams = 8;
+    const pricePerGram = 0.03;
+    
+    let price = 1 + hours + (pricePerGram * grams);
+    
+    // Apply current rounding
+    switch(currentRounding) {
+        case 'up': price = Math.ceil(price); break;
+        case 'down': price = Math.floor(price); break;
+        case 'nearest': price = Math.round(price); break;
+        case 'half': price = Math.round(price * 2) / 2; break;
+        case 'quarter': price = Math.round(price * 4) / 4; break;
+    }
+    
+    const previewEl = document.getElementById('previewPrice');
+    if (previewEl) {
+        previewEl.textContent = '$' + price.toFixed(2);
+    }
+}
 
 // ============================================
 // ADMIN PANEL - FIREBASE SYNC FUNCTIONS
@@ -1151,9 +1199,31 @@ async function activatePreset(presetType) {
         alert('Error activating promotion: ' + error.message);
     }
 }
-
+function renderPromotions() {
+    if (activePromotions.length === 0) {
+        document.getElementById('activePromotions').innerHTML = 
+            '<div class="info-box">No active promotions. Click a preset above to start one!</div>';
+        return;
+    }
+    
+    const html = activePromotions.map(p => `
+        <div class="formula-editor" style="margin-bottom: 15px;">
+            <h3 style="margin-bottom: 10px;">${p.name}</h3>
+            <p><strong>Code:</strong> ${p.code}</p>
+            <p><strong>Discount:</strong> ${p.type === 'percentage' ? p.value + '%' : '$' + p.value} off</p>
+            <p>${p.description}</p>
+            <button class="btn btn-danger btn-small" onclick="deactivatePromotion('${p.code}')">
+                🗑️ Deactivate
+            </button>
+        </div>
+    `).join('');
+    
+    document.getElementById('activePromotions').innerHTML = html;
+}
 // Deactivate promotion (remove from Firebase)
 async function deactivatePromotion(code) {
+    if (!confirm('Deactivate this promotion?')) return;
+    
     try {
         activePromotions = activePromotions.filter(p => p.code !== code);
         
@@ -1162,10 +1232,11 @@ async function deactivatePromotion(code) {
             lastUpdated: new Date().toISOString()
         });
         
-        alert('✅ Promotion deactivated - removed from website!');
+        alert('✅ Promotion deactivated!');
         renderPromotions();
         
     } catch (error) {
+        console.error('Error:', error);
         alert('Error: ' + error.message);
     }
 }
