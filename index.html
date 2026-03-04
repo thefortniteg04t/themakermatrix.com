@@ -1338,6 +1338,213 @@
     const db = firebase.firestore();
 
     console.log('✅ Firebase initialized successfully!');
+    let siteConfig = {
+    pricing: { rounding: 'none', hourlyRate: 1.0, customRoundUp: false, dealRoundDown: false },
+    promotions: [],
+    inventory: { pla: {}, petg: {} },
+    banner: null
+};
+
+// Load config from Firebase on page load
+async function loadSiteConfig() {
+    try {
+        console.log('📥 Loading site configuration from Firebase...');
+        
+        // Load pricing config
+        const pricingDoc = await db.collection('config').doc('pricing').get();
+        if (pricingDoc.exists) {
+            siteConfig.pricing = pricingDoc.data();
+            console.log('✅ Pricing config loaded:', siteConfig.pricing);
+        }
+        
+        // Load promotions
+        const promosDoc = await db.collection('config').doc('promotions').get();
+        if (promosDoc.exists) {
+            siteConfig.promotions = promosDoc.data().active || [];
+            console.log('✅ Promotions loaded:', siteConfig.promotions);
+        }
+        
+        // Load inventory
+        const inventoryDoc = await db.collection('config').doc('inventory').get();
+        if (inventoryDoc.exists) {
+            siteConfig.inventory = inventoryDoc.data();
+            console.log('✅ Inventory loaded:', siteConfig.inventory);
+        }
+        
+        // Load banner
+        const bannerDoc = await db.collection('config').doc('banner').get();
+        if (bannerDoc.exists) {
+            siteConfig.banner = bannerDoc.data();
+            console.log('✅ Banner loaded:', siteConfig.banner);
+            displayBanner();
+        }
+        
+        // Apply config to website
+        applyPricingConfig();
+        filterInventoryColors();
+        
+    } catch (error) {
+        console.error('❌ Error loading config:', error);
+    }
+}
+
+// Apply pricing rounding rules
+function applyPricingConfig() {
+    // This will be used in your calculatePrice function
+    window.pricingRounding = siteConfig.pricing.rounding || 'none';
+    window.customRoundUp = siteConfig.pricing.customRoundUp || false;
+    window.dealRoundDown = siteConfig.pricing.dealRoundDown || false;
+    window.hourlyRateMultiplier = siteConfig.pricing.hourlyRate || 1.0;
+}
+
+// Apply rounding to a price
+function applyRounding(price, category) {
+    // Category overrides
+    if (category === 'Custom' && window.customRoundUp) {
+        return Math.ceil(price);
+    }
+    if (category === '$5 Deal' && window.dealRoundDown) {
+        return Math.floor(price);
+    }
+    
+    // Global rounding rule
+    switch(window.pricingRounding) {
+        case 'up': return Math.ceil(price);
+        case 'down': return Math.floor(price);
+        case 'nearest': return Math.round(price);
+        case 'half': return Math.round(price * 2) / 2;
+        case 'quarter': return Math.round(price * 4) / 4;
+        default: return price; // No rounding
+    }
+}
+
+// Filter out-of-stock colors from display
+function filterInventoryColors() {
+    // This modifies your color options based on inventory
+    window.inventoryStatus = siteConfig.inventory;
+}
+
+// Check if a color is in stock
+function isColorInStock(material, color) {
+    if (!window.inventoryStatus) return true;
+    
+    const matInventory = window.inventoryStatus[material.toLowerCase()];
+    if (!matInventory) return true;
+    
+    return matInventory[color.toLowerCase()] !== false;
+}
+
+// Display announcement banner
+function displayBanner() {
+    const banner = siteConfig.banner;
+    if (!banner || !banner.active) {
+        // Remove banner if exists
+        const existingBanner = document.getElementById('siteBanner');
+        if (existingBanner) existingBanner.remove();
+        return;
+    }
+    
+    // Check if expired
+    if (banner.expiry && new Date(banner.expiry) < new Date()) {
+        return;
+    }
+    
+    // Create banner element
+    const bannerEl = document.createElement('div');
+    bannerEl.id = 'siteBanner';
+    bannerEl.style.cssText = `
+        position: sticky;
+        top: 0;
+        z-index: 999;
+        padding: 15px;
+        text-align: center;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        animation: slideDown 0.3s;
+        border-bottom: 2px solid;
+    `;
+    
+    // Set colors based on type
+    const colors = {
+        success: { bg: 'rgba(0, 255, 0, 0.2)', text: '#00ff00', border: '#00ff00' },
+        warning: { bg: 'rgba(255, 165, 0, 0.2)', text: '#ffaa00', border: '#ff8800' },
+        danger: { bg: 'rgba(255, 0, 0, 0.2)', text: '#ff6666', border: '#ff0000' },
+        info: { bg: 'rgba(0, 150, 255, 0.2)', text: '#00aaff', border: '#0088ff' }
+    };
+    
+    const color = colors[banner.type] || colors.success;
+    bannerEl.style.background = color.bg;
+    bannerEl.style.color = color.text;
+    bannerEl.style.borderColor = color.border;
+    bannerEl.textContent = banner.text;
+    
+    // Insert at top of body
+    document.body.insertBefore(bannerEl, document.body.firstChild);
+}
+
+// Apply promo code at checkout
+function applyPromoCode(code, total, items) {
+    const promo = siteConfig.promotions.find(p => p.code.toUpperCase() === code.toUpperCase());
+    
+    if (!promo) {
+        return { valid: false, message: 'Invalid promo code', newTotal: total };
+    }
+    
+    let newTotal = total;
+    let message = '';
+    
+    if (promo.type === 'percentage') {
+        newTotal = total * (1 - promo.value / 100);
+        message = `${promo.value}% off applied!`;
+    } else if (promo.type === 'fixed') {
+        if (promo.minimum && total < promo.minimum) {
+            return { valid: false, message: `Minimum order $${promo.minimum} required`, newTotal: total };
+        }
+        newTotal = Math.max(0, total - promo.value);
+        message = `$${promo.value} off applied!`;
+    } else if (promo.type === 'freeItem' && promo.value === 'dealItem') {
+        // BOGO deal - add free $5 deal item to cart
+        message = 'Free $5 Deal item added! Select one at checkout.';
+    }
+    
+    return { valid: true, message: message, newTotal: newTotal };
+}
+function enableRealTimeSync() {
+    // Listen for banner changes
+    db.collection('config').doc('banner').onSnapshot(doc => {
+        if (doc.exists) {
+            siteConfig.banner = doc.data();
+            displayBanner();
+        }
+    });
+    
+    // Listen for promotion changes
+    db.collection('config').doc('promotions').onSnapshot(doc => {
+        if (doc.exists) {
+            siteConfig.promotions = doc.data().active || [];
+            console.log('🔄 Promotions updated in real-time');
+        }
+    });
+    
+    // Listen for pricing changes
+    db.collection('config').doc('pricing').onSnapshot(doc => {
+        if (doc.exists) {
+            siteConfig.pricing = doc.data();
+            applyPricingConfig();
+            console.log('🔄 Pricing updated in real-time');
+        }
+    });
+    
+    // Listen for inventory changes
+    db.collection('config').doc('inventory').onSnapshot(doc => {
+        if (doc.exists) {
+            siteConfig.inventory = doc.data();
+            filterInventoryColors();
+            console.log('🔄 Inventory updated in real-time');
+        }
+    });
+}
+
 </script>
 
 </head>
@@ -1910,6 +2117,20 @@
                     <textarea id="specialNotes" placeholder="Any special instructions or customizations?"></textarea>
                 </div>
 
+                <div class="form-group">
+    <label style="display: block; margin-bottom: 10px; color: #00ff00;">Promo Code (Optional)</label>
+    <div style="display: flex; gap: 10px;">
+        <input type="text" id="promoCode" placeholder="Enter promo code" 
+               style="flex: 1; padding: 12px; border: 2px solid #003300; border-radius: 8px; 
+               font-size: 16px; font-family: 'Courier New', Courier, monospace; 
+               background: rgba(0, 26, 0, 0.8); color: #00ff00;">
+        <button onclick="checkPromoCode()" class="btn" type="button" 
+                style="padding: 12px 24px; white-space: nowrap;">
+            Apply
+        </button>
+    </div>
+    <div id="promoMessage" style="margin-top: 10px;"></div>
+</div>
                 <button class="submit-btn" onclick="checkout()">
                     SUBMIT ORDER
                 </button>
@@ -2433,7 +2654,18 @@ let selectedRating = 0;
 
         // Render Color Options
         function renderColorOptions() {
-            const colorContainer = document.getElementById('colorOptions');
+            // Filter out-of-stock colors
+    const originalColors = colors;
+    colors = colors.filter(color => {
+        const colorKey = color.value.toLowerCase();
+        return isColorInStock(material, colorKey);
+    });
+    
+    // If no colors available, show all (safety fallback)
+    if (colors.length === 0) {
+        colors = originalColors;
+    }
+        const colorContainer = document.getElementById('colorOptions');
             let colors = [];
 
             if (selectedMaterial === 'petg') {
@@ -2489,6 +2721,7 @@ let selectedRating = 0;
                 return;
             }
 
+
             const grams = selectedProduct.grams;
             
             let pricePerGram = 0;
@@ -2505,7 +2738,7 @@ let selectedRating = 0;
             }
             
             let materialCost = pricePerGram * grams;
-            let subtotal = 1 + (materialCost / 0.2);
+            let subtotal = 1 + (materialCost / 0.4);
             
             let discount = 0;
             if (subtotal > 20) {
@@ -2526,6 +2759,10 @@ let selectedRating = 0;
             `;
             
             document.getElementById('priceDisplay').innerHTML = html;
+            if (typeof applyRounding === 'function') {
+                total = applyRounding(total, selectedProduct.category);
+            }
+            return total;
         }
 
         // Add configured item to cart
@@ -2889,7 +3126,60 @@ function updateAllProductRatings() {
 // FIREBASE ORDER SUBMISSION
 // Replace your existing checkout function with this
 // ============================================
-
+function checkPromoCode() {
+    const code = document.getElementById('promoCode').value.trim();
+    if (!code) {
+        document.getElementById('promoMessage').innerHTML = '';
+        return;
+    }
+    
+    // Calculate current cart total
+    const dealItems = cart.filter(item => item.product.category === '$5 Deal');
+    const otherItems = cart.filter(item => item.product.category !== '$5 Deal');
+    let subtotal = 0;
+    
+    // Apply bundle pricing
+    if (dealItems.length >= 5) {
+        const bundleCount = Math.floor(dealItems.length / 5);
+        const remainingDeals = dealItems.length % 5;
+        subtotal += bundleCount * 5;
+        for (let i = 0; i < remainingDeals; i++) subtotal += dealItems[i].price;
+    } else {
+        dealItems.forEach(item => subtotal += item.price);
+    }
+    
+    // Add other items
+    otherItems.forEach(item => subtotal += item.price);
+    
+    // Apply cart discounts
+    if (subtotal > 30) subtotal -= subtotal * 0.20;
+    else if (subtotal > 20) subtotal -= subtotal * 0.15;
+    else if (subtotal > 10) subtotal -= subtotal * 0.10;
+    
+    // Check promo code
+    const result = applyPromoCode(code, subtotal, cart);
+    
+    const msgDiv = document.getElementById('promoMessage');
+    if (result.valid) {
+        msgDiv.innerHTML = `
+            <div style="background: rgba(0, 255, 0, 0.1); border: 2px solid #00ff00; padding: 10px; border-radius: 8px; color: #00ff00;">
+                ✅ ${result.message}<br>
+                <strong>New Total: $${result.newTotal.toFixed(2)}</strong>
+            </div>
+        `;
+        
+        // Store promo for checkout
+        window.appliedPromo = { code: code, newTotal: result.newTotal };
+        
+    } else {
+        msgDiv.innerHTML = `
+            <div style="background: rgba(255, 0, 0, 0.1); border: 2px solid #ff6666; padding: 10px; border-radius: 8px; color: #ff6666;">
+                ❌ ${result.message}
+            </div>
+        `;
+        window.appliedPromo = null;
+    }
+}
 async function checkout() {
     const customerName = document.getElementById('customerName').value.trim();
     const homeroom = document.getElementById('customerHomeroom').value.trim();
@@ -2935,7 +3225,11 @@ async function checkout() {
     }
 
     let total = subtotal;
-    
+    // Apply promo code if one was entered
+    if (window.appliedPromo && window.appliedPromo.newTotal) {
+        total = window.appliedPromo.newTotal;
+        orderDetails += `\n\n**PROMO CODE APPLIED: ${window.appliedPromo.code}**`;
+    }
     // Create order details text
     let orderDetails = '';
     cart.forEach((item, index) => {
@@ -3339,6 +3633,11 @@ window.onload = async function() {
     initializeMobileTabs();
     
     console.log('Page fully loaded and mobile-ready!');
+    window.addEventListener('load', async function() {
+    await loadSiteConfig();
+    console.log('✅ Site configuration loaded and applied!');
+});
+
 };
     </script>
 </body>
