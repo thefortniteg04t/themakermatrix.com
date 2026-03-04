@@ -1038,373 +1038,291 @@
             document.getElementById('previewPrice').textContent = '$' + price.toFixed(2);
         }
 
-        function savePricingFormula() {
-            saveSettings();
-            const code = generatePricingCode();
-            document.getElementById('pricingMessage').innerHTML = `
-                <div class="success-message">
-                    ✅ Formula saved! Copy the code below to your main website's calculatePrice() function:
-                    <div class="code-block" style="margin-top:10px;">${code}</div>
-                </div>
-            `;
-        }
+// ============================================
+// ADMIN PANEL - FIREBASE SYNC FUNCTIONS
+// ============================================
+// REPLACE the localStorage functions in your admin panel with these:
 
-        function generatePricingCode() {
-            let code = `// Apply rounding: ${currentRounding}\n`;
-            code += `let finalPrice = basePrice + materialCost;\n`;
-            
-            switch(currentRounding) {
-                case 'up': code += `finalPrice = Math.ceil(finalPrice);`; break;
-                case 'down': code += `finalPrice = Math.floor(finalPrice);`; break;
-                case 'nearest': code += `finalPrice = Math.round(finalPrice);`; break;
-                case 'half': code += `finalPrice = Math.round(finalPrice * 2) / 2;`; break;
-                case 'quarter': code += `finalPrice = Math.round(finalPrice * 4) / 4;`; break;
-            }
-            
-            if (document.getElementById('customRoundUp').checked) {
-                code += `\nif (product.category === 'Custom') finalPrice = Math.ceil(finalPrice);`;
-            }
-            if (document.getElementById('dealRoundDown').checked) {
-                code += `\nif (product.category === '$5 Deal') finalPrice = Math.floor(finalPrice);`;
-            }
-            
-            return code;
-        }
+// Save pricing config to Firebase
+async function savePricingFormula() {
+    const config = {
+        rounding: currentRounding,
+        hourlyRate: parseFloat(document.getElementById('hourlyRate').value) || 1.0,
+        baseFormula: document.getElementById('baseFormula').value || '1 + hours',
+        customRoundUp: document.getElementById('customRoundUp').checked,
+        dealRoundDown: document.getElementById('dealRoundDown').checked,
+        lastUpdated: new Date().toISOString()
+    };
+    
+    try {
+        await db.collection('config').doc('pricing').set(config);
+        
+        document.getElementById('pricingMessage').innerHTML = `
+            <div class="success-message">
+                ✅ Pricing formula saved to Firebase!<br>
+                Changes are now LIVE on your website instantly!
+            </div>
+        `;
+        
+        console.log('✅ Pricing saved to Firebase:', config);
+        
+    } catch (error) {
+        console.error('❌ Error saving pricing:', error);
+        document.getElementById('pricingMessage').innerHTML = `
+            <div class="error-message">Error: ${error.message}</div>
+        `;
+    }
+}
 
-        // Promotions
-        function activatePreset(presetType) {
-            const presets = {
-                'bogo': {
-                    name: 'BOGO Free',
-                    code: 'BOGOFREE',
-                    type: 'percentage',
-                    value: 50,
-                    description: 'Buy One Get One 50% Off',
-                    banner: '🎁 BUY ONE GET ONE FREE!'
-                },
-                'bogo-deal': {
-                    name: 'Buy 1 Get $5 Deal Free',
-                    code: 'FREEDEAL',
-                    type: 'freeItem',
-                    value: 'dealItem',
-                    description: 'Get a free $5 Deal item with purchase',
-                    banner: '💝 BUY ANYTHING, GET A $5 DEAL ITEM FREE!'
-                },
-                'half-off': {
-                    name: '50% Off Everything',
-                    code: 'HALF50',
-                    type: 'percentage',
-                    value: 50,
-                    description: 'Sitewide 50% discount',
-                    banner: '🔥 FLASH SALE: 50% OFF EVERYTHING!'
-                },
-                'flash-30': {
-                    name: 'Flash Sale 30%',
-                    code: 'FLASH30',
-                    type: 'percentage',
-                    value: 30,
-                    description: '30% off all orders',
-                    banner: '⚡ FLASH SALE: 30% OFF - HURRY!'
-                },
-                'discount-5': {
-                    name: '$5 Off Over $20',
-                    code: 'SAVE5',
-                    type: 'fixed',
-                    value: 5,
-                    minimum: 20,
-                    description: '$5 off orders over $20',
-                    banner: '💵 SAVE $5 ON ORDERS OVER $20!'
-                },
-                'weekend': {
-                    name: 'Weekend Special',
-                    code: 'WEEKEND',
-                    type: 'percentage',
-                    value: 20,
-                    description: '20% off + free premium rush',
-                    banner: '🎊 WEEKEND SPECIAL: 20% OFF + FREE RUSH!'
-                }
-            };
-            
-            const promo = presets[presetType];
-            if (!promo) return;
-            
-            // Add to active promotions
-            activePromotions = [promo];
-            saveSettings();
-            
-            // Auto-fill banner
-            document.getElementById('bannerText').value = promo.banner;
-            
-            alert(`✅ ${promo.name} activated!\n\nCode: ${promo.code}\n${promo.description}\n\nBanner has been auto-filled. Click "Publish Banner" to show it on your website.`);
-            
-            renderPromotions();
-            updateGeneratedCode();
+// Activate promotion preset (save to Firebase)
+async function activatePreset(presetType) {
+    const presets = {
+        'bogo': {
+            name: 'BOGO Free',
+            code: 'BOGOFREE',
+            type: 'percentage',
+            value: 50,
+            description: 'Buy One Get One 50% Off',
+            banner: '🎁 BUY ONE GET ONE FREE!'
+        },
+        'bogo-deal': {
+            name: 'Buy 1 Get $5 Deal Free',
+            code: 'FREEDEAL',
+            type: 'freeItem',
+            value: 'dealItem',
+            description: 'Get a free $5 Deal item with purchase',
+            banner: '💝 BUY ANYTHING, GET A $5 DEAL ITEM FREE!'
+        },
+        'half-off': {
+            name: '50% Off Everything',
+            code: 'HALF50',
+            type: 'percentage',
+            value: 50,
+            description: 'Sitewide 50% discount',
+            banner: '🔥 FLASH SALE: 50% OFF EVERYTHING!'
+        },
+        'flash-30': {
+            name: 'Flash Sale 30%',
+            code: 'FLASH30',
+            type: 'percentage',
+            value: 30,
+            description: '30% off all orders',
+            banner: '⚡ FLASH SALE: 30% OFF - HURRY!'
+        },
+        'discount-5': {
+            name: '$5 Off Over $20',
+            code: 'SAVE5',
+            type: 'fixed',
+            value: 5,
+            minimum: 20,
+            description: '$5 off orders over $20',
+            banner: '💵 SAVE $5 ON ORDERS OVER $20!'
+        },
+        'weekend': {
+            name: 'Weekend Special',
+            code: 'WEEKEND',
+            type: 'percentage',
+            value: 20,
+            description: '20% off + free premium rush',
+            banner: '🎊 WEEKEND SPECIAL: 20% OFF + FREE RUSH!'
         }
+    };
+    
+    const promo = presets[presetType];
+    if (!promo) return;
+    
+    try {
+        // Save to Firebase
+        activePromotions = [promo];
+        await db.collection('config').doc('promotions').set({
+            active: activePromotions,
+            lastUpdated: new Date().toISOString()
+        });
+        
+        // Auto-fill banner
+        document.getElementById('bannerText').value = promo.banner;
+        
+        alert(`✅ ${promo.name} activated!\n\nCode: ${promo.code}\n${promo.description}\n\nPromotion is now LIVE on your website!`);
+        
+        renderPromotions();
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        alert('Error activating promotion: ' + error.message);
+    }
+}
 
-        function renderPromotions() {
-            if (activePromotions.length === 0) {
-                document.getElementById('activePromotions').innerHTML = 
-                    '<div class="info-box">No active promotions</div>';
-                return;
-            }
+// Deactivate promotion (remove from Firebase)
+async function deactivatePromotion(code) {
+    try {
+        activePromotions = activePromotions.filter(p => p.code !== code);
+        
+        await db.collection('config').doc('promotions').set({
+            active: activePromotions,
+            lastUpdated: new Date().toISOString()
+        });
+        
+        alert('✅ Promotion deactivated - removed from website!');
+        renderPromotions();
+        
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+// Publish banner to Firebase
+async function publishBanner() {
+    const text = document.getElementById('bannerText').value;
+    if (!text) {
+        alert('Please enter banner text');
+        return;
+    }
+    
+    const banner = {
+        text: text,
+        type: document.getElementById('bannerType').value,
+        expiry: document.getElementById('bannerExpiry').value || null,
+        active: true,
+        lastUpdated: new Date().toISOString()
+    };
+    
+    try {
+        await db.collection('config').doc('banner').set(banner);
+        
+        document.getElementById('bannerMessage').innerHTML = 
+            '<div class="success-message">✅ Banner published! It\'s now LIVE on your website!</div>';
+        
+        console.log('✅ Banner saved to Firebase:', banner);
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        document.getElementById('bannerMessage').innerHTML = 
+            '<div class="error-message">Error: ' + error.message + '</div>';
+    }
+}
+
+// Remove banner from Firebase
+async function removeBanner() {
+    try {
+        await db.collection('config').doc('banner').set({
+            active: false,
+            lastUpdated: new Date().toISOString()
+        });
+        
+        document.getElementById('bannerMessage').innerHTML = 
+            '<div class="success-message">✅ Banner removed from website!</div>';
+        
+    } catch (error) {
+        alert('Error: ' + error.message);
+    }
+}
+
+// Save inventory to Firebase
+async function saveInventory() {
+    try {
+        await db.collection('config').doc('inventory').set({
+            pla: inventory.pla,
+            petg: inventory.petg,
+            lastUpdated: new Date().toISOString()
+        });
+        
+        document.getElementById('inventoryMessage').innerHTML = 
+            '<div class="success-message">✅ Inventory saved! Out-of-stock colors are now hidden on website!</div>';
+        
+        console.log('✅ Inventory saved to Firebase:', inventory);
+        
+        setTimeout(() => {
+            document.getElementById('inventoryMessage').innerHTML = '';
+        }, 3000);
+        
+    } catch (error) {
+        console.error('❌ Error:', error);
+        document.getElementById('inventoryMessage').innerHTML = 
+            '<div class="error-message">Error: ' + error.message + '</div>';
+    }
+}
+
+// Load current settings from Firebase on admin panel load
+async function loadAdminSettings() {
+    try {
+        console.log('📥 Loading current settings from Firebase...');
+        
+        // Load pricing
+        const pricingDoc = await db.collection('config').doc('pricing').get();
+        if (pricingDoc.exists) {
+            const pricing = pricingDoc.data();
+            currentRounding = pricing.rounding || 'none';
+            document.getElementById('hourlyRate').value = pricing.hourlyRate || 1.0;
+            document.getElementById('baseFormula').value = pricing.baseFormula || '1 + hours';
+            document.getElementById('customRoundUp').checked = pricing.customRoundUp || false;
+            document.getElementById('dealRoundDown').checked = pricing.dealRoundDown || false;
             
-            const html = activePromotions.map(p => `
-                <div class="formula-editor">
-                    <h3>${p.name}</h3>
-                    <p><strong>Code:</strong> ${p.code}</p>
-                    <p><strong>Type:</strong> ${p.type === 'percentage' ? p.value + '% Off' : '$' + p.value + ' Off'}</p>
-                    <p>${p.description}</p>
-                    <button class="btn btn-danger btn-small" onclick="deactivatePromotion('${p.code}')">
-                        🗑️ Deactivate
-                    </button>
-                </div>
-            `).join('');
-            
-            document.getElementById('activePromotions').innerHTML = html;
+            // Update rounding UI
+            document.querySelectorAll('.rounding-option').forEach(opt => opt.classList.remove('active'));
+            const activeRounding = document.querySelector(`[onclick="selectRounding('${currentRounding}')"]`);
+            if (activeRounding) activeRounding.classList.add('active');
         }
-
-        function deactivatePromotion(code) {
-            activePromotions = activePromotions.filter(p => p.code !== code);
-            saveSettings();
-            renderPromotions();
-            updateGeneratedCode();
-            alert('Promotion deactivated');
+        
+        // Load promotions
+        const promosDoc = await db.collection('config').doc('promotions').get();
+        if (promosDoc.exists) {
+            activePromotions = promosDoc.data().active || [];
         }
-
-        function publishBanner() {
-            const text = document.getElementById('bannerText').value;
-            if (!text) {
-                alert('Please enter banner text');
-                return;
-            }
-            
-            const banner = {
-                text: text,
-                type: document.getElementById('bannerType').value,
-                expiry: document.getElementById('bannerExpiry').value || null
-            };
-            
-            localStorage.setItem('makerMatrixBanner', JSON.stringify(banner));
-            
-            document.getElementById('bannerMessage').innerHTML = 
-                '<div class="success-message">✅ Banner published! It will show on your main website.</div>';
-            
-            updateGeneratedCode();
+        
+        // Load inventory
+        const inventoryDoc = await db.collection('config').doc('inventory').get();
+        if (inventoryDoc.exists) {
+            const inv = inventoryDoc.data();
+            inventory.pla = inv.pla || inventory.pla;
+            inventory.petg = inv.petg || inventory.petg;
         }
-
-        function removeBanner() {
-            localStorage.removeItem('makerMatrixBanner');
-            document.getElementById('bannerMessage').innerHTML = 
-                '<div class="success-message">✅ Banner removed</div>';
-        }
-
-        function updateGeneratedCode() {
-            let code = '// Add this to your main website\n\n';
-            
-            if (activePromotions.length > 0) {
-                code += '// Active Promotions\n';
-                code += 'const activePromotions = ' + JSON.stringify(activePromotions, null, 2) + ';\n\n';
-                code += '// Apply at checkout:\n';
-                code += 'function applyPromoCode(code, total) {\n';
-                code += '  const promo = activePromotions.find(p => p.code === code);\n';
-                code += '  if (!promo) return total;\n';
-                code += '  if (promo.type === "percentage") return total * (1 - promo.value/100);\n';
-                code += '  if (promo.type === "fixed") return Math.max(0, total - promo.value);\n';
-                code += '  return total;\n';
-                code += '}\n';
-            } else {
-                code += '// No active promotions\n';
-            }
-            
-            const banner = localStorage.getItem('makerMatrixBanner');
-            if (banner) {
-                code += '\n// Active Banner\n';
-                code += 'const activeBanner = ' + banner + ';\n';
-            }
-            
-            document.getElementById('generatedCode').textContent = code;
-        }
-
-        // Inventory
-        function renderInventory() {
-            const colors = {
-                red: '#FF0000', black: '#000000', white: '#FFFFFF', gold: '#FFD700',
-                yellow: '#FFFF00', purple: '#800080', blue: '#4169E1', green: '#D0ED78',
-                orange: '#FFA500', greyblue: '#5B7C99',
-                'multi-rg': 'linear-gradient(135deg, #FF0000 50%, #008000 50%)',
-                'multi-rb': 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)',
-                'multi-rgold': 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)',
-                'multi-bg': 'linear-gradient(135deg, #4169E1 50%, #008000 50%)'
-            };
-            
-            let plaHTML = '';
-            for (let color in inventory.pla) {
-                const inStock = inventory.pla[color];
-                plaHTML += `
-                    <div style="padding:15px;border:2px solid ${inStock?'#00ff00':'#ff0000'};border-radius:8px;text-align:center;cursor:pointer;" onclick="toggleInventory('pla','${color}')">
-                        <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 10px;background:${colors[color]};border:2px solid #003300;"></div>
-                        <div>${color}</div>
-                        <div style="margin-top:5px;">${inStock ? '✅ In Stock' : '❌ Out'}</div>
-                    </div>
-                `;
-            }
-            document.getElementById('plaInventory').innerHTML = plaHTML;
-            
-            let petgHTML = '';
-            for (let color in inventory.petg) {
-                const inStock = inventory.petg[color];
-                petgHTML += `
-                    <div style="padding:15px;border:2px solid ${inStock?'#00ff00':'#ff0000'};border-radius:8px;text-align:center;cursor:pointer;" onclick="toggleInventory('petg','${color}')">
-                        <div style="width:60px;height:60px;border-radius:50%;margin:0 auto 10px;background:${colors[color]};border:2px solid #003300;"></div>
-                        <div>${color}</div>
-                        <div style="margin-top:5px;">${inStock ? '✅ In Stock' : '❌ Out'}</div>
-                    </div>
-                `;
-            }
-            document.getElementById('petgInventory').innerHTML = petgHTML;
-        }
-
-        function toggleInventory(material, color) {
-            inventory[material][color] = !inventory[material][color];
-            renderInventory();
-        }
-
-        function saveInventory() {
-            saveSettings();
-            document.getElementById('inventoryMessage').innerHTML = 
-                '<div class="success-message">✅ Inventory saved!</div>';
-            setTimeout(() => {
-                document.getElementById('inventoryMessage').innerHTML = '';
-            }, 3000);
-        }
-
-        // Reviews
-        async function loadReviews() {
-            try {
-                const snapshot = await db.collection('reviews').get();
-                allReviews = [];
-                snapshot.forEach(doc => allReviews.push({ id: doc.id, ...doc.data() }));
-                allReviews.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
-                displayReviews(allReviews);
-            } catch (error) {
-                console.error('Error:', error);
+        
+        // Load banner
+        const bannerDoc = await db.collection('config').doc('banner').get();
+        if (bannerDoc.exists && bannerDoc.data().active) {
+            const banner = bannerDoc.data();
+            document.getElementById('bannerText').value = banner.text || '';
+            document.getElementById('bannerType').value = banner.type || 'success';
+            if (banner.expiry) {
+                document.getElementById('bannerExpiry').value = banner.expiry;
             }
         }
+        
+        console.log('✅ Settings loaded from Firebase');
+        renderPromotions();
+        renderInventory();
+        updatePreviewPrice();
+        
+    } catch (error) {
+        console.error('❌ Error loading settings:', error);
+    }
+}
 
-        function displayReviews(reviews) {
-            if (reviews.length === 0) {
-                document.getElementById('reviewsTable').innerHTML = '<div class="empty-state">No reviews</div>';
-                return;
-            }
-            
-            const html = `
-                <table>
-                    <tr><th>Date</th><th>Product</th><th>Author</th><th>Rating</th><th>Review</th><th>Actions</th></tr>
-                    ${reviews.map(r => `
-                        <tr>
-                            <td>${new Date(r.timestamp).toLocaleDateString()}</td>
-                            <td>${r.productName}</td>
-                            <td>${r.author}</td>
-                            <td>${'★'.repeat(r.stars)}</td>
-                            <td>${r.text.substring(0, 50)}...</td>
-                            <td><button class="btn btn-small btn-danger" onclick="deleteReview('${r.id}')">🗑️</button></td>
-                        </tr>
-                    `).join('')}
-                </table>
-            `;
-            document.getElementById('reviewsTable').innerHTML = html;
+// ============================================
+// UPDATE YOUR window.onload
+// ============================================
+
+// Replace the existing window.onload with this:
+window.onload = async function() {
+    // Check password (keep this if you have it)
+    const savedPassword = localStorage.getItem('makerMatrixPassword');
+    if (savedPassword) {
+        const entered = prompt('Enter admin password:');
+        if (entered !== savedPassword) {
+            alert('Access denied!');
+            window.location.href = 'index.html';
+            return;
         }
-
-        function filterReviews() {
-            const search = document.getElementById('reviewSearch').value.toLowerCase();
-            const filtered = allReviews.filter(r => 
-                r.productName.toLowerCase().includes(search) ||
-                r.author.toLowerCase().includes(search) ||
-                r.text.toLowerCase().includes(search)
-            );
-            displayReviews(filtered);
-        }
-
-        async function deleteReview(id) {
-            if (!confirm('Delete this review?')) return;
-            try {
-                await db.collection('reviews').doc(id).delete();
-                alert('Review deleted');
-                loadReviews();
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        }
-
-        function deleteSelectedReviews() {
-            alert('Bulk delete coming soon! For now, delete reviews individually.');
-        }
-
-        // Settings
-        function savePassword() {
-            const password = document.getElementById('adminPassword').value;
-            if (password) {
-                localStorage.setItem('makerMatrixPassword', password);
-                alert('Password saved! This panel will now require a password on load.');
-            }
-        }
-
-        function exportAllData() {
-            const data = {
-                settings: JSON.parse(localStorage.getItem('makerMatrixSettings') || '{}'),
-                banner: JSON.parse(localStorage.getItem('makerMatrixBanner') || 'null'),
-                inventory: inventory,
-                promotions: activePromotions,
-                exportDate: new Date().toISOString()
-            };
-            
-            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'maker-matrix-backup-' + new Date().toISOString().split('T')[0] + '.json';
-            a.click();
-        }
-
-        function clearAllData() {
-            if (!confirm('This will DELETE ALL settings and data. Are you sure?')) return;
-            if (!confirm('REALLY sure? This cannot be undone!')) return;
-            
-            localStorage.clear();
-            location.reload();
-        }
-
-        function copyCode() {
-            const code = document.getElementById('generatedCode').textContent;
-            navigator.clipboard.writeText(code);
-            alert('✅ Code copied to clipboard!');
-        }
-
-        function exportData() {
-            exportAllData();
-        }
-
-        // Initialize
-        window.onload = function() {
-            // Check password
-            const savedPassword = localStorage.getItem('makerMatrixPassword');
-            if (savedPassword) {
-                const entered = prompt('Enter admin password:');
-                if (entered !== savedPassword) {
-                    alert('Access denied!');
-                    window.location.href = 'index.html';
-                    return;
-                }
-            }
-            
-            loadSettings();
-            loadDashboard();
-            renderInventory();
-            renderPromotions();
-            updateGeneratedCode();
-            updatePreviewPrice();
-            
-            console.log('✅ Ultimate Admin Panel ready!');
+    }
+    
+    // Load settings from Firebase
+    await loadAdminSettings();
+    
+    // Load data
+    loadDashboard();
+    
+    console.log('✅ Admin panel loaded with Firebase sync!');
+    document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
         };
     </script>
 </body>
