@@ -2541,18 +2541,9 @@ function renderColorOptions(material) {
 }
 // Render Color Options
 function renderColorOptions() {
-// Filter out-of-stock colors
-    const originalColors = colors;
-    colors = colors.filter(color => {
-        const colorKey = color.value.toLowerCase();
-        return isColorInStock(material, colorKey);
-    });
-    
-    // If no colors available, show all (safety fallback)
-if (colors.length === 0) {
-    colors = originalColors;
-    }
     const colorContainer = document.getElementById('colorOptions');
+    
+    // Define colors array FIRST
     let colors = [];
 
     if (selectedMaterial === 'petg') {
@@ -2576,16 +2567,26 @@ if (colors.length === 0) {
             { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.05, extra: 0.02, textColor: '#fff', isMulti: true }
         ];
     }
-
-    colorContainer.innerHTML = colors.map(color => {
+    
+    // NOW filter out-of-stock colors
+    const availableColors = colors.filter(color => {
+        const colorKey = color.value.toLowerCase();
+        return isColorInStock(selectedMaterial, colorKey);
+    });
+    
+    // Safety: if no colors available, show all
+    const finalColors = availableColors.length > 0 ? availableColors : colors;
+    
+    // Render the colors
+    colorContainer.innerHTML = finalColors.map(color => {
         const priceText = color.isMulti 
             ? `+$${(color.price + color.extra).toFixed(2)}/g` 
             : `+$${color.price.toFixed(2)}/g`;
-                
+        
         return `
             <div class="color-option ${selectedColor === color.value ? 'selected' : ''}" 
-                onclick="selectColor('${color.value}')"
-                style="background: ${color.bg}; color: ${color.textColor};">
+                 onclick="selectColor('${color.value}')"
+                 style="background: ${color.bg}; color: ${color.textColor};">
                 ${color.name}
                 <span class="color-price">${priceText}</span>
                 ${color.isMulti ? '<span class="color-price" style="font-size: 0.75em;">(Multi-color)</span>' : ''}
@@ -2947,7 +2948,10 @@ async function loadAllReviews() {
 }
 
 // Get reviews for specific product
+// Get reviews for specific product
 function getProductReviews(productId) {
+    console.log('Getting reviews for product:', productId);
+    console.log('Available reviews:', globalReviews[productId]);
     return globalReviews[productId] || [];
 }
 
@@ -2962,9 +2966,19 @@ function getAverageRating(productId) {
 // Display reviews in product modal
 function displayProductReviews(productId) {
     const reviewsSection = document.getElementById('modalProductReviews');
+    if (!reviewsSection) {
+        console.error('❌ modalProductReviews element not found');
+        return;
+    }
+    
     const reviews = getProductReviews(productId);
     const avgRating = getAverageRating(productId);
     const product = products.find(p => p.id === productId);
+    
+    if (!product) {
+        console.error('❌ Product not found:', productId);
+        return;
+    }
     
     let html = '<h3>Customer Reviews</h3>';
     
@@ -3642,24 +3656,24 @@ function initializeMobileTabs() {
 
 // Initialize everything when page loads
 window.onload = async function() {
+    // Load Firebase config first
     await loadSiteConfig();
+    
+    // Load reviews - THIS LINE IS CRITICAL
+    await loadAllReviews();
+    
+    // Update product ratings
+    updateAllProductRatings();
+    
+    // Initialize mobile tabs
+    initializeMobileTabs();
+    
+    // Populate product dropdown
     populateProductSelect();
     renderColorOptions();
     updateCartDisplay();
     
-    // Load reviews from Google Sheets
-    await loadAllReviews();
-    updateAllProductRatings();
-    
-    // Initialize mobile tab support
-    initializeMobileTabs();
-    
-    console.log('Page fully loaded and mobile-ready!');
-    window.addEventListener('load', async function() {
-    await loadSiteConfig();
-    console.log('✅ Site configuration loaded and applied!');
-});
-
+    console.log('✅ Page fully loaded!');
 };
     </script>
 </body>
