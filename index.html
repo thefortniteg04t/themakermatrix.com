@@ -2539,6 +2539,60 @@ function renderColorOptions(material) {
         // Your rendering code here
     });
 }
+                // Render Color Options
+        function renderColorOptions() {
+            // Filter out-of-stock colors
+    const originalColors = colors;
+    colors = colors.filter(color => {
+        const colorKey = color.value.toLowerCase();
+        return isColorInStock(material, colorKey);
+    });
+    
+    // If no colors available, show all (safety fallback)
+if (colors.length === 0) {
+    colors = originalColors;
+    }
+    const colorContainer = document.getElementById('colorOptions');
+    let colors = [];
+
+    if (selectedMaterial === 'petg') {
+        colors = [
+            { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.05, textColor: '#fff' }
+        ];
+    } else {
+        colors = [
+            { value: 'red', name: 'Red', bg: '#FF0000', price: 0.03, textColor: '#000' },
+            { value: 'black', name: 'Black', bg: '#000000', price: 0.03, textColor: '#fff' },
+            { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.04, textColor: '#000' },
+            { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.04, textColor: '#000' },
+            { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.04, textColor: '#000' },
+            { value: 'purple', name: 'Purple', bg: '#800080', price: 0.05, textColor: '#fff' },
+            { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.05, textColor: '#fff' },
+            { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.05, textColor: '#fff' },
+            { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.05, textColor: '#000' },
+            { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
+            { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
+            { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.03, extra: 0.02, textColor: '#000', isMulti: true },
+            { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.05, extra: 0.02, textColor: '#fff', isMulti: true }
+        ];
+    }
+
+    colorContainer.innerHTML = colors.map(color => {
+        const priceText = color.isMulti 
+            ? `+$${(color.price + color.extra).toFixed(2)}/g` 
+            : `+$${color.price.toFixed(2)}/g`;
+                
+        return `
+            <div class="color-option ${selectedColor === color.value ? 'selected' : ''}" 
+                onclick="selectColor('${color.value}')"
+                style="background: ${color.bg}; color: ${color.textColor};">
+                ${color.name}
+                <span class="color-price">${priceText}</span>
+                ${color.isMulti ? '<span class="color-price" style="font-size: 0.75em;">(Multi-color)</span>' : ''}
+            </div>
+        `;
+    }).join('');
+}
         // Product selection in calculator
         function onProductSelect() {
             const select = document.getElementById('productSelect');
@@ -2674,62 +2728,6 @@ function renderColorOptions(material) {
             renderColorOptions();
             calculatePrice();
         }
-
-        // Render Color Options
-        function renderColorOptions() {
-            // Filter out-of-stock colors
-    const originalColors = colors;
-    colors = colors.filter(color => {
-        const colorKey = color.value.toLowerCase();
-        return isColorInStock(material, colorKey);
-    });
-    
-    // If no colors available, show all (safety fallback)
-    if (colors.length === 0) {
-        colors = originalColors;
-    }
-        const colorContainer = document.getElementById('colorOptions');
-            let colors = [];
-
-            if (selectedMaterial === 'petg') {
-                colors = [
-                    { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.05, textColor: '#fff' }
-                ];
-            } else {
-                colors = [
-                    { value: 'red', name: 'Red', bg: '#FF0000', price: 0.03, textColor: '#000' },
-                    { value: 'black', name: 'Black', bg: '#000000', price: 0.03, textColor: '#fff' },
-                    { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.04, textColor: '#000' },
-                    { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.04, textColor: '#000' },
-                    { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.04, textColor: '#000' },
-                    { value: 'purple', name: 'Purple', bg: '#800080', price: 0.05, textColor: '#fff' },
-                    { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.05, textColor: '#fff' },
-                    { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.05, textColor: '#fff' },
-                    { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.05, textColor: '#000' },
-                    { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
-                    { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
-                    { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.03, extra: 0.02, textColor: '#000', isMulti: true },
-                    { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.05, extra: 0.02, textColor: '#fff', isMulti: true }
-                ];
-            }
-
-            colorContainer.innerHTML = colors.map(color => {
-                const priceText = color.isMulti 
-                    ? `+$${(color.price + color.extra).toFixed(2)}/g` 
-                    : `+$${color.price.toFixed(2)}/g`;
-                
-                return `
-                    <div class="color-option ${selectedColor === color.value ? 'selected' : ''}" 
-                         onclick="selectColor('${color.value}')"
-                         style="background: ${color.bg}; color: ${color.textColor};">
-                        ${color.name}
-                        <span class="color-price">${priceText}</span>
-                        ${color.isMulti ? '<span class="color-price" style="font-size: 0.75em;">(Multi-color)</span>' : ''}
-                    </div>
-                `;
-            }).join('');
-        }
-
         // Select Color
         function selectColor(color) {
             selectedColor = color;
