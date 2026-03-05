@@ -3706,10 +3706,10 @@ function initializeMobileTabs() {
 
 // Initialize everything when page loads
 window.onload = async function() {
-    // Load Firebase config first
+    // Load Firebase config
     await loadSiteConfig();
     
-    // Load reviews - THIS LINE IS CRITICAL
+    // Load reviews
     await loadAllReviews();
     
     // Update product ratings
