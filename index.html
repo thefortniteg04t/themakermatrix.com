@@ -1344,7 +1344,7 @@ let siteConfig = {
     inventory: { pla: {}, petg: {} },
     banner: null
 };
-
+let products = [];
 // Load config from Firebase on page load
 async function loadSiteConfig() {
     try {
@@ -2386,51 +2386,64 @@ function enableRealTimeSync() {
 // Global reviews cache
 let globalReviews = {};
 let selectedRating = 0;
-        // PRODUCT DATABASE
-        window.products = [
-            // DECORATIVE ITEMS
-            { id: 1, name: 'Straw Topper', category: 'Decorative', grams: 20, hours: 1.2, emoji: '🥤', image: 'https://i.imgur.com/p2uTIaS.png', description: 'Fun and colorful straw toppers to personalize your drinks. Perfect for parties, gifts, or daily use. Customizable in every way possible!', dimensions: '1"x1"x1"' },
-            { id: 2, name: 'Keychain', category: 'Decorative', grams: 8, hours: 0.75, emoji: '🏷️', image: 'https://i.imgur.com/Jn9D34K.png', description: 'Customizable keychains in various designs. Lightweight and perfect for lanyards, bags, or as a unique gift.', dimensions: '1"x1"x1"' },
-            { id: 3, name: 'Desk Cactus', category: 'Decorative', grams: 50, hours: 2.8, emoji: '🌵', image: 'https://i.imgur.com/fl3T8u5.png', description: 'A cute little cactus to match the vibes. Perfect for gifts or desk accessory.', dimensions: '3"x1.5"x4"' },
-            { id: 4, name: 'Balancing Bird', category: 'Decorative', grams: 30, hours: 1.8, emoji: '🦅', image: 'https://i.imgur.com/EK9ldmU.png', description: 'This bird literally balances on anything- aside from round objects. It is an excellent party trick to show off to your friends.', dimensions: '3"x6"x0.5"' },
+// ============================================
+// PRODUCTS - AUTO-LOAD FROM FIREBASE
+// ============================================
 
-            // PRACTICAL ITEMS
-            { id: 5, name: 'LEGO Sorting Tray', category: 'Practical', grams: 45, hours: 3, emoji: '🧱', image: 'https://i.imgur.com/kj8Tub7.png', description: 'Organize your LEGO bricks efficiently with this multi-compartment sorting tray. Multiple sections for different sizes.', dimensions: '8"x8"x8"' },
-            { id: 6, name: 'Cable Organizer', category: 'Practical', grams: 31, hours: 1.7, emoji: '🔌', image: 'https://i.imgur.com/8rE5EnS.png', description: 'Say goodbye to tangled cables! This organizer keeps your charging cables, headphones, and wires neat and accessible.', dimensions: '1"x3.5"x4"' },
-            { id: 7, name: 'Roll-up Picnic Table', category: 'Practical', grams: 80, hours: 5, emoji: '🧺', image: 'https://i.imgur.com/Mf56D6Q.png', description: 'Portable and convenient roll-up table perfect for camping, picnics, or as an extra surface. Lightweight yet sturdy design.', dimensions: '12"x12"x8"' },
-            { id: 8, name: 'Sheets Holder', category: 'Practical', grams: 25, hours: 2, emoji: '🛏️', image: 'https://i.imgur.com/xGs4ooL.png', description: 'Got tough or annoying sheets? This is the ultimate solution! All you need to do is cover this in the sheets at each corner and lock it into place!', dimensions: '5"x5"x5"' },
-            { id: 9, name: 'Fruit Rinser', category: 'Practical', grams: 130, hours: 4, emoji: '🍇', image: 'https://i.imgur.com/pxhuXiT.png', description: 'Washing fruit has never been easier with this rinser! Simply put your fruit in the center and run water through the tube on the side. **Note this is NOT dishwasher safe. Do not wash in the dishwasher.', dimensions: '6"x8"x5"' },
-            { id: 10, name: 'Purse Hanger', category: 'Practical', grams: 15, hours: 1.5, emoji: '👜', image: 'https://i.imgur.com/8OhpLnD.png', description: 'If you don\'t like placing your purse on the floor or wasting space on the table, this is what you need. This gadget holds your purse off the edge of the table easily.', dimensions: '2"x1"x6"' },
-            { id: 11, name: 'Cable Clip', category: 'Practical', grams: 8, hours: 0.8, emoji: '🔌', image: 'https://i.imgur.com/oxWw4Pb.png', description: 'This minimalistic clip packs up your loose cords easily. Just snap and go!', dimensions: '2.5"x1"x1"' },
-            { id: 12, name: 'Glasses Holder', category: 'Practical', grams: 20, hours: 1.8, emoji: '👓', image: 'https://i.imgur.com/dhv52FD.png', description: 'This majestic Greek-Style column securely holds your glasses whilst standing them up. Great as decoration or display for glasses.', dimensions: '1"x1"x6"' },
-            { id: 13, name: 'Headphones Holder', category: 'Practical', grams: 60, hours: 2.7, emoji: '🎧', image: 'https://i.imgur.com/hyMtQgG.png', description: 'Tired of clustered desk space? This holder clamps onto the side of your desk and holds the headphones off to the side.', dimensions: '1"x4"x5"' },
+// Start with empty array (will be filled from Firebase)
+let products = [];
 
-            // SATISFYING FIDGETS
-            { id: 14, name: 'Infinity Cube', category: 'Fidget', grams: 100, hours:3.6, emoji: '🔲', image: 'https://i.imgur.com/aihR6No.png', description: 'Endlessly satisfying infinity cube fidget toy. Folds and unfolds in multiple directions for continuous fidgeting fun. Great for focus and stress relief.', dimensions: '2"x4"x1"' },
-            { id: 15, name: 'Clicker Button or Switch', category: 'Fidget', grams: 10, hours: 1, emoji: '👆', image: 'https://i.imgur.com/aVtCvRR.png', description: 'Like the satisfying sound of a light switch? How about a keyboard clack? This fidget mimics those with added satisfying click sounds!', dimensions: '1"x0.5"x1" or 1"x4"x0.5"' },
-            { id: 16, name: 'Pass Through', category: 'Fidget', grams: 12, hours: 1.2, emoji: '🌀', image: 'https://i.imgur.com/yecq8ZU.png', description: 'Classic pass through with smooth motion for long satisfaction. Great as a desk fidget for focus.', dimensions: '3"x3"x8"' },
-            { id: 17, name: 'Sensory Fidget', category: 'Fidget', grams: 15, hours: 1.3, emoji: '⭐', image: 'https://i.imgur.com/dTmgpnr.png', description: 'This fidget makes the best sounds. You just have to try it and trust us. No other way to describe it.', dimensions: '4"x4"x3"' },
-            { id: 18, name: '3D Fabric', category: 'Satisfying', grams: 20, hours: 2, emoji: '🧣', image: 'https://i.imgur.com/Ksi9yVE.png', description: 'This fabric is very cool to the touch and satisfies your senses. The cloth is great for whenever you want to feel something that is as cool as it sounds.', dimensions: '8"x8"x0.1"' },
-
-            // $5 DEAL ITEMS
-            { id: 19, name: 'Angry Duck', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🦆', image: 'https://i.imgur.com/Le1SFsr.png', description: 'This duck may look angry, but he just had a bad day. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 20, name: 'Baby Chicken', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🐤', image: 'https://i.imgur.com/F5RtTFL.png', description: 'This cute duck looks woven, but it is 3d Printed! Larger version available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 21, name: 'Chubby Bunny', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🐇', image: 'https://i.imgur.com/w2PyxJE.png', description: 'This cute little bunny is round and pleasantly plump. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 22, name: 'Goldfish', category: '$5 Deal', grams: 5, hours: 0.5, emoji: '🐠', image: 'https://i.imgur.com/cgvsM6M.png', description: 'The snack that smiles back! **DO NOT CONSUME! Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 23, name: 'Narwal', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🦭', image: 'https://i.imgur.com/R1LH1ih.png', description: 'This cute little Narwal is a great option for enthusiasts. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 24, name: 'Chubby Dino', category: '$5 Deal', grams: 7, hours: 0.7, emoji: '🦖', image: 'https://i.imgur.com/ybdMg8o.png', description: 'This chubby dinosaur is so cute, it\'ll melt your heart. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 25, name: 'Mini Otter', category: '$5 Deal', grams: 8, hours: 0.8, emoji: '🦦', image: 'https://i.imgur.com/Buopk8F.png', description: 'This articulated otter can wiggle around and simultaneously be the cutest otter ever. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 26, name: 'Panda', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🐼', image: 'https://i.imgur.com/VBc3zsA.png', description: 'Cute panda that sits around waiting for bamboo to eat. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 27, name: 'Froggy', category: '$5 Deal', grams: 12, hours: 0.5, emoji: '🐸', image: 'https://i.imgur.com/7m6NT66.png', description: 'This little frog is round and perfect for all decorational settings. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 28, name: 'Raccoon', category: '$5 Deal', grams: 6, hours: 0.6, emoji: '🦝', image: 'https://i.imgur.com/Go1TT49.png', description: 'Don\'t worry, he won\'t steal your food. Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-            { id: 29, name: 'Balloon Dog', category: '$5 Deal', grams: 3, hours: 0.5, emoji: '🐶', image: 'https://i.imgur.com/p2oji7p.png', description: 'These ballons look like a dog? Wait, it is a dog! Larger version is available for individual sale.', dimensions: '1"x1"x1"' },
-
-            // CUSTOM ORDERS
-            { id: 30, name: 'Custom Animal', category: 'Custom', grams: 15, hours: 2, emoji: '🐈', image: 'https://i.imgur.com/FYg88r9.png', description: 'Didn\'t see an animal you liked? Custom order one!', dimensions: 'custom"xcustom"xcustom"' },
-            { id: 31, name: 'Earrings', category: 'Custom', grams: 8, hours: 1, emoji: '💍', image: 'https://i.imgur.com/FNNj5pk.png', description: 'Want any customized bling? This is the right spot. Just request what you want and consider it done.', dimensions: 'custom"xcustom"xcustom"' },
-            { id: 32, name: 'Custom Prop', category: 'Custom', grams: 40, hours: 3, emoji: '🎭', image: 'https://i.imgur.com/nsEjmzM.png', description: 'Custom 3D printed figure from your favorite game or movie. Great for gaming miniatures, collectibles, or gifts. Pricing varies by complexity.', dimensions: 'custom"xcustom"xcustom"' },
-            { id: 33, name: 'Coaster', category: 'Custom', grams: 12, hours: 1.5, emoji: '🛞', image: 'https://i.imgur.com/G9fbSxn.png', description: 'Want a custom-made coaster? Perhaps a woven one, or a thematic one to go along with the design of your room.', dimensions: 'custom"xcustom"xcustom"' }
-        ];
+// Load products from Firebase
+async function loadProductsFromFirebase() {
+    try {
+        console.log('📦 Loading products from Firebase...');
+        
+        const productsSnapshot = await db.collection('products').get();
+        
+        if (productsSnapshot.empty) {
+            console.log('⚠️ No products found in Firebase');
+            return;
+        }
+        
+        // Clear existing
+        products = [];
+        
+        // Load from Firebase
+        productsSnapshot.forEach(doc => {
+            const p = doc.data();
+            products.push({
+                id: p.productId,
+                name: p.name,
+                category: p.category,
+                grams: p.grams,
+                hours: p.hours,
+                emoji: p.emoji,
+                image: p.image,
+                description: p.description,
+                dimensions: p.dimensions
+            });
+        });
+        
+        // Sort by ID
+        products.sort((a, b) => a.id - b.id);
+        
+        console.log('✅ Products loaded from Firebase:', products.length);
+        console.log('First product:', products[0]?.name);
+        console.log('Last product:', products[products.length - 1]?.name);
+        
+        // Refresh UI
+        if (document.getElementById('productSelect')) {
+            populateProductSelect();
+        }
+        
+        if (typeof updateAllProductRatings === 'function') {
+            updateAllProductRatings();
+        }
+        
+    } catch (error) {
+        console.error('❌ Error loading products:', error);
+    }
+}
         // GOOGLE FORMS CONFIGURATION
         const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse';
         
