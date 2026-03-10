@@ -1466,7 +1466,7 @@ async function loadProductsFromFirebase() {
         firebaseProducts.sort((a, b) => a.id - b.id);
         
         // Replace the products array
-        window.products = firebaseProducts;
+        let products = firebaseProducts;
         
         console.log('✅ Products loaded from Firebase:', firebaseProducts.length);
         
