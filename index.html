@@ -1434,56 +1434,6 @@ async function loadSiteConfig() {
         console.error('❌ Error loading config:', error);
     }
 }
-async function loadProductsFromFirebase() {
-    try {
-        console.log('📦 Loading products from Firebase...');
-        
-        const productsSnapshot = await db.collection('products').get();
-        
-        if (productsSnapshot.empty) {
-            console.log('⚠️ No products in Firebase, using fallback');
-            return;
-        }
-        
-        const firebaseProducts = [];
-        
-        productsSnapshot.forEach(doc => {
-            const p = doc.data();
-            firebaseProducts.push({
-                id: p.productId,
-                name: p.name,
-                category: p.category,
-                grams: p.grams,
-                hours: p.hours,
-                emoji: p.emoji,
-                image: p.image,
-                description: p.description,
-                dimensions: p.dimensions
-            });
-        });
-        
-        // Sort by ID
-        firebaseProducts.sort((a, b) => a.id - b.id);
-        
-        // Replace the products array
-        products = firebaseProducts;
-        
-        console.log('✅ Products loaded from Firebase:', firebaseProducts.length);
-        
-        // Refresh product dropdown if it exists
-        const productSelect = document.getElementById('productSelect');
-        if (productSelect) {
-            populateProductSelect();
-        }
-        
-        // Update product ratings
-        updateAllProductRatings();
-        
-    } catch (error) {
-        console.error('❌ Error loading products from Firebase:', error);
-        console.log('⚠️ Using hardcoded products as fallback');
-    }
-}
 // Apply pricing rounding rules
 function applyPricingConfig() {
     // This will be used in your calculatePrice function
@@ -2621,10 +2571,14 @@ async function loadProductsFromFirebase() {
             updateAllProductRatings();
         }
         
+        // ⭐ DISPLAY PRODUCTS IN COLLECTION!
+        displayProductCollection();
+        
     } catch (error) {
         console.error('❌ Error loading products:', error);
     }
 }
+
         // GOOGLE FORMS CONFIGURATION
         const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/1FAIpQLSf9MYA1ZBE21yLveE-0TTanUsW-hBc3K_sJYs9LkQfvNz-ReA/formResponse';
         
