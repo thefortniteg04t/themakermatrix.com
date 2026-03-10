@@ -1319,6 +1319,54 @@
     background: rgba(0, 77, 0, 0.3);
     border-radius: 8px;
 }
+/* ============================================ */
+/* OUT-OF-STOCK COLOR STYLING */
+/* ============================================ */
+
+/* Out of stock color option */
+.color-option.out-of-stock {
+    opacity: 0.5;
+    filter: grayscale(80%);
+    border: 3px solid #FFD700 !important;
+    position: relative;
+    cursor: not-allowed;
+    background: rgba(50, 50, 50, 0.5) !important;
+}
+
+.color-option.out-of-stock:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Diagonal "OUT OF STOCK" banner */
+.color-out-of-stock-banner {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+    border-radius: 8px;
+}
+
+.color-out-of-stock-banner::before {
+    content: 'OUT OF STOCK';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+    color: #000;
+    font-weight: bold;
+    font-size: 10px;
+    padding: 4px 30px;
+    white-space: nowrap;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+    border: 1px solid #000;
+    letter-spacing: 1px;
+}
 
 </style>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -1559,41 +1607,173 @@ function applyPromoCode(code, total, items) {
     
     return { valid: true, message: message, newTotal: newTotal };
 }
-function enableRealTimeSync() {
-    // Listen for banner changes
-    db.collection('config').doc('banner').onSnapshot(doc => {
+// ============================================
+// REAL-TIME PRODUCTS SYNC
+// ============================================
+
+function enableRealtimeProductSync() {
+    console.log('🔄 Real-time product sync ENABLED!');
+    
+    // Listen for ANY changes to products collection
+    db.collection('products').onSnapshot((snapshot) => {
+        // Skip initial load
+        if (!window.initialProductLoadComplete) {
+            window.initialProductLoadComplete = true;
+            return;
+        }
+        
+        console.log('🔔 Products changed! Updating...');
+        
+        // Rebuild products array
+        products = [];
+        
+        snapshot.forEach((doc) => {
+            const p = doc.data();
+            products.push({
+                id: p.productId,
+                name: p.name,
+                category: p.category,
+                grams: p.grams,
+                hours: p.hours,
+                emoji: p.emoji,
+                image: p.image,
+                description: p.description,
+                dimensions: p.dimensions
+            });
+        });
+        
+        // Sort by ID
+        products.sort((a, b) => a.id - b.id);
+        
+        console.log('✅ Products updated in real-time:', products.length);
+        
+        // Update UI instantly
+        if (document.getElementById('productSelect')) {
+            populateProductSelect();
+        }
+        
+        if (typeof updateAllProductRatings === 'function') {
+            updateAllProductRatings();
+        }
+        
+        // Show notification
+        showUpdateNotification('🔄 Products updated!');
+    });
+}
+// ============================================
+// UPDATE NOTIFICATION
+// ============================================
+
+function showUpdateNotification(message) {
+    // Don't show on initial load
+    if (!window.notificationsEnabled) {
+        window.notificationsEnabled = true;
+        return;
+    }
+    
+    // Create notification
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+        color: #00ff00;
+        padding: 15px 25px;
+        border-radius: 10px;
+        border: 2px solid #00ff00;
+        box-shadow: 0 0 30px rgba(0, 255, 0, 0.5);
+        z-index: 9999;
+        font-family: 'Courier New', Courier, monospace;
+        font-weight: bold;
+        animation: slideIn 0.3s ease-out;
+    `;
+    notification.textContent = message;
+    
+    // Add animation
+    if (!document.getElementById('notificationStyles')) {
+        const style = document.createElement('style');
+        style.id = 'notificationStyles';
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(400px); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(400px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => notification.remove(), 300);
+    }, 3000);
+}
+// ============================================
+// REAL-TIME SYNC FOR ALL FEATURES
+// ============================================
+
+function enableAllRealtimeSync() {
+    console.log('🚀 Enabling real-time sync for all features...');
+    
+    // Real-time inventory updates
+    db.collection('config').doc('inventory').onSnapshot((doc) => {
+        if (!window.inventorySyncEnabled) {
+            window.inventorySyncEnabled = true;
+            return;
+        }
+        
         if (doc.exists) {
-            siteConfig.banner = doc.data();
-            displayBanner();
+            siteConfig.inventory = doc.data();
+            console.log('🔄 Inventory updated in real-time');
+            
+            // Update color options if on calculator page
+            if (document.getElementById('colorOptions')) {
+                renderColorOptions();
+            }
+            
+            showUpdateNotification('📦 Inventory updated!');
         }
     });
     
-    // Listen for promotion changes
-    db.collection('config').doc('promotions').onSnapshot(doc => {
+    // Real-time promotion updates
+    db.collection('config').doc('promotions').onSnapshot((doc) => {
+        if (!window.promoSyncEnabled) {
+            window.promoSyncEnabled = true;
+            return;
+        }
+        
         if (doc.exists) {
             siteConfig.promotions = doc.data().active || [];
             console.log('🔄 Promotions updated in real-time');
+            showUpdateNotification('🎉 Promotions updated!');
         }
     });
     
-    // Listen for pricing changes
-    db.collection('config').doc('pricing').onSnapshot(doc => {
+    // Real-time banner updates
+    db.collection('config').doc('banner').onSnapshot((doc) => {
+        if (!window.bannerSyncEnabled) {
+            window.bannerSyncEnabled = true;
+            return;
+        }
+        
         if (doc.exists) {
-            siteConfig.pricing = doc.data();
-            applyPricingConfig();
-            console.log('🔄 Pricing updated in real-time');
+            siteConfig.banner = doc.data();
+            console.log('🔄 Banner updated in real-time');
+            displayBanner();
+            showUpdateNotification('📢 Banner updated!');
         }
     });
     
-    // Listen for inventory changes
-    db.collection('config').doc('inventory').onSnapshot(doc => {
-        if (doc.exists) {
-            siteConfig.inventory = doc.data();
-            filterInventoryColors();
-            console.log('🔄 Inventory updated in real-time');
-        }
-    });
+    console.log('✅ Real-time sync enabled for all features!');
 }
+
 
 </script>
 
@@ -2630,31 +2810,53 @@ function renderColorOptions() {
         ];
     }
     
-    // NOW filter out-of-stock colors
-    const availableColors = colors.filter(color => {
+    // SHOW ALL COLORS but mark out-of-stock ones
+    colorContainer.innerHTML = colors.map(color => {
         const colorKey = color.value.toLowerCase();
-        return isColorInStock(selectedMaterial, colorKey);
-    });
-    
-    // Safety: if no colors available, show all
-    const finalColors = availableColors.length > 0 ? availableColors : colors;
-    
-    // Render the colors
-    colorContainer.innerHTML = finalColors.map(color => {
+        const inStock = isColorInStock(selectedMaterial, colorKey);
+        
         const priceText = color.isMulti 
             ? `+$${(color.price + color.extra).toFixed(2)}/g` 
             : `+$${color.price.toFixed(2)}/g`;
         
+        const outOfStockClass = !inStock ? 'out-of-stock' : '';
+        const selectedClass = selectedColor === color.value ? 'selected' : '';
+        const onclickAction = inStock ? `selectColor('${color.value}')` : '';
+        const outOfStockBanner = !inStock ? '<div class="color-out-of-stock-banner"></div>' : '';
+        
         return `
-            <div class="color-option ${selectedColor === color.value ? 'selected' : ''}" 
-                 onclick="selectColor('${color.value}')"
-                 style="background: ${color.bg}; color: ${color.textColor};">
-                ${color.name}
-                <span class="color-price">${priceText}</span>
-                ${color.isMulti ? '<span class="color-price" style="font-size: 0.75em;">(Multi-color)</span>' : ''}
+            <div class="color-option ${selectedClass} ${outOfStockClass}" 
+                 onclick="${onclickAction}"
+                 style="background: ${color.bg}; color: ${color.textColor}; position: relative;">
+                ${outOfStockBanner}
+                <div style="position: relative; z-index: 11;">
+                    ${color.name}
+                    <span class="color-price">${priceText}</span>
+                    ${color.isMulti ? '<span class="color-price" style="font-size: 0.75em;">(Multi-color)</span>' : ''}
+                    ${!inStock ? '<div style="font-size: 0.75em; margin-top: 3px; color: #FFD700;">Temporarily Unavailable</div>' : ''}
+                </div>
             </div>
         `;
     }).join('');
+    
+    // Add notice if some colors out of stock
+    const outOfStockCount = colors.filter(c => !isColorInStock(selectedMaterial, c.value.toLowerCase())).length;
+    
+    if (outOfStockCount > 0 && outOfStockCount < colors.length) {
+        colorContainer.innerHTML += `
+            <div style="grid-column: 1 / -1; text-align: center; padding: 15px; background: rgba(255, 215, 0, 0.1); border: 2px solid #FFD700; border-radius: 8px; margin-top: 10px;">
+                <span style="color: #FFD700; font-weight: bold;">⚠️ ${outOfStockCount} color${outOfStockCount !== 1 ? 's' : ''} temporarily out of stock</span>
+            </div>
+        `;
+    } else if (outOfStockCount === colors.length) {
+        colorContainer.innerHTML = `
+            <div style="text-align: center; padding: 30px; background: rgba(255, 215, 0, 0.1); border: 2px solid #FFD700; border-radius: 10px;">
+                <div style="font-size: 2em; margin-bottom: 10px;">⚠️</div>
+                <div style="color: #FFD700; font-weight: bold; margin-bottom: 10px;">All ${selectedMaterial.toUpperCase()} Colors Temporarily Out of Stock</div>
+                <div style="color: #FFA500; font-size: 0.9em;">Try switching to ${selectedMaterial === 'pla' ? 'PETG' : 'PLA'} or check back soon!</div>
+            </div>
+        `;
+    }
 }
         // Product selection in calculator
         function onProductSelect() {
@@ -2793,6 +2995,12 @@ function renderColorOptions() {
         }
         // Select Color
         function selectColor(color) {
+            // Check if color is in stock
+            if (!isColorInStock(selectedMaterial, color.toLowerCase())) {
+                alert('⚠️ Sorry, this color is temporarily out of stock. Please choose another color.');
+                return;
+            }
+    
             selectedColor = color;
             renderColorOptions();
             calculatePrice();
@@ -3727,8 +3935,14 @@ window.onload = async function() {
     // Update product ratings
     updateAllProductRatings();
 
-    //Load products from Firebase
+    // Load products from Firebase
     await loadProductsFromFirebase();
+    
+    // Enable real-time sync for products
+    enableRealtimeProductSync();
+    
+    // Enable real-time sync for other features
+    enableAllRealtimeSync();
     
     // Initialize mobile tabs
     initializeMobileTabs();
@@ -3738,7 +3952,7 @@ window.onload = async function() {
     renderColorOptions();
     updateCartDisplay();
     
-    console.log('✅ Page fully loaded!');
+    console.log('✅ Page fully loaded with REAL-TIME SYNC!');
 };
     </script>
 </body>
