@@ -1655,6 +1655,8 @@ function enableRealtimeProductSync() {
         if (typeof updateAllProductRatings === 'function') {
             updateAllProductRatings();
         }
+        // Update collection display
+        displayProductCollection();
         
         // Show notification
         showUpdateNotification('🔄 Products updated!');
@@ -2754,6 +2756,11 @@ if (bannerTextEl) {
         // Populate product dropdown
         function populateProductSelect() {
             const select = document.getElementById('productSelect');
+    
+            // CLEAR existing options first!
+            select.innerHTML = '<option value="">Choose a product...</option>';
+    
+            // Then add products
             products.forEach(product => {
                 const option = document.createElement('option');
                 option.value = product.id;
@@ -2761,6 +2768,68 @@ if (bannerTextEl) {
                 select.appendChild(option);
             });
         }
+// ============================================
+// DYNAMIC PRODUCT COLLECTION DISPLAY
+// ============================================
+
+function displayProductCollection() {
+    console.log('📦 Displaying product collection...');
+    
+    // Get all category containers
+    const categories = {
+        'Decorative': document.querySelector('.collection-content .category-section:nth-of-type(1) .product-grid'),
+        'Practical': document.querySelector('.collection-content .category-section:nth-of-type(2) .product-grid'),
+        'Toys & Fidgets': document.querySelector('.collection-content .category-section:nth-of-type(3) .product-grid'),
+        'Tools': document.querySelector('.collection-content .category-section:nth-of-type(4) .product-grid'),
+        'Educational': document.querySelector('.collection-content .category-section:nth-of-type(5) .product-grid')
+    };
+    
+    // Clear all categories
+    Object.values(categories).forEach(grid => {
+        if (grid) grid.innerHTML = '';
+    });
+    
+    // Add products to their categories
+    products.forEach(product => {
+        const grid = categories[product.category];
+        if (!grid) {
+            console.warn(`No grid found for category: ${product.category}`);
+            return;
+        }
+        
+        // Create product card
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.setAttribute('onclick', `openProductDetail(${product.id})`);
+        card.setAttribute('data-product-id', product.id);
+        
+        // Add image or emoji
+        let imageHtml = '';
+        if (product.image && product.image !== '') {
+            imageHtml = `<img src="${product.image}" alt="${product.name}">`;
+        } else {
+            imageHtml = `<div class="product-placeholder">${product.emoji || '📦'}</div>`;
+        }
+        
+        card.innerHTML = `
+            <div class="product-image">
+                ${imageHtml}
+            </div>
+            <div class="product-name">${product.name}</div>
+            <div class="product-category">${product.category}</div>
+            <div class="product-rating" id="rating-${product.id}">⭐⭐⭐⭐⭐</div>
+        `;
+        
+        grid.appendChild(card);
+    });
+    
+    console.log(`✅ Displayed ${products.length} products in collection`);
+    
+    // Update ratings after display
+    if (typeof updateAllProductRatings === 'function') {
+        updateAllProductRatings();
+    }
+}
 function renderColorOptions(material) {
     // Get the original colors array
     let colorOptions = [...colors]; // Create a copy
