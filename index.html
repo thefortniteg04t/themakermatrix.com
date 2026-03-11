@@ -2693,18 +2693,18 @@ if (bannerTextEl) {
         // Color Pricing
         const colorPrices = {
             red: 0.03, black: 0.03,
-            white: 0.04, gold: 0.04, yellow: 0.04,
-            purple: 0.05, blue: 0.05, green: 0.05, orange: 0.05,
-            greyblue: 0.05
+            white: 0.03, gold: 0.03, yellow: 0.03,
+            purple: 0.03, blue: 0.03, green: 0.03, orange: 0.03,
+            greyblue: 0.04
         };
 
         const multiColorExtra = 0.02;
 
         const multiColors = {
-            'multi-rg': { name: 'Red & Green', base: 0.03 },
-            'multi-rb': { name: 'Red & Blue', base: 0.03 },
-            'multi-rgold': { name: 'Red & Gold', base: 0.03 },
-            'multi-bg': { name: 'Blue & Green', base: 0.05 }
+            'multi-rg': { name: 'Red & Green', base: 0.01 },
+            'multi-rb': { name: 'Red & Blue', base: 0.01 },
+            'multi-rgold': { name: 'Red & Gold', base: 0.01 },
+            'multi-bg': { name: 'Blue & Green', base: 0.01 }
         };
 
         // Populate product dropdown
@@ -2828,23 +2828,23 @@ function renderColorOptions() {
 
     if (selectedMaterial === 'petg') {
         colors = [
-            { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.05, textColor: '#fff' }
+            { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.04, textColor: '#fff' }
         ];
     } else {
         colors = [
             { value: 'red', name: 'Red', bg: '#FF0000', price: 0.03, textColor: '#000' },
             { value: 'black', name: 'Black', bg: '#000000', price: 0.03, textColor: '#fff' },
-            { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.04, textColor: '#000' },
-            { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.04, textColor: '#000' },
-            { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.04, textColor: '#000' },
-            { value: 'purple', name: 'Purple', bg: '#800080', price: 0.05, textColor: '#fff' },
-            { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.05, textColor: '#fff' },
-            { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.05, textColor: '#fff' },
-            { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.05, textColor: '#000' },
-            { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
-            { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
-            { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.03, extra: 0.02, textColor: '#000', isMulti: true },
-            { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.05, extra: 0.02, textColor: '#fff', isMulti: true }
+            { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.03, textColor: '#000' },
+            { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.03, textColor: '#000' },
+            { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.03, textColor: '#000' },
+            { value: 'purple', name: 'Purple', bg: '#800080', price: 0.03, textColor: '#fff' },
+            { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.03, textColor: '#fff' },
+            { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.03, textColor: '#fff' },
+            { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.03, textColor: '#000' },
+            { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.01, extra: 0.02, textColor: '#fff', isMulti: true },
+            { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.01, extra: 0.02, textColor: '#fff', isMulti: true },
+            { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.01, extra: 0.02, textColor: '#000', isMulti: true },
+            { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.01, extra: 0.02, textColor: '#fff', isMulti: true }
         ];
     }
     
