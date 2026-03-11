@@ -2223,7 +2223,7 @@ function enableAllRealtimeSync() {
 
             <div class="form-group">
                 <label>Color Selection</label>
-                <p class="info-text">PETG is currently only available in Greyish Blue</p>
+                <p class="info-text">All colors are $0.03/gram • PETG is currently only available in Greyish Blue</p>
                 <div class="color-grid" id="colorOptions"></div>
             </div>
 
@@ -2404,7 +2404,7 @@ function enableAllRealtimeSync() {
             <span class="faq-toggle">▼</span>
         </div>
         <div class="faq-answer">
-            Quality is our priority! If there's any issue with your print, contact us immediately at <span>rc54871@stu.alaschools.org</span> or <span>sl70590@stu.alaschools.org</span>. We'll either fix the issue or refund your item. **Must have proof of damage**
+            Quality is our priority! If there's any issue with your print, contact us immediately at <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="16647523222e21275665626338777a7765757e79797a6538796471">[email&#160;protected]</a></span> or <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="addec19a9d98949dedded9d883ccc1ccdecec5c2c2c1de83c2dfca">[email&#160;protected]</a></span>. We'll either fix the issue or refund your item. **Must have proof of damage**
         </div>
     </div>
 
@@ -2509,7 +2509,7 @@ function enableAllRealtimeSync() {
         </div>
     </div>
     
-    <script>
+    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ============================================
 // API ENDPOINTS - REPLACE WITH YOUR URLS
 // ============================================
@@ -2691,21 +2691,34 @@ if (bannerTextEl) {
         let cart = [];
 
         // Color Pricing
+        // ============================================
+        // SIMPLIFIED PRICING - ALL COLORS $0.03/GRAM
+        // ============================================
+        
+        // All colors cost the same now!
         const colorPrices = {
-            red: 0.03, black: 0.03,
-            white: 0.04, gold: 0.04, yellow: 0.04,
-            purple: 0.05, blue: 0.05, green: 0.05, orange: 0.05,
-            greyblue: 0.05
+            red: 0.03, black: 0.03, white: 0.03, 
+            gold: 0.03, yellow: 0.03, purple: 0.03, 
+            blue: 0.03, green: 0.03, orange: 0.03,
+            greyblue: 0.03  // PETG color also $0.03
         };
 
-        const multiColorExtra = 0.02;
+        // No extra charge for multi-colors anymore
+        const multiColorExtra = 0;
 
         const multiColors = {
             'multi-rg': { name: 'Red & Green', base: 0.03 },
             'multi-rb': { name: 'Red & Blue', base: 0.03 },
             'multi-rgold': { name: 'Red & Gold', base: 0.03 },
-            'multi-bg': { name: 'Blue & Green', base: 0.05 }
+            'multi-bg': { name: 'Blue & Green', base: 0.03 }
         };
+
+        // ============================================
+        // PRICING FORMULA EXPLANATION:
+        // Cost = $1 base + (grams × $0.03)
+        // Price = Cost / 0.4  (60% profit margin)
+        // ============================================
+
 
         // Populate product dropdown
         function populateProductSelect() {
@@ -2828,23 +2841,23 @@ function renderColorOptions() {
 
     if (selectedMaterial === 'petg') {
         colors = [
-            { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.05, textColor: '#fff' }
+            { value: 'greyblue', name: 'Greyish Blue', bg: '#5B7C99', price: 0.03, textColor: '#fff' }
         ];
     } else {
         colors = [
             { value: 'red', name: 'Red', bg: '#FF0000', price: 0.03, textColor: '#000' },
             { value: 'black', name: 'Black', bg: '#000000', price: 0.03, textColor: '#fff' },
-            { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.04, textColor: '#000' },
-            { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.04, textColor: '#000' },
-            { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.04, textColor: '#000' },
-            { value: 'purple', name: 'Purple', bg: '#800080', price: 0.05, textColor: '#fff' },
-            { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.05, textColor: '#fff' },
-            { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.05, textColor: '#fff' },
-            { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.05, textColor: '#000' },
-            { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
-            { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0.02, textColor: '#fff', isMulti: true },
-            { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.03, extra: 0.02, textColor: '#000', isMulti: true },
-            { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.05, extra: 0.02, textColor: '#fff', isMulti: true }
+            { value: 'white', name: 'White', bg: '#FFFFFF', price: 0.03, textColor: '#000' },
+            { value: 'gold', name: 'Gold', bg: '#FFD700', price: 0.03, textColor: '#000' },
+            { value: 'yellow', name: 'Yellow', bg: '#FFFF00', price: 0.03, textColor: '#000' },
+            { value: 'purple', name: 'Purple', bg: '#800080', price: 0.03, textColor: '#fff' },
+            { value: 'blue', name: 'Blue', bg: '#4169E1', price: 0.03, textColor: '#fff' },
+            { value: 'green', name: 'Green', bg: '#D0ED78', price: 0.03, textColor: '#fff' },
+            { value: 'orange', name: 'Orange', bg: '#FFA500', price: 0.03, textColor: '#000' },
+            { value: 'multi-rg', name: 'Red & Green', bg: 'linear-gradient(135deg, #FF0000 50%, #008000 50%)', price: 0.03, extra: 0, textColor: '#fff', isMulti: true },
+            { value: 'multi-rb', name: 'Red & Blue', bg: 'linear-gradient(135deg, #FF0000 50%, #4169E1 50%)', price: 0.03, extra: 0, textColor: '#fff', isMulti: true },
+            { value: 'multi-rgold', name: 'Red & Gold', bg: 'linear-gradient(135deg, #FF0000 50%, #FFD700 50%)', price: 0.03, extra: 0, textColor: '#000', isMulti: true },
+            { value: 'multi-bg', name: 'Blue & Green', bg: 'linear-gradient(135deg, #4169E1 50%, #008000 50%)', price: 0.03, extra: 0, textColor: '#fff', isMulti: true }
         ];
     }
     
@@ -3051,7 +3064,6 @@ function renderColorOptions() {
                 return;
             }
 
-
             const grams = selectedProduct.grams;
             
             let pricePerGram = 0;
@@ -3076,8 +3088,13 @@ function renderColorOptions() {
                 subtotal -= discount;
             }
             
-            let premium = document.getElementById('premiumListing').checked ? 1 : 0;
+            let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
             let total = subtotal + premium;
+            
+            // ⭐ FIX: Apply rounding BEFORE displaying!
+            if (typeof applyRounding === 'function') {
+                total = applyRounding(total, selectedProduct.category);
+            }
 
             let html = `
                 <div class="price-display">
@@ -3089,9 +3106,6 @@ function renderColorOptions() {
             `;
             
             document.getElementById('priceDisplay').innerHTML = html;
-            if (typeof applyRounding === 'function') {
-                total = applyRounding(total, selectedProduct.category);
-            }
             return total;
         }
 
@@ -3116,22 +3130,23 @@ function renderColorOptions() {
             }
             
             let materialCost = pricePerGram * grams;
-            let subtotal = 1 + (materialCost / 0.2);
+            // ⭐ FIX: Use SAME formula as calculatePrice - 0.4 not 0.2!
+            let subtotal = 1 + (materialCost / 0.4);
             
-            if (subtotal > 10) {
-                subtotal -= (subtotal - 10) * 0.10;
-            }
-
+            // ⭐ FIX: Use SAME discount logic as calculatePrice
+            let discount = 0;
             if (subtotal > 20) {
-                subtotal -= (subtotal - 20) * 0.15
-            }
-
-            if (subtotal > 30) {
-                subtotal -= (subtotal - 30)  * 0.2
+                discount = (subtotal - 20) * 0.10;
+                subtotal -= discount;
             }
             
-            let premium = document.getElementById('premiumListing').checked ? 1 : 0;
+            let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
             let total = subtotal + premium;
+            
+            // ⭐ FIX: Apply rounding here too!
+            if (typeof applyRounding === 'function') {
+                total = applyRounding(total, selectedProduct.category);
+            }
 
             const cartItem = {
                 id: Date.now(),
@@ -3977,21 +3992,4 @@ window.onload = async function() {
     await loadProductsFromFirebase();
     
     // Enable real-time sync for products
-    enableRealtimeProductSync();
-    
-    // Enable real-time sync for other features
-    enableAllRealtimeSync();
-    
-    // Initialize mobile tabs
-    initializeMobileTabs();
-    
-    // Populate product dropdown
-    populateProductSelect();
-    renderColorOptions();
-    updateCartDisplay();
-    
-    console.log('✅ Page fully loaded with REAL-TIME SYNC!');
-};
-    </script>
-</body>
-</html>
+    enableRealtimeProductSync()
