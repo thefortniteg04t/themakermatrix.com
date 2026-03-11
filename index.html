@@ -2231,7 +2231,7 @@ function enableAllRealtimeSync() {
                 <div class="checkbox-option">
                     <input type="checkbox" id="premiumListing" onchange="calculatePrice()">
                     <label for="premiumListing" style="cursor: pointer; margin: 0; color: #00ff00;">
-                        <strong>Premium Listing (Fast Pass)</strong> - Get your order prioritized for +$0.50
+                        <strong>Premium Listing (Fast Pass)</strong> - Get your order prioritized for +$1
                     </label>
                 </div>
             </div>
@@ -3076,7 +3076,7 @@ function renderColorOptions() {
                 subtotal -= discount;
             }
             
-            let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
+            let premium = document.getElementById('premiumListing').checked ? 1 : 0;
             let total = subtotal + premium;
 
             let html = `
@@ -3130,7 +3130,7 @@ function renderColorOptions() {
                 subtotal -= (subtotal - 30)  * 0.2
             }
             
-            let premium = document.getElementById('premiumListing').checked ? 0.50 : 0;
+            let premium = document.getElementById('premiumListing').checked ? 1 : 0;
             let total = subtotal + premium;
 
             const cartItem = {
