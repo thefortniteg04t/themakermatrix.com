@@ -3069,7 +3069,10 @@ function renderColorOptions() {
             
             let materialCost = pricePerGram * grams;
             let subtotal = 1 + (materialCost / 0.4);
-            
+
+            if (typeof applyRounding === 'function') {
+                total = applyRounding(total, selectedProduct.category);
+            }
             let discount = 0;
             if (subtotal > 20) {
                 discount = (subtotal - 20) * 0.10;
