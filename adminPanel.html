@@ -1248,7 +1248,21 @@ async function loadProducts() {
         // Sort by product ID
         allProducts.sort((a, b) => (a.productId || 0) - (b.productId || 0));
         
+        // ⭐ SYNC TO window.products FOR STOCK TAB
+        window.products = allProducts.map(p => ({
+            id: p.productId,
+            name: p.name,
+            category: p.category,
+            grams: p.grams,
+            hours: p.hours,
+            emoji: p.emoji,
+            image: p.image,
+            description: p.description,
+            dimensions: p.dimensions
+        }));
+        
         console.log('✅ Products loaded:', allProducts.length);
+        console.log('✅ window.products synced:', window.products.length);
         displayProducts(allProducts);
         
     } catch (error) {
