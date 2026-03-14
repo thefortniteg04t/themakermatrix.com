@@ -2263,6 +2263,9 @@ window.onload = async function() {
     // Load settings from Firebase
     await loadAdminSettings();
 
+    // Load Site Configuration
+    await loadSiteConfig();
+    
     //Load products on startup
     await loadProducts();
     
@@ -2280,7 +2283,7 @@ window.onload = async function() {
 let materials = [];
 let stockItems = [];
 let transactions = [];
-
+let siteConfig = { inventory: {} };
 // ============================================
 // MATERIALS MANAGEMENT
 // ============================================
@@ -2390,6 +2393,20 @@ function displayMaterials() {
     }
 
     container.innerHTML = html;
+}
+async function loadSiteConfig() {
+    try {
+        const snapshot = await db.collection('config').doc('inventory').get();
+        if (snapshot.exists) {
+            siteConfig.inventory = snapshot.data() || {};
+        } else {
+            siteConfig.inventory = {};
+        }
+        console.log('✅ Site config loaded');
+    } catch (error) {
+        console.error('Error loading site config:', error);
+        siteConfig.inventory = {};
+    }
 }
 // ============================================
 // MATERIALS ↔️ INVENTORY SYNC
@@ -2854,7 +2871,10 @@ async function logTransaction(transaction) {
     transaction.id = `tx_${Date.now()}`;
 
     try {
-        await db.collection('inventory').collection('transactions').add(transaction);
+        transactions.push(transaction);
+        await db.collection('inventory').doc('transactions').set({
+            items: transactions
+        });
     } catch (error) {
         console.error('Error logging transaction:', error);
     }
@@ -2865,11 +2885,13 @@ async function loadReconciliation() {
     
     try {
         // Load transactions
-        const txSnapshot = await db.collection('inventory').collection('transactions').get();
-        transactions = [];
-        txSnapshot.forEach(doc => {
-            transactions.push(doc.data());
-        });
+        const txSnapshot = await db.collection('inventory').doc('transactions').get();
+        if (txSnapshot.exists) {
+            transactions = txSnapshot.data().items || [];
+        } else {
+            transactions = [];
+        }
+
 
         // Load orders
         const ordersSnapshot = await db.collection('orders').get();
@@ -3001,7 +3023,7 @@ window.openTab = function(tabName) {
     originalOpenTab(tabName);
     
     if (tabName === 'materials') {
-        loadMaterials();
+        loadSiteConfig().then(() => loadMaterials());
     } else if (tabName === 'stock') {
         loadStock();
     } else if (tabName === 'reconciliation') {
