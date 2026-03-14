@@ -507,6 +507,95 @@
 .btn-small:hover {
     background: rgba(0, 77, 0, 0.7);
 }
+        /* Toggle Switch for Materials */
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #330000;
+    border: 2px solid #660000;
+    transition: 0.3s;
+    border-radius: 24px;
+}
+
+.toggle-slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #660000;
+    transition: 0.3s;
+    border-radius: 50%;
+}
+
+input:checked + .toggle-slider {
+    background-color: #003300;
+    border-color: #00ff00;
+}
+
+input:checked + .toggle-slider:before {
+    transform: translateX(26px);
+    background-color: #00ff00;
+}
+
+input:disabled + .toggle-slider {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.status-out {
+    background: rgba(100, 0, 0, 0.3);
+    color: #ff6666;
+    padding: 3px 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.text-warning {
+    color: #ffaa00;
+    font-weight: bold;
+}
+
+/* Toast animation */
+@keyframes slideInUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutDown {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+}
     </style>
 </head>
 <body>
@@ -2229,8 +2318,8 @@ function displayMaterials() {
                                 <th>Color</th>
                                 <th>Grams</th>
                                 <th>Cost/Spool</th>
-                                <th>Cost/g</th>
-                                <th>Status</th>
+                                <th>In Stock</th>
+                                <th>Website Status</th>
                                 <th>Actions</th>
                             </tr>
                         </thead>
@@ -2239,17 +2328,38 @@ function displayMaterials() {
 
         items.forEach(material => {
             const costPerGram = (material.cost / 1000).toFixed(4);
-            const statusClass = material.grams < 100 ? 'status-warning' : 'status-ready';
-            const statusText = material.grams < 100 ? '⚠️ LOW' : '✅ OK';
+            
+            // Check current inventory status
+            const materialKey = material.type.toLowerCase().replace(/\s+/g, '');
+            const colorKey = material.color.toLowerCase().replace(/\s+/g, '-');
+            const inStock = siteConfig.inventory?.[materialKey]?.[colorKey] !== false;
+            
+            // Auto-determine if should be in stock based on grams
+            const shouldBeInStock = material.grams > 0;
+            const statusClass = shouldBeInStock ? (inStock ? 'status-ready' : 'status-warning') : 'status-out';
+            const statusText = shouldBeInStock ? (inStock ? '✅ Available' : '⚠️ Hidden') : '❌ Empty';
+            
+            // Warning if grams low
+            const gramsClass = material.grams < 100 ? 'text-warning' : '';
+            const gramsWarning = material.grams < 100 ? ' ⚠️' : '';
 
             html += `
                 <tr>
-                    <td>${material.color}</td>
-                    <td>${material.grams}g</td>
+                    <td><strong>${material.color}</strong></td>
+                    <td class="${gramsClass}">${material.grams}g${gramsWarning}</td>
                     <td>$${material.cost.toFixed(2)}</td>
-                    <td>$${costPerGram}</td>
+                    <td>
+                        <label class="toggle-switch">
+                            <input type="checkbox" 
+                                   ${inStock ? 'checked' : ''} 
+                                   onchange="toggleMaterialStock('${materialKey}', '${colorKey}', this.checked)"
+                                   ${material.grams === 0 ? 'disabled' : ''}>
+                            <span class="toggle-slider"></span>
+                        </label>
+                    </td>
                     <td><span class="${statusClass}">${statusText}</span></td>
                     <td>
+                        <button class="btn-small" onclick="adjustMaterialGrams('${material.id}')">Adjust</button>
                         <button class="btn-small" onclick="editMaterial('${material.id}')">Edit</button>
                         <button class="btn-small" onclick="deleteMaterial('${material.id}')">Delete</button>
                     </td>
@@ -2266,6 +2376,131 @@ function displayMaterials() {
     }
 
     container.innerHTML = html;
+}
+// ============================================
+// MATERIALS ↔️ INVENTORY SYNC
+// ============================================
+
+async function toggleMaterialStock(materialType, colorKey, isInStock) {
+    try {
+        // Update local config
+        if (!siteConfig.inventory[materialType]) {
+            siteConfig.inventory[materialType] = {};
+        }
+        siteConfig.inventory[materialType][colorKey] = isInStock;
+
+        // Save to Firebase
+        await db.collection('config').doc('inventory').set(siteConfig.inventory);
+
+        console.log(`✅ ${materialType} ${colorKey} set to: ${isInStock ? 'IN STOCK' : 'OUT OF STOCK'}`);
+        
+        // Refresh display
+        displayMaterials();
+        
+        // Show confirmation
+        const status = isInStock ? 'available' : 'hidden';
+        showToast(`✅ Color ${status} on website!`);
+        
+    } catch (error) {
+        console.error('Error toggling stock:', error);
+        alert('Error updating stock status');
+    }
+}
+
+async function adjustMaterialGrams(materialId) {
+    const material = materials.find(m => m.id === materialId);
+    if (!material) return;
+
+    const currentGrams = material.grams;
+    const action = prompt(
+        `Current: ${currentGrams}g\n\n` +
+        `Enter:\n` +
+        `• Positive number to ADD grams (e.g., 1000)\n` +
+        `• Negative number to REMOVE grams (e.g., -120)\n` +
+        `• Or just new total (e.g., 500)`
+    );
+
+    if (action === null) return;
+
+    let newGrams;
+    const input = parseFloat(action);
+
+    if (isNaN(input)) {
+        alert('Please enter a valid number!');
+        return;
+    }
+
+    // If input starts with + or -, it's an adjustment
+    if (action.startsWith('+') || action.startsWith('-')) {
+        newGrams = currentGrams + input;
+    } else {
+        // Otherwise, it's a new total
+        newGrams = input;
+    }
+
+    if (newGrams < 0) {
+        alert('Grams cannot be negative!');
+        return;
+    }
+
+    // Update material
+    const materialIndex = materials.findIndex(m => m.id === materialId);
+    materials[materialIndex].grams = newGrams;
+    materials[materialIndex].lastUpdated = new Date().toISOString();
+
+    // If grams hit 0, auto-disable in inventory
+    if (newGrams === 0) {
+        const materialType = material.type.toLowerCase().replace(/\s+/g, '');
+        const colorKey = material.color.toLowerCase().replace(/\s+/g, '-');
+        
+        if (!siteConfig.inventory[materialType]) {
+            siteConfig.inventory[materialType] = {};
+        }
+        siteConfig.inventory[materialType][colorKey] = false;
+        
+        await db.collection('config').doc('inventory').set(siteConfig.inventory);
+        
+        alert(`⚠️ ${material.type} ${material.color} is now OUT OF STOCK and hidden from website!`);
+    }
+
+    try {
+        await db.collection('inventory').doc('materials').set({
+            items: materials
+        });
+
+        showToast(`✅ Updated to ${newGrams}g`);
+        displayMaterials();
+    } catch (error) {
+        console.error('Error updating grams:', error);
+        alert('Error saving changes');
+    }
+}
+
+// Simple toast notification
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: linear-gradient(135deg, #003300 0%, #004d00 100%);
+        color: #00ff00;
+        padding: 15px 25px;
+        border-radius: 10px;
+        border: 2px solid #00ff00;
+        box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        z-index: 10000;
+        font-family: 'Courier New', Courier, monospace;
+        animation: slideInUp 0.3s ease-out;
+    `;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.animation = 'slideOutDown 0.3s ease-out';
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
 }
 
 function showAddMaterialForm() {
@@ -2303,12 +2538,27 @@ async function saveMaterial() {
 
     materials.push(newMaterial);
 
+    // ⭐ AUTO-ADD TO INVENTORY SYSTEM
+    const materialType = type.toLowerCase().replace(/\s+/g, '');
+    const colorKey = color.toLowerCase().replace(/\s+/g, '-');
+    
+    if (!siteConfig.inventory[materialType]) {
+        siteConfig.inventory[materialType] = {};
+    }
+    
+    // Default to IN STOCK when adding
+    siteConfig.inventory[materialType][colorKey] = true;
+
     try {
+        // Save materials
         await db.collection('inventory').doc('materials').set({
             items: materials
         });
+        
+        // Save inventory config
+        await db.collection('config').doc('inventory').set(siteConfig.inventory);
 
-        alert('✅ Material added successfully!');
+        alert(`✅ Material added and enabled on website!\n\n${type} - ${color} is now available to customers.`);
         cancelAddMaterial();
         displayMaterials();
     } catch (error) {
@@ -2316,7 +2566,6 @@ async function saveMaterial() {
         alert('Error saving material. Please try again.');
     }
 }
-
 async function deleteMaterial(materialId) {
     if (!confirm('Delete this material? This cannot be undone.')) return;
 
