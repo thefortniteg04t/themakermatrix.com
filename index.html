@@ -1374,7 +1374,7 @@
 <script>
 // FIREBASE MUST BE FIRST!
     const firebaseConfig = {
-      apiKey: "${{ secrets.MY_API_KEY }}",
+      apiKey: "AIzaSyAE3gIFBTqPLjwXwsj0hg2kve3dhp3ibcY",
       authDomain: "matrix-74ec2.firebaseapp.com",
       projectId: "matrix-74ec2",
       storageBucket: "matrix-74ec2.firebasestorage.app",
@@ -3322,14 +3322,17 @@ function displayProductReviews(productId) {
         );
         
         sortedReviews.forEach(review => {
-            const date = new Date(review.timestamp).toLocaleDateString();
+            const date = review.timestamp ? new Date(review.timestamp).toLocaleDateString() : 'Unknown date';
+            const author = review.author || 'Anonymous';
+            const text = review.text || '';
+            const stars = review.stars || 0;
             html += `
                 <div class="review-item">
                     <div class="review-header">
-                        <span class="review-author">${review.author}</span>
-                        <span class="review-stars">${'★'.repeat(review.stars)}${'☆'.repeat(5-review.stars)}</span>
+                        <span class="review-author">${author}</span>
+                        <span class="review-stars">${'★'.repeat(stars)}${'☆'.repeat(5-stars)}</span>
                     </div>
-                    <div class="review-text">${review.text}</div>
+                    <div class="review-text">${text}</div>
                     <div class="review-date">Posted on ${date}</div>
                 </div>
             `;
