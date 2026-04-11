@@ -1564,7 +1564,7 @@ function applyPromoCode(code, total, items) {
 function enableRealtimeProductSync() {
     console.log('🔄 Real-time product sync ENABLED!');
     let retryCount = 0;
-    const MAX_RETRIES = 1;
+    const MAX_RETRIES = 0;
 
     const unsubscribe = db.collection('products').onSnapshot(
         (snapshot) => {
