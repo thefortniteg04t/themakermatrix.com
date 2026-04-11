@@ -1563,54 +1563,41 @@ function applyPromoCode(code, total, items) {
 
 function enableRealtimeProductSync() {
     console.log('🔄 Real-time product sync ENABLED!');
-    
-    // Listen for ANY changes to products collection
-    db.collection('products').onSnapshot((snapshot) => {
-        // Skip initial load
-        if (!window.initialProductLoadComplete) {
-            window.initialProductLoadComplete = true;
-            return;
-        }
-        
-        console.log('🔔 Products changed! Updating...');
-        
-        // Rebuild products array
-        products = [];
-        
-        snapshot.forEach((doc) => {
-            const p = doc.data();
-            products.push({
-                id: p.productId,
-                name: p.name,
-                category: p.category,
-                grams: p.grams,
-                hours: p.hours,
-                emoji: p.emoji,
-                image: p.image,
-                description: p.description,
-                dimensions: p.dimensions
+    let retryCount = 0;
+    const MAX_RETRIES = 3;
+
+    const unsubscribe = db.collection('products').onSnapshot(
+        (snapshot) => {
+            retryCount = 0; // reset on success
+            if (!window.initialProductLoadComplete) {
+                window.initialProductLoadComplete = true;
+                return;
+            }
+            console.log('🔔 Products changed! Updating...');
+            products = [];
+            snapshot.forEach((doc) => {
+                const p = doc.data();
+                products.push({
+                    id: p.productId, name: p.name, category: p.category,
+                    grams: p.grams, hours: p.hours, emoji: p.emoji,
+                    image: p.image, description: p.description, dimensions: p.dimensions
+                });
             });
-        });
-        
-        // Sort by ID
-        products.sort((a, b) => a.id - b.id);
-        
-        console.log('✅ Products updated in real-time:', products.length);
-        
-        // Update UI instantly
-        if (document.getElementById('productSelect')) {
-            populateProductSelect();
+            products.sort((a, b) => a.id - b.id);
+            if (document.getElementById('productSelect')) populateProductSelect();
+            if (typeof updateAllProductRatings === 'function') updateAllProductRatings();
+            displayProductCollection();
+            showUpdateNotification('🔄 Products updated!');
+        },
+        (error) => {
+            console.warn('⚠️ Product sync blocked or failed:', error.code);
+            retryCount++;
+            if (retryCount >= MAX_RETRIES) {
+                console.warn('🛑 Product sync stopped after max retries (likely blocked by ad blocker).');
+                unsubscribe(); // stop retrying entirely
+            }
         }
-        
-        if (typeof updateAllProductRatings === 'function') {
-            updateAllProductRatings();
-        }
-        // Update collection display
-        displayProductCollection();
-        
-        // Show notification
-        showUpdateNotification('🔄 Products updated!');
-    });
+    );
 }
 // ============================================
 // UPDATE NOTIFICATION
@@ -1673,56 +1660,66 @@ function showUpdateNotification(message) {
 
 function enableAllRealtimeSync() {
     console.log('🚀 Enabling real-time sync for all features...');
-    
-    // Real-time inventory updates
-    db.collection('config').doc('inventory').onSnapshot((doc) => {
-        if (!window.inventorySyncEnabled) {
-            window.inventorySyncEnabled = true;
-            return;
-        }
-        
-        if (doc.exists) {
+
+    function safeOnSnapshot(docRef, flagName, onData, label) {
+        let retries = 0;
+        const MAX = 3;
+        const unsub = docRef.onSnapshot(
+            (doc) => {
+                retries = 0;
+                if (!window[flagName]) { window[flagName] = true; return; }
+                onData(doc);
+            },
+            (error) => {
+                console.warn(`⚠️ ${label} sync failed:`, error.code);
+                retries++;
+                if (retries >= MAX) {
+                    console.warn(`🛑 ${label} sync stopped (likely blocked by ad blocker).`);
+                    unsub();
+                }
+            }
+        );
+        return unsub;
+    }
+
+    safeOnSnapshot(
+        db.collection('config').doc('inventory'),
+        'inventorySyncEnabled',
+        (doc) => {
+            if (!doc.exists) return;
             siteConfig.inventory = doc.data();
             console.log('🔄 Inventory updated in real-time');
-            
-            // Update color options if on calculator page
-            if (document.getElementById('colorOptions')) {
-                renderColorOptions();
-            }
-            
+            if (document.getElementById('colorOptions')) renderColorOptions();
             showUpdateNotification('📦 Inventory updated!');
-        }
-    });
-    
-    // Real-time promotion updates
-    db.collection('config').doc('promotions').onSnapshot((doc) => {
-        if (!window.promoSyncEnabled) {
-            window.promoSyncEnabled = true;
-            return;
-        }
-        
-        if (doc.exists) {
+        },
+        'Inventory'
+    );
+
+    safeOnSnapshot(
+        db.collection('config').doc('promotions'),
+        'promoSyncEnabled',
+        (doc) => {
+            if (!doc.exists) return;
             siteConfig.promotions = doc.data().active || [];
             console.log('🔄 Promotions updated in real-time');
             showUpdateNotification('🎉 Promotions updated!');
-        }
-    });
-    
-    // Real-time banner updates
-    db.collection('config').doc('banner').onSnapshot((doc) => {
-        if (!window.bannerSyncEnabled) {
-            window.bannerSyncEnabled = true;
-            return;
-        }
-        
-        if (doc.exists) {
+        },
+        'Promotions'
+    );
+
+    safeOnSnapshot(
+        db.collection('config').doc('banner'),
+        'bannerSyncEnabled',
+        (doc) => {
+            if (!doc.exists) return;
             siteConfig.banner = doc.data();
             console.log('🔄 Banner updated in real-time');
             displayBanner();
             showUpdateNotification('📢 Banner updated!');
-        }
-    });
-    
+        },
+        'Banner'
+    );
+
     console.log('✅ Real-time sync enabled for all features!');
 }
 
@@ -2522,60 +2519,71 @@ let selectedRating = 0;
 // ============================================
 
 // Start with empty array (will be filled from Firebase)
-let products = [];
+let products = [
+    { id: 1, name: 'Straw Topper', category: 'Decorative', grams: 10, hours: 1, emoji: '🥤', image: 'https://i.imgur.com/p2uTIaS.png', description: 'A fun decorative topper for your straw!', dimensions: 'Small' },
+    { id: 2, name: 'Keychain', category: 'Decorative', grams: 8, hours: 1, emoji: '🔑', image: 'https://i.imgur.com/Jn9D34K.png', description: 'A custom 3D printed keychain.', dimensions: 'Small' },
+    { id: 3, name: 'Desk Cactus', category: 'Decorative', grams: 15, hours: 2, emoji: '🌵', image: 'https://i.imgur.com/fl3T8u5.png', description: 'A cute desk cactus decoration.', dimensions: 'Medium' },
+    { id: 4, name: 'Balancing Bird', category: 'Decorative', grams: 12, hours: 1, emoji: '🐦', image: 'https://i.imgur.com/EK9ldmU.png', description: 'A fun balancing bird toy.', dimensions: 'Small' },
+    { id: 5, name: 'LEGO Sorting Tray', category: 'Practical', grams: 40, hours: 3, emoji: '🧱', image: 'https://i.imgur.com/kj8Tub7.png', description: 'A tray for sorting LEGO pieces.', dimensions: 'Large' },
+    { id: 6, name: 'Cable Organizer', category: 'Practical', grams: 20, hours: 2, emoji: '🔌', image: 'https://i.imgur.com/8rE5EnS.png', description: 'Keep your cables neat and organized.', dimensions: 'Medium' },
+    { id: 7, name: 'Roll-up Picnic Table', category: 'Practical', grams: 50, hours: 4, emoji: '🪑', image: 'https://i.imgur.com/Mf56D6Q.png', description: 'A roll-up picnic table for on the go.', dimensions: 'Large' },
+    { id: 8, name: 'Sheets Holder', category: 'Practical', grams: 25, hours: 2, emoji: '📄', image: 'https://i.imgur.com/xGs4ooL.png', description: 'Holds your sheets in place.', dimensions: 'Medium' },
+    { id: 9, name: 'Fruit Rinser', category: 'Practical', grams: 30, hours: 3, emoji: '🍎', image: 'https://i.imgur.com/pxhuXiT.png', description: 'Rinse your fruit with ease.', dimensions: 'Medium' },
+    { id: 10, name: 'Purse Hanger', category: 'Practical', grams: 18, hours: 2, emoji: '👜', image: 'https://i.imgur.com/8OhpLnD.png', description: 'Hang your purse anywhere.', dimensions: 'Small' },
+    { id: 11, name: 'Cable Clip', category: 'Practical', grams: 5, hours: 1, emoji: '📎', image: 'https://i.imgur.com/oxWw4Pb.png', description: 'A small clip to manage cables.', dimensions: 'Small' },
+    { id: 12, name: 'Glasses Holder', category: 'Practical', grams: 22, hours: 2, emoji: '👓', image: 'https://i.imgur.com/dhv52FD.png', description: 'A holder for your glasses.', dimensions: 'Medium' },
+    { id: 13, name: 'Headphones Holder', category: 'Practical', grams: 35, hours: 3, emoji: '🎧', image: 'https://i.imgur.com/hyMtQgG.png', description: 'Keep your headphones organized.', dimensions: 'Medium' },
+    { id: 14, name: 'Infinity Cube', category: 'Fidget', grams: 28, hours: 3, emoji: '🎲', image: 'https://i.imgur.com/aihR6No.png', description: 'A satisfying infinity cube fidget toy.', dimensions: 'Small' },
+    { id: 15, name: 'Clicker Button or Switch', category: 'Fidget', grams: 12, hours: 1, emoji: '🔘', image: 'https://i.imgur.com/aVtCvRR.png', description: 'A satisfying clicker button or switch.', dimensions: 'Small' },
+    { id: 16, name: 'Pass Through', category: 'Fidget', grams: 15, hours: 2, emoji: '🔄', image: 'https://i.imgur.com/yecq8ZU.png', description: 'A fun pass through fidget toy.', dimensions: 'Small' },
+    { id: 17, name: 'Sensory Fidget', category: 'Fidget', grams: 20, hours: 2, emoji: '✋', image: 'https://i.imgur.com/dTmgpnr.png', description: 'A sensory fidget toy for focus.', dimensions: 'Small' },
+    { id: 18, name: '3D Fabric', category: 'Satisfying', grams: 25, hours: 2, emoji: '🧵', image: 'https://i.imgur.com/Ksi9yVE.png', description: 'A satisfying 3D printed fabric.', dimensions: 'Medium' },
+    { id: 19, name: 'Angry Duck', category: '$5 Deal', grams: 8, hours: 1, emoji: '🦆', image: 'https://i.imgur.com/Le1SFsr.png', description: 'A cute angry duck figurine.', dimensions: 'Small' },
+    { id: 20, name: 'Baby Chicken', category: '$5 Deal', grams: 7, hours: 1, emoji: '🐣', image: 'https://i.imgur.com/F5RtTFL.png', description: 'An adorable baby chicken figurine.', dimensions: 'Small' },
+    { id: 21, name: 'Chubby Bunny', category: '$5 Deal', grams: 9, hours: 1, emoji: '🐰', image: 'https://i.imgur.com/w2PyxJE.png', description: 'A chubby bunny figurine.', dimensions: 'Small' },
+    { id: 22, name: 'Goldfish', category: '$5 Deal', grams: 7, hours: 1, emoji: '🐟', image: 'https://i.imgur.com/cgvsM6M.png', description: 'A cute goldfish figurine.', dimensions: 'Small' },
+    { id: 23, name: 'Narwal', category: '$5 Deal', grams: 10, hours: 1, emoji: '🐳', image: 'https://i.imgur.com/R1LH1ih.png', description: 'A narwhal figurine.', dimensions: 'Small' },
+    { id: 24, name: 'Chubby Dino', category: '$5 Deal', grams: 9, hours: 1, emoji: '🦕', image: 'https://i.imgur.com/ybdMg8o.png', description: 'A chubby dinosaur figurine.', dimensions: 'Small' },
+    { id: 25, name: 'Mini Otter', category: '$5 Deal', grams: 8, hours: 1, emoji: '🦦', image: 'https://i.imgur.com/Buopk8F.png', description: 'A mini otter figurine.', dimensions: 'Small' },
+    { id: 26, name: 'Panda', category: '$5 Deal', grams: 9, hours: 1, emoji: '🐼', image: 'https://i.imgur.com/VBc3zsA.png', description: 'A cute panda figurine.', dimensions: 'Small' },
+    { id: 27, name: 'Froggy', category: '$5 Deal', grams: 8, hours: 1, emoji: '🐸', image: 'https://i.imgur.com/7m6NT66.png', description: 'A cute froggy figurine.', dimensions: 'Small' },
+    { id: 28, name: 'Raccoon', category: '$5 Deal', grams: 9, hours: 1, emoji: '🦝', image: 'https://i.imgur.com/Go1TT49.png', description: 'A cute raccoon figurine.', dimensions: 'Small' },
+    { id: 29, name: 'Balloon Dog', category: '$5 Deal', grams: 10, hours: 1, emoji: '🐶', image: 'https://i.imgur.com/p2oji7p.png', description: 'A balloon dog figurine.', dimensions: 'Small' },
+    { id: 30, name: 'Custom Animal', category: 'Custom', grams: 15, hours: 2, emoji: '🐾', image: 'https://i.imgur.com/FYg88r9.png', description: 'A custom animal of your choice.', dimensions: 'Varies' },
+    { id: 31, name: 'Earrings', category: 'Custom', grams: 5, hours: 1, emoji: '💎', image: 'https://i.imgur.com/FNNj5pk.png', description: 'Custom 3D printed earrings.', dimensions: 'Small' },
+    { id: 32, name: 'Custom Prop', category: 'Custom', grams: 30, hours: 3, emoji: '🎭', image: 'https://i.imgur.com/nsEjmzM.png', description: 'A custom prop for any occasion.', dimensions: 'Varies' },
+    { id: 33, name: 'Coaster', category: 'Custom', grams: 20, hours: 2, emoji: '☕', image: 'https://i.imgur.com/G9fbSxn.png', description: 'A custom coaster for your drinks.', dimensions: 'Medium' }
+];
 
 // Load products from Firebase
 async function loadProductsFromFirebase() {
     try {
-        console.log('📦 Loading products from Firebase...');
-        
         const productsSnapshot = await db.collection('products').get();
-        
         if (productsSnapshot.empty) {
-            console.log('⚠️ No products found in Firebase');
+            console.log('⚠️ No products in Firebase, using hardcoded fallback');
+            populateProductSelect();
+            updateAllProductRatings();
+            displayProductCollection();
             return;
         }
-        
-        // Clear existing
         products = [];
-        
-        // Load from Firebase
         productsSnapshot.forEach(doc => {
             const p = doc.data();
             products.push({
-                id: p.productId,
-                name: p.name,
-                category: p.category,
-                grams: p.grams,
-                hours: p.hours,
-                emoji: p.emoji,
-                image: p.image,
-                description: p.description,
-                dimensions: p.dimensions
+                id: p.productId, name: p.name, category: p.category,
+                grams: p.grams, hours: p.hours, emoji: p.emoji,
+                image: p.image, description: p.description, dimensions: p.dimensions
             });
         });
-        
-        // Sort by ID
         products.sort((a, b) => a.id - b.id);
-        
-        console.log('✅ Products loaded from Firebase:', products.length);
-        console.log('First product:', products[0]?.name);
-        console.log('Last product:', products[products.length - 1]?.name);
-        
-        // Refresh UI
-        if (document.getElementById('productSelect')) {
-            populateProductSelect();
-        }
-        
-        if (typeof updateAllProductRatings === 'function') {
-            updateAllProductRatings();
-        }
-        
-        // ⭐ DISPLAY PRODUCTS IN COLLECTION!
+        populateProductSelect();
+        updateAllProductRatings();
         displayProductCollection();
-        
     } catch (error) {
-        console.error('❌ Error loading products:', error);
+        console.warn('⚠️ Firebase failed, using hardcoded fallback:', error);
+        populateProductSelect();
+        updateAllProductRatings();
+        displayProductCollection();
     }
 }
 
